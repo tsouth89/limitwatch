@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T01:46:00.760Z",
+  "generated_at": "2026-06-08T01:48:08.337Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
@@ -528,6 +528,52 @@
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
           "notes": "Per seat. Larger monthly pool of AI credits plus priority access to new models; per-seat credit amount not published per-plan."
+        },
+        {
+          "provider": "Replit",
+          "product": "Replit",
+          "plan": "Core",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 25,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$25 of monthly credits",
+          "source": "https://replit.com/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "$20/mo billed monthly ($25/mo equivalent when billed annually with the discount). Credits meter Agent/AI usage; overages billed on-demand."
+        },
+        {
+          "provider": "Replit",
+          "product": "Replit",
+          "plan": "Pro",
+          "price_usd": 95,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 100,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$100.00 monthly credits",
+          "source": "https://replit.com/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "$95/mo billed monthly ($100/mo equivalent billed annually). Credits meter Agent/AI usage; overages billed on-demand."
         }
       ]
     }

@@ -66,6 +66,14 @@
       "method": "browser"
     },
     {
+      "id": "replit-pricing",
+      "provider": "Replit",
+      "label": "Replit plans & monthly credits",
+      "url": "https://replit.com/pricing",
+      "tier": "official",
+      "method": "http"
+    },
+    {
       "id": "cursor-pricing-docs",
       "provider": "Cursor",
       "label": "Cursor plans & included usage",
