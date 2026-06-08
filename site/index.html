@@ -148,35 +148,38 @@
       return parts.length ? ` <span class="meta">(${parts.join(" · ")})</span>` : "";
     };
 
-    // Custom tooltip: native title doesn't respond to click and is flaky. Hover follows the
-    // cursor; click pins it open (touch-friendly). data-tip holds the text.
+    // Custom tooltip: native title doesn't respond to click and is flaky. The tooltip anchors to
+    // the hovered element (not the cursor), so the pointer stays above it and never covers the
+    // text. Click pins it open (touch-friendly). data-tip holds the text.
     (() => {
       const tip = document.createElement("div");
       tip.id = "tip";
       document.body.appendChild(tip);
-      let pinned = false;
-      const place = (ev) => {
-        const offX = 18, offY = 26, w = tip.offsetWidth, h = tip.offsetHeight;
-        let x = ev.clientX + offX, y = ev.clientY + offY;       // sit clear below-right of the cursor
-        if (x + w > innerWidth - 8) x = ev.clientX - w - offX;  // flip left near right edge
-        if (y + h > innerHeight - 8) y = ev.clientY - h - 14;   // flip above near bottom edge
+      let pinned = false, current = null;
+      const place = (el) => {
+        const r = el.getBoundingClientRect();
+        const w = tip.offsetWidth, h = tip.offsetHeight, gap = 10;
+        let x = Math.min(r.left, innerWidth - 8 - w);          // align to element, clamp to right edge
+        let y = r.bottom + gap;                                 // sit below the element, clear of the cursor
+        if (y + h > innerHeight - 8) y = r.top - h - gap;       // flip above when no room below
         tip.style.left = Math.max(8, x) + "px";
         tip.style.top = Math.max(8, y) + "px";
       };
-      const show = (el, ev) => { tip.textContent = el.dataset.tip; tip.style.display = "block"; place(ev); };
-      const hide = () => { tip.style.display = "none"; pinned = false; };
+      const show = (el) => { current = el; tip.textContent = el.dataset.tip; tip.style.display = "block"; place(el); };
+      const hide = () => { tip.style.display = "none"; pinned = false; current = null; };
       document.addEventListener("mouseover", (ev) => {
         if (pinned) return;
         const t = ev.target.closest("[data-tip]");
-        if (t) show(t, ev);
+        if (t && t !== current) show(t);
       });
-      document.addEventListener("mousemove", (ev) => {
-        if (pinned || tip.style.display !== "block") return;
-        if (ev.target.closest("[data-tip]")) place(ev); else hide();
+      document.addEventListener("mouseout", (ev) => {
+        if (pinned || !current) return;
+        const to = ev.relatedTarget && ev.relatedTarget.closest && ev.relatedTarget.closest("[data-tip]");
+        if (to !== current) hide();
       });
       document.addEventListener("click", (ev) => {
         const t = ev.target.closest("[data-tip]");
-        if (t) { show(t, ev); pinned = true; ev.stopPropagation(); }
+        if (t) { show(t); pinned = true; ev.stopPropagation(); }
         else hide();
       });
       addEventListener("scroll", () => { if (!pinned) hide(); }, true);
