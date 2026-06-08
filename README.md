@@ -25,6 +25,19 @@ Copy the newest file in `data/snapshots/`, rename to today's date, update number
 node scripts/build.mjs
 ```
 
+## Watch official sources for changes
+
+`npm run watch` (`scripts/fetch.mjs`) hashes each page in `data/sources.json` and flags only
+the ones that changed since last check, so you re-verify just what moved. It never edits
+snapshots — human stays in the loop.
+
+- Anthropic pages: plain HTTP (`method: "http"`).
+- OpenAI pages: Cloudflare-protected, return 403 to plain fetch. Routed through headed
+  patchright (`method: "browser"`, `scripts/browser-fetch.mjs`). **Headed** Chrome is what
+  clears the block — headless still gets 403. So the watcher needs a desktop session (a
+  visible browser window flashes). For unattended/CI runs, run on a machine with an active
+  display or a virtual framebuffer.
+
 ## Record schema
 
 Each snapshot is `{ "date": "YYYY-MM-DD", "entries": [ ... ] }`. See `data/schema.md`.

@@ -2,11 +2,25 @@
   "anthropic-api-rate-limits": {
     "hash": "207cf11cca4acf78",
     "checked": "2026-06-08",
-    "len": 17027
+    "len": 17027,
+    "method": "http"
   },
   "anthropic-pricing": {
     "hash": "2a4cde637f929560",
     "checked": "2026-06-08",
-    "len": 24117
+    "len": 24117,
+    "method": "http"
+  },
+  "openai-gpt55-help": {
+    "hash": "7c7e223446b1675c",
+    "checked": "2026-06-08",
+    "len": 7796,
+    "method": "browser"
+  },
+  "openai-pricing": {
+    "hash": "a938b06e5ed64318",
+    "checked": "2026-06-08",
+    "len": 9587,
+    "method": "browser"
   }
 }

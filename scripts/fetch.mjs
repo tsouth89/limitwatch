@@ -6,6 +6,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { fetchRendered } from "./browser-fetch.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const sources = JSON.parse(readFileSync(join(root, "data", "sources.json"), "utf8")).sources;
@@ -26,19 +27,33 @@ function visibleText(html) {
 
 const hash = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 
+// Plain HTTP fetch → visible text, or null on non-OK.
+async function httpText(url) {
+  const res = await fetch(url, {
+    headers: { "user-agent": "LimitWatch/0.1 (+https://limitwatch.southforgeai.com)" },
+    redirect: "follow",
+  });
+  if (!res.ok) return { text: null, note: `HTTP ${res.status}` };
+  return { text: visibleText(await res.text()), note: "" };
+}
+
 const results = [];
 for (const src of sources) {
   try {
-    const res = await fetch(src.url, {
-      headers: { "user-agent": "LimitWatch/0.1 (+https://limitwatch.southforgeai.com)" },
-      redirect: "follow",
-    });
-    if (!res.ok) { results.push({ src, status: `HTTP ${res.status}` }); continue; }
-    const text = visibleText(await res.text());
+    let text, note;
+    if (src.method === "browser") {
+      // Cloudflare-protected: headed patchright is what actually passes (headless = 403).
+      const r = await fetchRendered(src.url, { headless: false });
+      if (!r.ok) { results.push({ src, status: `BLOCKED (${r.note || r.status})` }); continue; }
+      text = visibleText(r.text);
+    } else {
+      ({ text, note } = await httpText(src.url));
+      if (text == null) { results.push({ src, status: note }); continue; }
+    }
     const h = hash(text);
     const prev = state[src.id];
     const changed = prev && prev.hash !== h;
-    state[src.id] = { hash: h, checked: new Date().toISOString().slice(0, 10), len: text.length };
+    state[src.id] = { hash: h, checked: new Date().toISOString().slice(0, 10), len: text.length, method: src.method };
     results.push({ src, status: prev ? (changed ? "CHANGED" : "same") : "new", changed });
   } catch (e) {
     results.push({ src, status: `ERROR ${e.message}` });
