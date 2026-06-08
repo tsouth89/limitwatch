@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "note": "Auto-flagged news radar. Items the discovery LLM (scripts/discover.mjs) marked limit/pricing-relevant from provider feeds. UNVERIFIED machine output, NOT verified facts: a human promotes the real ones into data/events.json (with a verbatim quote) and they then appear in What's New / the changelog. Appended automatically by discover.mjs (dedup by link, newest first, capped). Safe to hand-prune.",
+  "items": [
+    {
+      "at": "2026-06-04",
+      "provider": "GitHub",
+      "product": "Copilot",
+      "title": "Larger context windows and configurable reasoning levels for GitHub Copilot",
+      "link": "https://github.blog/changelog/2026-06-04-larger-context-windows-and-configurable-reasoning-levels-for-github-copilot",
+      "why": "Larger context windows are a direct increase to a published Copilot usage limit.",
+      "kind": "limit_boost",
+      "confidence": "announced"
+    }
+  ]
+}

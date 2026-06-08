@@ -45,14 +45,14 @@ jobs:
             --title "News discovery: new provider item(s) ($(date -u +%Y-%m-%d))" \
             --body-file data/_discover-summary.md
 
-      - name: Commit advanced discovery state
+      - name: Commit advanced discovery state + radar
         run: |
           rm -f data/_discover-summary.md
-          if ! git diff --quiet -- data/discover-state.json; then
+          if ! git diff --quiet -- data/discover-state.json data/news.json; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add data/discover-state.json
-            git commit -m "chore: advance discovery state [skip ci]"
+            git add data/discover-state.json data/news.json
+            git commit -m "data: advance discovery state + news radar"
             git push
           else
             echo "No discovery state change to commit."

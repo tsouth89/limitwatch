@@ -136,3 +136,24 @@ for (const it of fresh) lines.push(`- [${it.provider}] [${it.title}](${it.link})
 if (relevant) lines.push("", "</details>");
 writeFileSync(summaryPath, lines.join("\n"));
 console.log(`Wrote ${summaryPath}${relevant ? ` (${relevant.length} relevant)` : " (no LLM filter — raw list)"}`);
+
+// Append the LLM-flagged items to the site's news radar (data/news.json) so relevant news shows
+// on the site automatically — badged unverified, never promoted to a verified event without a human.
+if (relevant && relevant.length) {
+  const newsPath = join(root, "data", "news.json");
+  const news = existsSync(newsPath) ? JSON.parse(readFileSync(newsPath, "utf8")) : { schema: 1, note: "Auto-flagged news radar (unverified). Appended by scripts/discover.mjs.", items: [] };
+  const have = new Set((news.items || []).map((i) => i.link));
+  let added = 0;
+  for (const r of relevant) {
+    const it = fresh[r.index]; if (!it || have.has(it.link)) continue;
+    news.items.unshift({
+      at: (it.date && new Date(it.date).toISOString().slice(0, 10)) || nowIso.slice(0, 10),
+      provider: it.provider, product: it.product ?? null, title: it.title, link: it.link,
+      why: r.why, kind: r.kind, confidence: r.confidence,
+    });
+    have.add(it.link); added++;
+  }
+  news.items = news.items.slice(0, 40);   // keep the radar recent
+  writeFileSync(newsPath, JSON.stringify(news, null, 2));
+  console.log(`news.json: +${added} flagged item(s) (${news.items.length} total)`);
+}

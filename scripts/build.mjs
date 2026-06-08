@@ -185,6 +185,19 @@ try {
   if (err.code !== "ENOENT") throw err;
 }
 
+// Auto-flagged news radar (scripts/discover.mjs output). Unverified machine signal, shown in its own
+// section — never mixed with verified events/changelog. Optional file; newest first, capped for display.
+let radar = [];
+try {
+  const nw = JSON.parse(readFileSync(join(root, "data", "news.json"), "utf8"));
+  if (Array.isArray(nw.items)) {
+    for (const i of nw.items) if (!i.title || !i.link) throw new Error("news.json: an item is missing title/link");
+    radar = nw.items.slice(0, 15);
+  }
+} catch (err) {
+  if (err.code !== "ENOENT") throw err;
+}
+
 const out = {
   generated_at: new Date().toISOString(),
   snapshot_count: snapshots.length,
@@ -193,8 +206,9 @@ const out = {
   events,
   changes: collapsed.reverse(), // newest first
   usage_reports: usageReports,
+  radar,
   snapshots,
 };
 
 writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
-console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${dataWarnings.length} warning(s)`);
+console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${radar.length} radar item(s), ${dataWarnings.length} warning(s)`);

@@ -265,6 +265,13 @@
     .rsummeta { grid-column: 1 / -1; margin-top: -.1rem; }
     .rdetails { margin-top: 1rem; }
     .rdetails > summary { cursor: pointer; color: var(--muted); font-size: 13px; padding: .3rem 0; }
+    .radrow { padding: .6rem 0; border-bottom: 1px solid var(--line-soft); }
+    .radrow:last-child { border-bottom: 0; }
+    .radmeta { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; font-size: 13px; }
+    .radtitle { margin: .2rem 0 .1rem; }
+    .radtitle a { color: var(--ink); font-weight: 600; text-decoration: none; }
+    .radtitle a:hover { color: var(--blue-ink); text-decoration: underline; }
+    .radwhy { font-size: 13px; }
 
     /* Provider monogram */
     .pmark { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 5px; font-size: 10.5px; font-weight: 800; vertical-align: -3px; margin-right: .4rem; background: color-mix(in srgb, var(--c) 18%, var(--paper)); color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 32%, var(--paper)); }
@@ -372,6 +379,7 @@
       <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
       <div class="navlinks" id="navlinks">
         <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">What's new</a>
+        <a href="#radar" data-section="radar" id="navRadar" style="display:none">Radar</a>
         <a href="#limits" data-section="limits">Limits</a>
         <a href="#value" data-section="value">Value</a>
         <a href="#crossProvider" data-section="crossProvider">Estimate</a>
@@ -411,6 +419,21 @@
       </div>
       <div id="eventsBody"></div>
       <div id="highlightsBody"></div>
+    </div>
+
+    <div class="card" id="radar" style="display:none">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Radar</p>
+          <h2>Auto-flagged news <span class="meta" style="font-weight:400">(unverified)</span></h2>
+          <p class="meta">
+            Items the discovery bot pulled from provider feeds and flagged as limit/pricing-relevant.
+            <strong>Machine-flagged, not verified</strong> — confirmed changes get promoted to
+            <a href="#whatsnew">What's new</a> with a sourced quote. <span class="badge announced">auto</span>
+          </p>
+        </div>
+      </div>
+      <div id="radarBody"></div>
     </div>
 
     <div class="card" id="limits">
@@ -1252,10 +1275,27 @@
         }
       })();
 
+      // ---- Radar: auto-flagged news from the discovery bot (unverified machine signal) ----
+      (() => {
+        const radar = db.radar ?? [];
+        if (!radar.length) return;
+        const esc3 = (s) => (s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const kindBadge = { limit_boost: "limit ↑", limit_cut: "limit ↓", pricing_change: "pricing", promo: "promo", new_plan: "new plan" };
+        const fmtDay = (d) => { const t = new Date(d); return isNaN(t) ? d : t.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
+        document.getElementById("radarBody").innerHTML = radar.map((n) => `
+          <div class="radrow">
+            <div class="radmeta">${provMark(n.provider)} <strong>${provName(n.provider)}</strong> <span class="meta">· ${fmtDay(n.at)}</span> <span class="badge announced">${kindBadge[n.kind] ?? "flagged"}</span></div>
+            <div class="radtitle"><a href="${n.link}" target="_blank" rel="noopener">${esc3(n.title)}</a></div>
+            ${n.why ? `<div class="radwhy meta">${esc3(n.why)}</div>` : ""}
+          </div>`).join("");
+        document.getElementById("radar").style.display = "";
+        document.getElementById("navRadar").style.display = "";
+      })();
+
       // Highlight the nav link for whichever section is centered in the viewport.
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const sections = ["whatsnew", "limits", "value", "crossProvider", "measuredCard", "usageReports", "trends", "changelog", "trust"]
+      const sections = ["whatsnew", "radar", "limits", "value", "crossProvider", "measuredCard", "usageReports", "trends", "changelog", "trust"]
         .map((id) => document.getElementById(id))
         .filter((el) => el && el.style.display !== "none");
       const io = new IntersectionObserver((entries) => {
