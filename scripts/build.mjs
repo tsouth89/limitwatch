@@ -158,6 +158,22 @@ try {
   if (err.code !== "ENOENT") throw err;
 }
 
+// Self-reported / crowdsourced usage observations (chat-subscription caps that no API exposes).
+// Light validation only — these are honest field reports, kept verbatim. Optional file.
+const REPORT_REQUIRED = ["provider", "plan", "surface", "window", "captured_at", "metric", "observed"];
+let usageReports = [];
+try {
+  const ur = JSON.parse(readFileSync(join(root, "data", "usage-reports.json"), "utf8"));
+  if (!Array.isArray(ur.reports)) throw new Error("usage-reports.json: reports not array");
+  for (const r of ur.reports) {
+    for (const k of REPORT_REQUIRED) if (r[k] == null) throw new Error(`usage-reports.json: a report is missing ${k}`);
+    if (r.captured_at.slice(0, 10) > today) dataWarnings.push(`usage-reports.json: ${r.provider} ${r.plan} captured_at ${r.captured_at} is after ${today}`);
+  }
+  usageReports = ur.reports;
+} catch (err) {
+  if (err.code !== "ENOENT") throw err;
+}
+
 const out = {
   generated_at: new Date().toISOString(),
   snapshot_count: snapshots.length,
@@ -165,8 +181,9 @@ const out = {
   data_warnings: dataWarnings,
   events,
   changes: collapsed.reverse(), // newest first
+  usage_reports: usageReports,
   snapshots,
 };
 
 writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
-console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${dataWarnings.length} warning(s)`);
+console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${dataWarnings.length} warning(s)`);

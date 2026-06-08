@@ -350,6 +350,7 @@
         <a href="#value" data-section="value">Value</a>
         <a href="#crossProvider" data-section="crossProvider">Estimate</a>
         <a href="#measuredCard" data-section="measuredCard" id="navMeasured" style="display:none">Measured</a>
+        <a href="#usageReports" data-section="usageReports" id="navReports" style="display:none">Reports</a>
         <a href="#trends" data-section="trends" id="navTrends" style="display:none">History</a>
         <a href="#changelog" data-section="changelog">Changelog</a>
         <a href="#trust" data-section="trust">Trust</a>
@@ -479,6 +480,25 @@
         </div>
       </div>
       <div id="measuredBody"></div>
+    </div>
+
+    <div class="card" id="usageReports" style="display:none">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Field reports</p>
+          <h2>Real usage observations <span class="meta" style="font-weight:400">(read off the usage screen)</span></h2>
+          <p class="meta">
+            What real accounts actually hit on chat subscriptions, read straight from the provider's own
+            usage screen (claude.ai, ChatGPT, Claude Code). These caps are <strong>not in any API</strong>,
+            so this is the only way to measure them. Each row is one observed reading, kept verbatim.
+            <span class="badge crowdsourced">crowdsourced</span>
+          </p>
+        </div>
+      </div>
+      <div class="table-scroll"><table id="reportsTable">
+        <thead><tr><th>Captured</th><th>Plan</th><th>Window</th><th class="num">Observed</th><th>Note</th></tr></thead>
+        <tbody id="reportsBody"></tbody>
+      </table></div>
     </div>
 
     <div class="card" id="trends" style="display:none">
@@ -925,6 +945,34 @@
         }).join("") + `</div>`;
       }
 
+      // ---- Community usage reports: observed chat-cap readings, kept verbatim ----
+      (() => {
+        const reports = db.usage_reports ?? [];
+        if (!reports.length) return;  // card stays hidden until the first reading lands
+        const fmtTs = (ts) => new Date(ts).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC", timeZoneName: "short" });
+        const obs = (r) =>
+          r.metric === "percent" ? `${fmt(r.observed)}%` :
+          r.metric === "tokens" ? (r.observed >= 1e6 ? `${(r.observed / 1e6).toFixed(1)}M tokens` : `${fmt(r.observed)} tokens`) :
+          `${fmt(r.observed)} ${r.metric}`;
+        const esc2 = (s) => (s ?? "").replace(/"/g, "&quot;");
+        const rows = [...reports].sort((a, b) => (a.captured_at < b.captured_at ? 1 : -1)).map((r) => {
+          const hit = r.limit_hit ? ` <span class="badge warning">cap hit</span>` : "";
+          const reset = r.reset_at ? ` <span class="meta">· resets ${fmtTs(r.reset_at)}</span>` : "";
+          const ev = r.evidence ? ` <span class="q meta" data-tip="${esc2(r.evidence)}">evidence</span>` : "";
+          const model = r.model ? ` <span class="meta">· ${r.model}</span>` : "";
+          return `<tr>` +
+            `<td class="meta">${fmtTs(r.captured_at)}</td>` +
+            `<td>${provMark(r.provider)}<strong>${r.plan}</strong> <span class="meta">· ${r.surface}</span>${model}</td>` +
+            `<td class="meta">${r.window}${reset}</td>` +
+            `<td class="num">${obs(r)}${hit}</td>` +
+            `<td class="meta">${r.note ?? ""}${ev}</td>` +
+            `</tr>`;
+        }).join("");
+        document.getElementById("reportsBody").innerHTML = rows;
+        document.getElementById("usageReports").style.display = "";
+        document.getElementById("navReports").style.display = "";
+      })();
+
       const cl = document.getElementById("changelogList");
       const clBtn = document.getElementById("changelogMore");
       if (!db.changes.length) {
@@ -1101,7 +1149,7 @@
       // Highlight the nav link for whichever section is centered in the viewport.
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const sections = ["whatsnew", "limits", "value", "crossProvider", "measuredCard", "trends", "changelog", "trust"]
+      const sections = ["whatsnew", "limits", "value", "crossProvider", "measuredCard", "usageReports", "trends", "changelog", "trust"]
         .map((id) => document.getElementById(id))
         .filter((el) => el && el.style.display !== "none");
       const io = new IntersectionObserver((entries) => {

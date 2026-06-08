@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "note": "Self-reported / crowdsourced usage observations read off the provider's own usage screen (claude.ai, ChatGPT, Claude Code, etc.). These are REAL observed data points about chat-subscription caps that no API exposes: what a plan actually allowed before it throttled, or the usage screen's reading at a moment in time. Each report records what was seen, not an inferred cap. Empty until the first reading is added; the site hides the section while empty. Add a report by appending an object to `reports`.",
+  "fields": {
+    "provider": "e.g. Anthropic, OpenAI",
+    "plan": "e.g. Pro, Max 5x",
+    "surface": "where it was read: claude.ai | desktop | Claude Code | chatgpt.com",
+    "window": "the cap window this observes: 5h | week | day | month",
+    "captured_at": "ISO timestamp when the reading was taken",
+    "reset_at": "ISO timestamp the window resets (optional, if shown)",
+    "metric": "what the number means: messages | percent | tokens",
+    "observed": "numeric value of metric at capture (e.g. messages sent before the cap, or % used)",
+    "limit_hit": "true if this reading is the point the cap actually throttled",
+    "model": "model in use, if relevant (optional)",
+    "note": "verbatim wording from the usage screen + any context",
+    "reporter": "self | community handle",
+    "evidence": "screenshot url / description (optional)"
+  },
+  "reports": []
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T11:11:45.861Z",
+  "generated_at": "2026-06-08T11:33:01.960Z",
   "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
@@ -173,6 +173,7 @@
       "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing"
     }
   ],
+  "usage_reports": [],
   "snapshots": [
     {
       "schema": 3,
