@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T00:47:14.207Z",
+  "generated_at": "2026-06-08T01:05:34.346Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
@@ -139,6 +139,181 @@
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
           "notes": "Multiplier (20x) is official; the 88k token/5h figure is a community estimate."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Pro",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 1,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "The Gemini app now uses compute-based usage limits that refresh every 5 hours until you reach your weekly limit; premium models and features consume the budget faster.",
+          "source": "https://support.google.com/gemini/answer/16275805?hl=en",
+          "as_of": "2026-05-28",
+          "verified_on": "2026-06-07",
+          "notes": "Google moved from daily prompt counts to opaque compute-based limits (5h refresh + weekly cap), then adjusted them after May 2026 backlash. No published numeric cap. Pro = 1x baseline for Ultra multipliers."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Ultra (5x)",
+          "price_usd": 100,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 5,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "The $100/month AI Ultra plan offers a 5X higher usage limit in the Gemini app and Google Antigravity than the Pro plan.",
+          "source": "https://blog.google/products-and-platforms/products/google-one/google-ai-subscriptions/",
+          "as_of": "2026-05-21",
+          "verified_on": "2026-06-07",
+          "notes": "Multiplier is official; absolute compute budget is not published."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Ultra (20x)",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Google reduced the top AI Ultra plan from $250 to $200, with up to 20x higher usage limits in Gemini than the Pro plan.",
+          "source": "https://www.business-standard.com/technology/tech-news/google-reshuffles-gemini-ai-plans-with-new-ultra-tier-revises-usage-limits-126052100670_1.html",
+          "as_of": "2026-05-21",
+          "verified_on": "2026-06-07",
+          "notes": "Price dropped from $250 to $200 in May 2026. Multiplier official; absolute budget not published."
+        },
+        {
+          "provider": "xAI",
+          "product": "Grok",
+          "plan": "SuperGrok",
+          "price_usd": 30,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 1000,
+              "unit": "messages",
+              "window": "day",
+              "model": null,
+              "kind": "primary"
+            },
+            {
+              "value": 125,
+              "unit": "messages",
+              "window": "4h",
+              "model": null,
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "SuperGrok offers 1,000 messages and 50 images per day; on the standard plan you can send approximately 100 to 150 messages per four-hour window before being throttled.",
+          "source": "https://jingrey.com/tools/current-supergrok-usage-limits/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "4h figure is a community midpoint of the 100-150 range. $30/mo or $300/yr."
+        },
+        {
+          "provider": "xAI",
+          "product": "Grok",
+          "plan": "SuperGrok Heavy",
+          "price_usd": 300,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 5000,
+              "unit": "messages",
+              "window": "day",
+              "model": null,
+              "kind": "primary"
+            },
+            {
+              "value": 250,
+              "unit": "messages",
+              "window": "4h",
+              "model": null,
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "SuperGrok Heavy lifts the caps to 5,000 messages and 200 images daily; Heavy subscribers see roughly 250 messages per four-hour window.",
+          "source": "https://jingrey.com/tools/current-supergrok-usage-limits/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Only consumer plan with full Grok 4.3 access. $300/mo."
+        },
+        {
+          "provider": "Perplexity",
+          "product": "Perplexity",
+          "plan": "Pro",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 500,
+              "unit": "requests",
+              "window": "day",
+              "model": "Deep Research",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "Perplexity Pro includes approximately 500 Deep Research queries per day at average usage.",
+          "source": "https://www.finout.io/blog/perplexity-pricing-in-2026",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Pro Pro users reported quiet limit cuts to advanced models in May 2026. Chat 'unlimited' applies to the UI, not API."
+        },
+        {
+          "provider": "Perplexity",
+          "product": "Perplexity",
+          "plan": "Max",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": null,
+              "unit": "requests",
+              "window": "day",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Perplexity Max includes the highest available limits across all features, plus 10,000 Perplexity Computer credits per month.",
+          "source": "https://suprmind.ai/hub/perplexity/pricing/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Exact daily query cap for Max is not published. $200/mo or $2,000/yr."
         }
       ]
     }
