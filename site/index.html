@@ -55,7 +55,6 @@
     .pgroup .pcount { font-size: 12px; font-weight: 400; color: #6e7681; }
     .empty { color: #6e7681; padding: 1rem 0; }
     table.ltable { table-layout: fixed; }
-    .star { color: #e3b341; cursor: help; }
     .pname { color: #9aa7b4; font-weight: 400; }
 
     html { scroll-behavior: smooth; }
@@ -99,6 +98,11 @@
     .vtrack { position: relative; background: #0d1117; border: 1px solid #21262d; border-radius: 6px; height: 22px; overflow: hidden; }
     .vfill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #1f6feb55, #1f6febaa); border-right: 1px solid #58a6ff66; }
     .vval { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); font-size: 12px; font-variant-numeric: tabular-nums; color: #e6edf3; }
+    .bestpill { background: rgba(46,160,67,.18); color: #3fb950; border-radius: 999px; padding: .03rem .42rem; font-size: 10.5px; font-weight: 700; margin-left: .4rem; vertical-align: 1px; white-space: nowrap; }
+    .vsummary { background: #0d1117; border: 1px solid #21262d; border-radius: 8px; padding: .55rem .8rem; margin: 0 0 1.1rem; font-size: 13px; color: #9aa7b4; }
+    .vsummary strong { color: #e6edf3; }
+    .vsummary .lead { color: #3fb950; font-weight: 600; }
+    .vexcluded { font-size: 12.5px; color: #6e7681; margin: .2rem 0 0; line-height: 1.5; }
 
     /* Sub-tabs */
     .subtabs { display: flex; gap: .35rem; margin: .2rem 0 1rem; }
@@ -152,7 +156,7 @@
         <div class="chips" id="provChips"></div>
       </div>
       <h2>Latest published limits</h2>
-      <p class="meta">One row per plan, native units as published. Group by provider or by price tier; <span class="star">★</span> marks the best value per dollar within a comparable unit. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished.</p>
+      <p class="meta">One row per plan, native units as published. Group by provider or by price tier. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished. <a href="#value">Best value per $ →</a></p>
       <div id="latest"></div>
     </div>
 
@@ -302,23 +306,8 @@
       let query = "";
       let groupMode = "provider";
 
-      // Per-day-per-$ leaders among hard caps only (no multiplier/estimate/credit) — flags the
-      // best value within each comparable unit. Cross-unit "best" is intentionally not claimed.
+      // Per-day throughput per window — drives the value-per-dollar math further down.
       const winPerDay = { "3h": 8, "4h": 6, "5h": 4.8, day: 1, week: 1 / 7, month: 1 / 30 };
-      const leaders = {};                 // unit -> "Provider Plan"
-      { const best = {};
-        for (const e of latest.entries) for (const l of e.limits) {
-          if (l.value == null || l.unit === "multiplier" || l.unit === "usd_credit" || l.basis === "estimate" || !(l.window in winPerDay)) continue;
-          const pd = l.value * winPerDay[l.window] / e.price_usd;
-          if (!best[l.unit] || pd > best[l.unit].pd) best[l.unit] = { pd, name: `${e.provider} ${e.plan}` };
-        }
-        for (const u in best) leaders[u] = best[u].name;
-      }
-      const leaderStar = (e) => {
-        const nm = `${e.provider} ${e.plan}`;
-        const u = Object.keys(leaders).find((u) => leaders[u] === nm && e.limits.some((l) => l.unit === u));
-        return u ? ` <span class="star" data-tip="Best ${u} per dollar among hard-capped plans">★</span>` : "";
-      };
 
       const matches = (e) => {
         if (active.size && !active.has(e.provider)) return false;
@@ -332,7 +321,7 @@
         const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
         const name = showProvider ? `${provMark(e.provider)}<span class="pname">${e.provider}</span> <strong>${e.plan}</strong>` : `<strong>${e.plan}</strong>`;
         return `<tr>` +
-          `<td>${name}${surf}${leaderStar(e)}</td>` +
+          `<td>${name}${surf}</td>` +
           `<td class="num">$${e.price_usd}</td>` +
           `<td>${limitCell(e)}</td>` +
           `<td><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
@@ -402,23 +391,26 @@
       const rows = [];
       for (const e of latest.entries) {
         for (const l of e.limits) {
-          // Exclude soft/estimate limits from the ceiling tables — they are not hard caps.
-          if (l.value == null || l.unit === "multiplier" || l.basis === "estimate" || !(l.window in winPerDay)) continue;
+          // Exclude soft/estimate/credit limits from the ceiling tables — they are not throughput caps.
+          if (l.value == null || l.unit === "multiplier" || l.unit === "usd_credit" || l.basis === "estimate" || !(l.window in winPerDay)) continue;
           const perDay = l.value * winPerDay[l.window];
           rows.push({ prov: e.provider, name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model, window: l.window });
         }
       }
 
       const vg = document.getElementById("valueGroups");
+      const summary = [];
       for (const unit of ["messages", "tokens", "requests"]) {
         const r = rows.filter((x) => x.unit === unit).sort((a, b) => b.perDollar - a.perDollar);
         if (!r.length) continue;
-        const max = Math.max(...r.map((x) => x.perDollar)) || 1;
-        const barsHtml = r.map((x) => {
+        const max = r[0].perDollar || 1;
+        summary.push({ unit, lead: r[0] });
+        const barsHtml = r.map((x, i) => {
           const pct = Math.max(2, Math.round((x.perDollar / max) * 100));
           const tip = `${fmt(Math.round(x.perDay))} ${unit}/day ceiling · $${x.price}/mo`;
+          const best = i === 0 ? ` <span class="bestpill">Best value</span>` : "";
           return `<div class="vrow">` +
-            `<div class="vname">${provMark(x.prov)}${x.name}${descriptor(x)} <span class="price">$${x.price}</span></div>` +
+            `<div class="vname">${provMark(x.prov)}${x.name}${descriptor(x)} <span class="price">$${x.price}</span>${best}</div>` +
             `<div class="vtrack q" data-tip="${tip}"><div class="vfill" style="width:${pct}%"></div>` +
             `<span class="vval">${fmt(Math.round(x.perDollar))}</span></div>` +
             `</div>`;
@@ -431,6 +423,39 @@
         vg.appendChild(h);
       }
 
+      // Concrete "best value" line — the metric is shown, so the claim isn't a mystery star.
+      if (summary.length) {
+        const s = summary.map((x) =>
+          `<strong>${x.unit}</strong>: <span class="lead">${x.lead.name}</span> <span class="num">(${fmt(Math.round(x.lead.perDollar))}/day per $)</span>`
+        ).join(" &nbsp;·&nbsp; ");
+        const el = document.createElement("div");
+        el.className = "vsummary";
+        el.innerHTML = `Best value per $ — ${s}. Ranked within each native unit only; we don't pit a message against a token.`;
+        vg.insertBefore(el, vg.firstChild);
+      }
+
+      // Explain what can't be ranked so absent plans read as honesty, not a gap.
+      const valued = new Set(rows.map((x) => x.name));
+      const reasonOf = (e) =>
+        e.limits.some((l) => l.unit === "multiplier") ? "multiplier" :
+        e.limits.some((l) => l.unit === "usd_credit") ? "credit" : "unlisted";
+      const buckets = { multiplier: new Set(), credit: new Set(), unlisted: new Set() };
+      for (const e of latest.entries) {
+        if (valued.has(`${e.provider} ${e.plan}`)) continue;
+        buckets[reasonOf(e)].add(e.provider);
+      }
+      const list = (set) => [...set].join(", ");
+      const phrases = [];
+      if (buckets.multiplier.size) phrases.push(`${list(buckets.multiplier)} publish only a multiplier (e.g. "5× Pro") with no absolute number`);
+      if (buckets.credit.size) phrases.push(`${list(buckets.credit)} sell a dollar credit, not a throughput cap — see <a href="#measuredCard">Measured usage</a>`);
+      if (buckets.unlisted.size) phrases.push(`${list(buckets.unlisted)} list some plans as unlimited or unpublished`);
+      if (phrases.length) {
+        const ex = document.createElement("p");
+        ex.className = "vexcluded";
+        ex.innerHTML = `Not shown above, because they can't be ranked by throughput: ${phrases.join("; ")}.`;
+        vg.appendChild(ex);
+      }
+
       // ---- Cross-provider estimate (behind the visible knob) ----
       const tpmEl = document.getElementById("tpm"), tpmVal = document.getElementById("tpmVal");
       const crossBody = document.querySelector("#crossTable tbody");
@@ -440,13 +465,23 @@
         tpmVal.textContent = tpm;
         const conv = rows
           .filter((x) => x.unit === "messages" || x.unit === "tokens")
-          .map((x) => ({ name: x.name, model: x.model, window: x.window, price: x.price, unit: x.unit, tokPerDay: x.unit === "tokens" ? x.perDay : x.perDay * tpm }))
-          .map((x) => ({ ...x, perDollar: x.tokPerDay / x.price }))
-          .sort((a, b) => b.perDollar - a.perDollar);
-        crossBody.innerHTML = conv.map((x) =>
-          `<tr><td>${x.name}${descriptor(x)} <span class="meta">(${x.unit})</span></td><td class="num">$${x.price}</td>` +
+          .map((x) => ({ prov: x.prov, name: x.name, model: x.model, window: x.window, price: x.price, kind: x.unit, tokPerDay: x.unit === "tokens" ? x.perDay : x.perDay * tpm }));
+        // Dollar-credit plans can't publish a token cap, but measured usage gives a real observed
+        // number — fold those in (clearly flagged) so the table isn't just the message plans.
+        for (const e of latest.entries) {
+          if (!e.measured) continue;
+          conv.push({ prov: e.provider, name: `${e.provider} ${e.plan}`, price: e.price_usd, kind: "measured", tokPerDay: e.measured.realized_tokens_month / 30 });
+        }
+        const ranked = conv.map((x) => ({ ...x, perDollar: x.tokPerDay / x.price })).sort((a, b) => b.perDollar - a.perDollar);
+        const tag = {
+          tokens: ' <span class="meta">(tokens)</span>',
+          messages: ' <span class="meta">(messages)</span>',
+          measured: ' <span class="badge crowdsourced">measured</span>',
+        };
+        crossBody.innerHTML = ranked.map((x) =>
+          `<tr><td>${provMark(x.prov)}${x.name}${descriptor(x)}${tag[x.kind]}</td><td class="num">$${x.price}</td>` +
           `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
-        crossNote.textContent = `Estimate only. Token plans use published tokens; message plans converted at ${tpm} tokens/message. Requests-based plans (e.g. Perplexity) and multiplier-only plans are excluded, not honestly comparable.`;
+        crossNote.innerHTML = `Estimate only. Token plans use published tokens; message plans converted at ${tpm} tokens/message; dollar-credit plans folded in from <a href="#measuredCard">measured usage</a> (observed, not a cap). Requests-based plans (e.g. Perplexity) and multiplier-only plans stay excluded — not honestly comparable.`;
       }
       tpmEl.addEventListener("input", renderCross);
       renderCross();
