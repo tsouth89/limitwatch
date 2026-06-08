@@ -176,6 +176,7 @@ try {
     // percent rows drive the "→ $/window" extrapolation (api_equiv_usd / (observed/100)); 0 or out-of-range breaks it.
     if (r.metric === "percent" && (r.observed <= 0 || r.observed > 100)) throw new Error(`usage-reports.json: ${who} percent observed ${r.observed} out of range (0,100]`);
     if (r.api_equiv_usd != null && (typeof r.api_equiv_usd !== "number" || r.api_equiv_usd < 0)) throw new Error(`usage-reports.json: ${who} api_equiv_usd must be a non-negative number`);
+    if (r.value_basis != null && !["floor", "receipt"].includes(r.value_basis)) throw new Error(`usage-reports.json: ${who} bad value_basis "${r.value_basis}" (expected floor|receipt)`);
     if (r.captured_at.slice(0, 10) > today) dataWarnings.push(`usage-reports.json: ${who} captured_at ${r.captured_at} is after ${today}`);
   }
   usageReports = ur.reports;

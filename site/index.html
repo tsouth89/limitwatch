@@ -960,15 +960,19 @@
         const esc2 = (s) => (s ?? "").replace(/"/g, "&quot;");
         // API-equivalent value: what the session's tokens would cost at the model's API rate. When
         // the reading is a % of a window, extrapolate to the full-window value (the moat number).
+        // A "floor" reading is a soft lower bound (Claude Code burn only, weak per-account attribution),
+        // not a measured ceiling. Badge it so the extrapolated $/window isn't read as a hard number.
+        const floor = (r) => r.value_basis === "floor"
+          ? ` <span class="badge community q" data-tip="Soft lower bound, not a ceiling: counts Claude Code transcript burn only (excludes claude.ai chat) and attributes by project as a weak account proxy. The real consumption is at least this; the &rarr;/window figure is a floor.">floor</span>` : "";
         const apiVal = (r) => {
           if (r.api_equiv_usd == null) return `<span class="meta">—</span>`;
           const tip = r.api_equiv_basis ? ` data-tip="${esc2(r.api_equiv_basis)}"` : "";
           const base = `<span class="q"${tip}>$${fmt(r.api_equiv_usd)}</span>`;
           if (r.metric === "percent" && r.observed) {
             const full = Math.round(r.api_equiv_usd / (r.observed / 100));
-            return `${base} <span class="meta">→ ~$${fmt(full)}/window</span>`;
+            return `${base} <span class="meta">→ ~$${fmt(full)}/window${r.value_basis === "floor" ? "+" : ""}</span>${floor(r)}`;
           }
-          return base;
+          return `${base}${floor(r)}`;
         };
         const rows = [...reports].sort((a, b) => (a.captured_at < b.captured_at ? 1 : -1)).map((r) => {
           const hit = r.limit_hit ? ` <span class="badge warning">cap hit</span>` : "";

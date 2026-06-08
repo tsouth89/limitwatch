@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T12:33:42.257Z",
+  "generated_at": "2026-06-08T12:42:11.264Z",
   "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
@@ -215,6 +215,7 @@
         "cache_read": 208218570
       },
       "api_equiv_usd": 153.3,
+      "value_basis": "floor",
       "api_equiv_basis": "Anthropic API list price per model (Opus 4.8 in $5 / out $25 / cw-5m $6.25 / cw-1h $10 / cr $0.50; Sonnet 4.6 $3/$15/$3.75/$6/$0.30; Haiku 4.5 $1/$5/$1.25/$2/$0.10 per 1M). See scripts/cc-usage.mjs. Value comparison, not the cap mechanic.",
       "reporter": "self",
       "evidence": "Aggregated ~/.claude/projects/**/*.jsonl assistant-turn usage via scripts/cc-usage.mjs --since 2026-06-03T21:00:00Z --match personal, deduped by message.id. Paired with in-app weekly % indicator. Scoped to personal projects as a weak account proxy (see note)."
