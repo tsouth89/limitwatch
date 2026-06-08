@@ -1168,7 +1168,7 @@
 
         document.getElementById("eventsBody").innerHTML = evs.map((e) => {
           const plans = (e.applies_to ?? []).join(", ");
-          const scope = `${e.provider}${e.surface ? " " + e.surface : ""}${plans ? " · " + plans : ""}`;
+          const scope = `${provName(e.provider)}${e.surface ? " " + e.surface : ""}${plans ? " · " + plans : ""}`;
           let status, count;
           if (e.st === "active") {
             status = `<span class="estatus live"><span class="ldot"></span>Live</span>`;

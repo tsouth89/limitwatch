@@ -37,6 +37,21 @@
       "quote": "Anthropic announced it was doubling Claude Code five-hour rate limits for Pro, Max, Team, and seat-based Enterprise plans and removing peak-hours limit reduction for Claude Code on Pro and Max.",
       "source": "https://www.verdent.ai/guides/claude-code-limits-doubled-may-2026",
       "note": "Permanent (no expiry announced). Doubles the rolling 5-hour cap and removed peak-hour throttling for Pro/Max on Claude Code. The temporary weekly +50% (separate event) stacks on top through Jul 13."
+    },
+    {
+      "id": "github-copilot-usage-based-2026",
+      "provider": "GitHub",
+      "product": "Copilot",
+      "applies_to": ["Pro", "Pro+", "Business", "Enterprise"],
+      "title": "Copilot moves to usage-based billing (AI Credits)",
+      "kind": "pricing_change",
+      "starts_on": "2026-06-01",
+      "ends_on": null,
+      "permanent": true,
+      "confidence": "announced",
+      "quote": "Starting June 1, premium request units (PRUs) will be replaced by GitHub AI Credits.",
+      "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
+      "note": "Billing-model change, not a promo. Premium request units (PRUs) are replaced by GitHub AI Credits, consumed by token usage (input, output, cached) at each model's published API rate. Monthly price is unchanged but now bundles a matching credit pool: Pro $10/mo incl $10 in credits, Pro+ $39/mo incl $39 in credits; Business $19/seat, Enterprise $39/seat. Existing annual Pro/Pro+ subscribers stay on PRU-based pricing until their plan expires (with model multipliers rising Jun 1 for annual plans). GitHub shipped a preview-bill experience in early May so users could project costs before the switch."
     }
   ]
 }
