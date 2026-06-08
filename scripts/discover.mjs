@@ -39,6 +39,25 @@ function parseFeed(xml) {
   return items;
 }
 
+// HTML source (providers without a feed, e.g. Anthropic): pull article links matching a pattern
+// off a server-rendered index page, with the heading text as the title (humanized slug fallback).
+const humanize = (href) => (href.split(/[?#]/)[0].split("/").filter(Boolean).pop() || href).replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+function parseHtml(html, base, pattern) {
+  const re = new RegExp(`href=["'](${pattern})["']`, "gi");
+  const seen = new Set(); const items = [];
+  let m;
+  while ((m = re.exec(html))) {
+    const href = m[1];
+    if (seen.has(href)) continue; seen.add(href);
+    const after = html.slice(m.index, m.index + 500);
+    const h = after.match(/<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/i);
+    const title = (h ? decode(h[1]) : "") || humanize(href);
+    const link = /^https?:/i.test(href) ? href : base.replace(/\/$/, "") + href;
+    items.push({ title, link, id: link, date: "" });
+  }
+  return items;
+}
+
 const cfg = JSON.parse(readFileSync(feedsPath, "utf8"));
 const firstRun = !existsSync(statePath);   // cold start: seed a baseline, report nothing
 const state = firstRun ? { seen: {} } : JSON.parse(readFileSync(statePath, "utf8"));
@@ -51,7 +70,9 @@ for (const f of cfg.feeds) {
   try {
     const res = await fetch(f.url, { headers: { "user-agent": "LimitWatch-discover/1.0" } });
     if (!res.ok) { console.log(`[skip] ${f.url} HTTP ${res.status}`); continue; }
-    const items = parseFeed(await res.text()).slice(0, PER_FEED);   // newest-first feeds -> recent only
+    const text = await res.text();
+    const parsed = f.format === "html" ? parseHtml(text, f.base ?? f.url, f.link_pattern) : parseFeed(text);
+    const items = parsed.slice(0, PER_FEED);   // newest-first sources -> recent only
     console.log(`[ok] ${f.provider}: ${items.length} recent item(s) from ${f.url}`);
     for (const it of items) {
       if (!firstRun && (all || !state.seen[it.id])) fresh.push({ ...it, provider: f.provider, product: f.product ?? null });

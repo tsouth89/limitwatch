@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "note": "Provider news/changelog feeds polled by scripts/discover.mjs to DISCOVER new announcements (vs scripts/fetch.mjs which only detects changes to known pricing pages). Only verified, working feeds are listed; do not add a feed URL without confirming it returns a real RSS/Atom document. Providers without a public feed are recorded in 'no_feed' so the gap is visible, not silently missing.",
+  "note": "Provider news/changelog sources polled by scripts/discover.mjs to DISCOVER new announcements (vs scripts/fetch.mjs which only detects changes to known pricing pages). format 'rss' parses an RSS/Atom feed; format 'html' scrapes article links matching link_pattern off a server-rendered index page (base resolves relative links). Only verified, working sources are listed; confirm a source actually returns items before adding it. Providers still uncovered are recorded in 'no_feed' so the gap is visible.",
   "feeds": [
     { "provider": "GitHub", "product": "Copilot", "url": "https://github.blog/changelog/feed/", "format": "rss" },
     { "provider": "GitHub", "product": "Copilot", "url": "https://github.blog/feed/", "format": "rss" },
-    { "provider": "OpenAI", "product": "ChatGPT", "url": "https://openai.com/news/rss.xml", "format": "rss" }
+    { "provider": "OpenAI", "product": "ChatGPT", "url": "https://openai.com/news/rss.xml", "format": "rss" },
+    { "provider": "Anthropic", "product": "Claude", "url": "https://www.anthropic.com/news", "format": "html", "base": "https://www.anthropic.com", "link_pattern": "/news/[A-Za-z0-9\\-]+" }
   ],
   "no_feed": [
-    { "provider": "Anthropic", "reason": "No public RSS/Atom (anthropic.com/rss.xml 404 as of 2026-06-08). Needs an HTML changelog watch via scripts/fetch.mjs instead.", "watch": "https://www.anthropic.com/news" },
-    { "provider": "Google", "reason": "Gemini updates are spread across blog.google / DeepMind; no single clean product feed wired yet." },
-    { "provider": "Cursor", "reason": "cursor.com/changelog is a JS-rendered SPA; no RSS. Use a browser HTML watch." }
+    { "provider": "Google", "reason": "Gemini updates are spread across blog.google / DeepMind; no single clean server-rendered product index wired yet." },
+    { "provider": "Cursor", "reason": "cursor.com/changelog is a JS-rendered SPA returning no links to plain fetch; needs a browser HTML watch." }
   ]
 }

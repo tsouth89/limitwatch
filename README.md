@@ -87,8 +87,10 @@ snapshots — human stays in the loop. Use `--http-only` to skip the browser sou
 
 `npm run watch` only diffs pages you already track, so it can't catch a *new* announcement (e.g.
 "Copilot moves to usage-based billing"). `npm run discover` (`scripts/discover.mjs`) polls the
-provider news/changelog **feeds** in `data/feeds.json` (only verified, working RSS/Atom feeds; gaps
-are recorded in `no_feed`) and reports items it hasn't seen before. State lives in
+provider news/changelog sources in `data/feeds.json` and reports items it hasn't seen before. Two
+source kinds: `format: "rss"` parses an RSS/Atom feed (GitHub, OpenAI), and `format: "html"` scrapes
+article links matching `link_pattern` off a server-rendered index page (Anthropic, which has no
+feed). Only verified sources are listed; remaining gaps are recorded in `no_feed`. State lives in
 `data/discover-state.json`; the first run seeds a silent baseline.
 
 - **Without an API key:** lists the new items for manual triage.
