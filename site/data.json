@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T02:24:53.938Z",
+  "generated_at": "2026-06-08T03:08:22.796Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
@@ -224,7 +224,8 @@
           "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
           "as_of": "2026-06-15",
           "verified_on": "2026-06-07",
-          "notes": "Effective 2026-06-15: Agent SDK, `claude -p`, Claude Code GitHub Actions, and third-party apps authing via the Agent SDK stop drawing on the subscription's interactive usage and instead consume this separate monthly credit, billed at standard API rates after it runs out. Per-user, no rollover, one-time opt-in required. Interactive use (claude.ai chat, Claude Code in terminal/IDE, Cowork) is unaffected. Announced/press-reported; not yet on a stable first-party page."
+          "notes": "Effective 2026-06-15: Agent SDK, `claude -p`, Claude Code GitHub Actions, and third-party apps authing via the Agent SDK stop drawing on the subscription's interactive usage and instead consume this separate monthly credit, billed at standard API rates after it runs out. Per-user, no rollover, one-time opt-in required. Interactive use (claude.ai chat, Claude Code in terminal/IDE, Cowork) is unaffected. Announced/press-reported; not yet on a stable first-party page.",
+          "credit_bills_at_api": true
         },
         {
           "provider": "Anthropic",
@@ -248,7 +249,8 @@
           "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
           "as_of": "2026-06-15",
           "verified_on": "2026-06-07",
-          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported."
+          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported.",
+          "credit_bills_at_api": true
         },
         {
           "provider": "Anthropic",
@@ -272,7 +274,8 @@
           "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
           "as_of": "2026-06-15",
           "verified_on": "2026-06-07",
-          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported."
+          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported.",
+          "credit_bills_at_api": true
         },
         {
           "provider": "Google",
@@ -728,7 +731,8 @@
           "source": "https://replit.com/pricing",
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "$20/mo billed monthly ($25/mo equivalent when billed annually with the discount). Credits meter Agent/AI usage; overages billed on-demand."
+          "notes": "$20/mo billed monthly ($25/mo equivalent when billed annually with the discount). Credits meter Agent/AI usage; overages billed on-demand.",
+          "credit_bills_at_api": true
         },
         {
           "provider": "Replit",
@@ -751,7 +755,8 @@
           "source": "https://replit.com/pricing",
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "$95/mo billed monthly ($100/mo equivalent billed annually). Credits meter Agent/AI usage; overages billed on-demand."
+          "notes": "$95/mo billed monthly ($100/mo equivalent billed annually). Credits meter Agent/AI usage; overages billed on-demand.",
+          "credit_bills_at_api": true
         }
       ]
     }
