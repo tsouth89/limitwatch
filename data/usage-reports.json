@@ -36,6 +36,24 @@
       "api_equiv_basis": "Opus 4.8 API rate: input $5, output $25, 5-min cache-write $6.25, cache-read $0.50 per 1M tokens. Value comparison, not the cap mechanic.",
       "reporter": "self",
       "evidence": "Claude Code session transcript + in-app 5h usage indicator"
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "week",
+      "captured_at": "2026-06-08T12:14:31Z",
+      "reset_at": "2026-06-03T21:00:00Z",
+      "metric": "percent",
+      "observed": 78,
+      "limit_hit": false,
+      "model": "mixed (Opus 4.8 primary, Sonnet 4.6, Haiku 4.5)",
+      "note": "Weekly cap at 78% (in-app indicator). MEASURED FLOOR aggregated from local Claude Code transcripts (~/.claude/projects/**/*.jsonl) across all projects, deduped by message.id, for the active weekly window (reset Wed 2026-06-03 17:00 EDT). Excludes claude.ai web/desktop chat, which also counts against this same cap, so the burn is a lower bound on what consumed the window. 4,328 assistant turns: Opus 4.8 2,269 turns ($447), Sonnet 4.6 1,905 ($89), Haiku 4.5 123 ($0.72). Priced at Anthropic API list rates, that is ~$537 of API-equivalent value at 78%, implying a full weekly Claude Code budget of >=~$688 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "usage_tokens": { "input": 325712, "output": 3331313, "cache_write": 17511731, "cache_read": 681018089 },
+      "api_equiv_usd": 537.17,
+      "api_equiv_basis": "Anthropic API list price per model (Opus 4.8 in $5 / out $25 / cw-5m $6.25 / cw-1h $10 / cr $0.50; Sonnet 4.6 $3/$15/$3.75/$6/$0.30; Haiku 4.5 $1/$5/$1.25/$2/$0.10 per 1M). See scripts/cc-usage.mjs. Value comparison, not the cap mechanic.",
+      "reporter": "self",
+      "evidence": "Aggregated ~/.claude/projects/**/*.jsonl assistant-turn usage via scripts/cc-usage.mjs --since 2026-06-03T21:00:00Z, deduped by message.id. Paired with in-app weekly % indicator."
     }
   ]
 }
