@@ -131,12 +131,6 @@
     th { color: var(--muted); font-weight: 700; background: var(--paper-soft); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
     a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 2px; }
     .meta { color: var(--muted); font-size: 13.5px; }
-    /* Sponsor slot — single, privacy-first EthicalAds unit. Collapses entirely when unfilled. */
-    .ad-slot { display: flex; flex-direction: column; align-items: center; gap: .45rem; margin: 1.35rem 0; }
-    .ad-slot:not(.filled) { display: none; }
-    .ad-slot .ad-note { color: var(--muted); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
-    .ad-slot .ad-note a { color: var(--muted); text-decoration: underline; }
-    .ad-slot [data-ea-publisher] { max-width: 100%; }
     .badge { display: inline-block; border-radius: 999px; padding: .08rem .52rem; font-size: 11px; font-weight: 800; white-space: nowrap; border: 1px solid transparent; }
     .official { background: var(--pos-soft); color: var(--green); border-color: var(--pos-line); }
     .announced { background: var(--info-soft); color: var(--info); border-color: var(--info-line); }
@@ -447,13 +441,6 @@
       </div>
     </div>
 
-    <!-- Sponsor: single EthicalAds unit. Replace PUBLISHER_ID after EthicalAds approval (ethicalads.io).
-         No cookies/tracking; .filled is added by JS only when an ad actually renders, else the slot stays hidden. -->
-    <div class="ad-slot" id="adSlot">
-      <div data-ea-publisher="PUBLISHER_ID" data-ea-type="image"></div>
-      <p class="ad-note">Ads keep LimitWatch free · no tracking, <a href="https://www.ethicalads.io/advertiser-policy/" rel="nofollow noopener" target="_blank">via EthicalAds</a></p>
-    </div>
-
     <div class="card" id="limits">
       <div class="controls">
         <input id="search" type="search" placeholder="Search provider, plan, or model…" aria-label="Search plans" />
@@ -616,29 +603,14 @@
     (() => {
       const root = document.documentElement;
       const mq = matchMedia("(prefers-color-scheme: dark)");
-      // Keep the ad unit's theme in lockstep with the site (EthicalAds reads a `dark` class).
-      const syncAdTheme = () => document.querySelectorAll("[data-ea-publisher]")
-        .forEach((el) => el.classList.toggle("dark", root.getAttribute("data-theme") === "dark"));
-      syncAdTheme();
       document.getElementById("themeToggle").addEventListener("click", () => {
         const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
         root.setAttribute("data-theme", next);
         localStorage.setItem("theme", next);
-        syncAdTheme();
       });
       mq.addEventListener("change", (e) => {
         if (!localStorage.getItem("theme")) root.setAttribute("data-theme", e.matches ? "dark" : "light");
-        syncAdTheme();
       });
-      // Reveal the slot only once an ad has actually rendered, so an unfilled/blocked unit
-      // leaves no empty gap or stray "Sponsored" caption.
-      const slot = document.getElementById("adSlot");
-      if (slot) {
-        const ad = slot.querySelector("[data-ea-publisher]");
-        new MutationObserver((_, obs) => {
-          if (ad.querySelector(".ea-content, img, iframe")) { slot.classList.add("filled"); obs.disconnect(); }
-        }).observe(ad, { childList: true, subtree: true });
-      }
     })();
 
     const fmt = (n) => n == null ? "?" : Number(n).toLocaleString();
@@ -1413,7 +1385,5 @@
       console.error("LimitWatch data load failed:", err);
     });
   </script>
-  <!-- EthicalAds loader: privacy-first, async, no cookies. Inert until PUBLISHER_ID is set above. -->
-  <script async src="https://media.ethicalads.io/media/client/ethicalads.min.js"></script>
 </body>
 </html>
