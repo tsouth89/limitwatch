@@ -69,6 +69,29 @@
     </div>
 
     <div class="card">
+      <h2>Value per dollar <span class="meta" style="font-weight:400">(theoretical ceiling)</span></h2>
+      <p class="meta">
+        Throughput per $ if you used the whole limit every window. A <strong>ceiling, not typical</strong> use.
+        Compared only within the same unit — we never silently equate a message to a token.
+        Multiplier-only plans (no published absolute) show as relative and can't be valued.
+      </p>
+      <div id="valueGroups"></div>
+      <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #21262d;">
+        <h3 style="font-size:1rem; margin:0 0 .4rem;">Cross-provider estimate</h3>
+        <p class="meta">The only honest way to line up messages vs tokens: pick how many tokens a message is worth. This knob is the assumption — drag it.</p>
+        <label class="meta">tokens per message:
+          <input id="tpm" type="range" min="100" max="2000" step="50" value="700" style="vertical-align:middle;width:240px;">
+          <span id="tpmVal" class="num">700</span>
+        </label>
+        <table id="crossTable" style="margin-top:.6rem;">
+          <thead><tr><th>Provider / Plan</th><th>$/mo</th><th class="num">est. tokens / day / $</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="meta" id="crossNote"></p>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Limit changelog</h2>
       <p class="meta">Derived by diffing snapshots. This is the part nobody else tracks: when limits silently move.</p>
       <ul class="changelog" id="changelog"></ul>
@@ -111,6 +134,55 @@
           tb.appendChild(tr);
         });
       }
+
+      // ---- Value per dollar (derived, never stored) ----
+      const winPerDay = { "3h": 8, "4h": 6, "5h": 4.8, day: 1, week: 1 / 7, month: 1 / 30 };
+      const UNIT_LABEL = { messages: "messages", tokens: "tokens", requests: "requests" };
+
+      // Flatten to valuable rows: numeric value + known window + a per-day throughput.
+      const rows = [];
+      for (const e of latest.entries) {
+        for (const l of e.limits) {
+          if (l.value == null || l.unit === "multiplier" || !(l.window in winPerDay)) continue;
+          const perDay = l.value * winPerDay[l.window];
+          rows.push({ name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model });
+        }
+      }
+
+      const vg = document.getElementById("valueGroups");
+      for (const unit of ["messages", "tokens", "requests"]) {
+        const r = rows.filter((x) => x.unit === unit).sort((a, b) => b.perDollar - a.perDollar);
+        if (!r.length) continue;
+        const rowsHtml = r.map((x) =>
+          `<tr><td>${x.name}${x.model ? ` <span class="meta">(${x.model})</span>` : ""}</td>` +
+          `<td class="num">$${x.price}</td><td class="num">${fmt(Math.round(x.perDay))}</td>` +
+          `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
+        const h = document.createElement("div");
+        h.style.marginBottom = "1rem";
+        h.innerHTML = `<h3 style="font-size:1rem;margin:.2rem 0 .4rem;text-transform:capitalize">${UNIT_LABEL[unit]}</h3>` +
+          `<table><thead><tr><th>Provider / Plan</th><th>$/mo</th><th class="num">${unit}/day (ceiling)</th><th class="num">${unit}/day per $</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+        vg.appendChild(h);
+      }
+
+      // ---- Cross-provider estimate (behind the visible knob) ----
+      const tpmEl = document.getElementById("tpm"), tpmVal = document.getElementById("tpmVal");
+      const crossBody = document.querySelector("#crossTable tbody");
+      const crossNote = document.getElementById("crossNote");
+      function renderCross() {
+        const tpm = Number(tpmEl.value);
+        tpmVal.textContent = tpm;
+        const conv = rows
+          .filter((x) => x.unit === "messages" || x.unit === "tokens")
+          .map((x) => ({ name: x.name, price: x.price, unit: x.unit, tokPerDay: x.unit === "tokens" ? x.perDay : x.perDay * tpm }))
+          .map((x) => ({ ...x, perDollar: x.tokPerDay / x.price }))
+          .sort((a, b) => b.perDollar - a.perDollar);
+        crossBody.innerHTML = conv.map((x) =>
+          `<tr><td>${x.name} <span class="meta">(${x.unit})</span></td><td class="num">$${x.price}</td>` +
+          `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
+        crossNote.textContent = `Estimate only. Token plans use published tokens; message plans converted at ${tpm} tokens/message. Requests-based plans (e.g. Perplexity) and multiplier-only plans are excluded — not honestly comparable.`;
+      }
+      tpmEl.addEventListener("input", renderCross);
+      renderCross();
 
       const cl = document.getElementById("changelog");
       if (!db.changes.length) {
