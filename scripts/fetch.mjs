@@ -13,6 +13,11 @@ const sources = JSON.parse(readFileSync(join(root, "data", "sources.json"), "utf
 const statePath = join(root, "data", "source-state.json");
 const state = existsSync(statePath) ? JSON.parse(readFileSync(statePath, "utf8")) : {};
 
+// --http-only: skip browser (Cloudflare) sources — they need a headed desktop, not CI.
+// --ci: write data/_watch-summary.md when something changed, for the workflow to file an issue.
+const HTTP_ONLY = process.argv.includes("--http-only");
+const CI = process.argv.includes("--ci");
+
 // Collapse HTML to comparable visible text so we don't churn on tokens/markup noise.
 function visibleText(html) {
   return html
@@ -41,6 +46,10 @@ const results = [];
 for (const src of sources) {
   try {
     let text, note;
+    if (src.method === "browser" && HTTP_ONLY) {
+      results.push({ src, status: "skipped (needs local headed browser)" });
+      continue;
+    }
     if (src.method === "browser") {
       // Cloudflare-protected: headed patchright is what actually passes (headless = 403).
       const r = await fetchRendered(src.url, { headless: false });
@@ -73,4 +82,25 @@ if (changed.length) {
   for (const r of changed) console.log(`  - ${r.src.url}`);
 } else {
   console.log("\nNo monitored official page changed since last check.");
+}
+
+if (CI) {
+  const skipped = results.filter((r) => String(r.status).startsWith("skipped"));
+  if (changed.length) {
+    const today = new Date().toISOString().slice(0, 10);
+    const body =
+      `## Official source page(s) changed — re-verify\n\n` +
+      `The weekly watch (${today}) detected text changes on monitored official pages. ` +
+      `Check each, and if a limit/price actually moved, add a new dated snapshot.\n\n` +
+      changed.map((r) => `- [ ] [${r.src.provider} — ${r.src.label}](${r.src.url})`).join("\n") +
+      (skipped.length
+        ? `\n\n### Also check manually (Cloudflare-protected, not run in CI)\n` +
+          skipped.map((r) => `- [ ] [${r.src.provider} — ${r.src.label}](${r.src.url}) — run \`npm run watch\` locally`).join("\n")
+        : "") +
+      `\n`;
+    writeFileSync(join(root, "data", "_watch-summary.md"), body);
+    console.log("\n[ci] wrote data/_watch-summary.md (changes found)");
+  } else {
+    console.log("\n[ci] no changes; no issue needed.");
+  }
 }

@@ -3,3 +3,4 @@ node_modules/
 *.log
 _*.txt
 _*.log
+data/_watch-summary.md

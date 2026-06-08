@@ -1,0 +1,56 @@
+name: weekly-source-watch
+
+# Checks Anthropic (HTTP) official pages weekly for changes and opens an issue if
+# anything moved. OpenAI pages are Cloudflare-protected and need a headed desktop
+# browser, so they are NOT run here — the issue reminds you to check them locally.
+
+on:
+  schedule:
+    - cron: "0 14 * * 1" # Mondays 14:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run source watch (HTTP only)
+        run: node scripts/fetch.mjs --http-only --ci
+
+      - name: Open issue if pages changed
+        if: hashFiles('data/_watch-summary.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Source watch: official page(s) changed ($(date -u +%Y-%m-%d))" \
+            --body-file data/_watch-summary.md \
+            --label "source-watch" || \
+          gh issue create \
+            --title "Source watch: official page(s) changed ($(date -u +%Y-%m-%d))" \
+            --body-file data/_watch-summary.md
+
+      - name: Commit advanced baseline
+        run: |
+          rm -f data/_watch-summary.md
+          if ! git diff --quiet -- data/source-state.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/source-state.json
+            git commit -m "chore: advance source-watch baseline [skip ci]"
+            git push
+          else
+            echo "No baseline change to commit."
+          fi
