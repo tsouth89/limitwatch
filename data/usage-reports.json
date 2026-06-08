@@ -16,5 +16,20 @@
     "reporter": "self | community handle",
     "evidence": "screenshot url / description (optional)"
   },
-  "reports": []
+  "reports": [
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "5h",
+      "captured_at": "2026-06-08T11:46:00Z",
+      "metric": "percent",
+      "observed": 72,
+      "limit_hit": false,
+      "model": "Claude Opus 4.8 (fast, medium reasoning)",
+      "note": "Single continuous session from 0% at window start. 371 Opus turns over ~57 min reached 72% of the 5h cap (in-app indicator; may lag a few min). Session token usage: 266,673 output + 36,585 fresh input + 3,328,905 cache-write + 47,332,221 cache-read = 50.96M total incl cache reads, 3.63M excl. So ~3.6M fresh (or ~51M incl cache) tokens = 72% of one 5h Opus window. Cap estimate is a range because cache reads are weighted below fresh input.",
+      "reporter": "self",
+      "evidence": "Claude Code session transcript + in-app 5h usage indicator"
+    }
+  ]
 }
