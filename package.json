@@ -1,0 +1,10 @@
+{
+  "name": "ai-limit-tracker",
+  "version": "0.1.0",
+  "description": "Tracks AI subscription plans, prices, and usage limits over time, with source-linked provenance.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "license": "MIT"
+}

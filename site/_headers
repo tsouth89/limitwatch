@@ -1,0 +1,7 @@
+# Cloudflare Pages headers
+# Data refreshes weekly; let it cache short so updates show fast, edge still absorbs load.
+/data.json
+  Cache-Control: public, max-age=300, s-maxage=300
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
