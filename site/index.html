@@ -241,6 +241,7 @@
     .key { display: flex; flex-wrap: wrap; gap: .4rem .9rem; align-items: center; margin: 1.1rem 0 0; font-size: 12.5px; color: var(--muted); }
     .notice { border: 1px solid var(--amber-line); background: var(--amber-soft); color: var(--amber); border-radius: 8px; padding: .75rem .9rem; margin: 1rem 0 0; font-size: 13.5px; display: none; }
     .notice strong { color: var(--ink); }
+    .notice.notice-error { border-color: var(--neg-line); background: var(--neg-soft); color: var(--neg); }
 
     /* Provider monogram */
     .pmark { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 5px; font-size: 10.5px; font-weight: 800; vertical-align: -3px; margin-right: .4rem; background: color-mix(in srgb, var(--c) 18%, var(--paper)); color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 32%, var(--paper)); }
@@ -632,7 +633,10 @@
 
     // cache: "no-cache" forces a conditional revalidation (304 when unchanged), so a fresh build's
     // data shows on the next load instead of a stale copy. Pairs with site/_headers below.
-    fetch("data.json", { cache: "no-cache" }).then((r) => r.json()).then((db) => {
+    fetch("data.json", { cache: "no-cache" }).then((r) => {
+      if (!r.ok) throw new Error(`data.json HTTP ${r.status}`);
+      return r.json();
+    }).then((db) => {
       const latest = db.snapshots.at(-1);
       const todayIso = new Date().toISOString().slice(0, 10);
       const isFutureDate = (d) => d && d > todayIso;
@@ -654,12 +658,15 @@
         stat(db.changes.length, "changes logged") +
         stat(db.snapshot_count, "snapshots") +
         stat(db.date_range.at(-1), "last updated");
-      if (futureRecords.length || upcomingRecords.length) {
+      const buildWarnings = Array.isArray(db.data_warnings) ? db.data_warnings : [];
+      if (futureRecords.length || upcomingRecords.length || buildWarnings.length) {
         const dn = document.getElementById("dataNotice");
         dn.style.display = "block";
         const parts = [];
         if (upcomingRecords.length) parts.push(`<strong>Upcoming:</strong> ${upcomingRecords.length} announced plan changes have future effective dates and are labeled upcoming.`);
         if (futureRecords.length) parts.push(`<strong>Data check:</strong> ${futureRecords.length} evidence records are dated after today (${todayIso}) and are hidden from rankings until current.`);
+        // Build-time integrity warnings (from scripts/build.mjs) — surface them instead of shipping silently.
+        if (buildWarnings.length) parts.push(`<strong>Build warnings:</strong> ${buildWarnings.map((w) => String(w)).join("; ")}.`);
         dn.innerHTML = parts.join(" ");
       }
       document.getElementById("buildInfo").textContent = `built ${db.generated_at.slice(0, 10)}`;
@@ -1180,6 +1187,16 @@
         }
       }, { rootMargin: "-45% 0px -50% 0px" });
       sections.forEach((s) => io.observe(s));
+    }).catch((err) => {
+      // Static site, single data source: if data.json fails to load or parse, say so instead of
+      // leaving a blank skeleton. Keeps the page honest under a network blip or a bad deploy.
+      const dn = document.getElementById("dataNotice");
+      if (dn) {
+        dn.style.display = "block";
+        dn.classList.add("notice-error");
+        dn.innerHTML = `<strong>Couldn't load the data.</strong> ${String(err.message || err)}. Try a refresh; if it persists the latest deploy may be broken.`;
+      }
+      console.error("LimitWatch data load failed:", err);
     });
   </script>
 </body>
