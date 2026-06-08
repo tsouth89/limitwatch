@@ -272,6 +272,12 @@
     .radtitle a { color: var(--ink); font-weight: 600; text-decoration: none; }
     .radtitle a:hover { color: var(--blue-ink); text-decoration: underline; }
     .radwhy { font-size: 13px; }
+    .bottomline { border-color: var(--blue-soft); background: linear-gradient(180deg, var(--paper-soft), var(--paper)); }
+    .bl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .8rem; margin: .3rem 0 .2rem; }
+    .bl-tile { border: 1px solid var(--line); border-radius: 10px; padding: .7rem .85rem; background: var(--paper); }
+    .bl-k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted-2); margin-bottom: .3rem; }
+    .bl-v { font-size: 14.5px; color: var(--ink); line-height: 1.45; }
+    .bl-note { font-size: 13px; color: var(--muted); margin: .9rem 0 0; }
 
     /* Provider monogram */
     .pmark { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 5px; font-size: 10.5px; font-weight: 800; vertical-align: -3px; margin-right: .4rem; background: color-mix(in srgb, var(--c) 18%, var(--paper)); color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 32%, var(--paper)); }
@@ -409,6 +415,11 @@
     </div>
   </header>
   <main>
+    <div class="card bottomline" id="bottomLine" style="display:none">
+      <p class="eyebrow">Bottom line</p>
+      <div id="bottomLineBody"></div>
+    </div>
+
     <div class="card" id="whatsnew" style="display:none">
       <div class="section-head">
         <div>
@@ -904,6 +915,26 @@
         vg.insertBefore(el, vg.firstChild);
       }
 
+      // ---- Bottom line: the instant-answer card up top (computed here, where value data exists) ----
+      (() => {
+        const paid = latest.entries.filter((e) => e.price_usd > 0).sort((a, b) => a.price_usd - b.price_usd);
+        const cheapest = paid[0];
+        const tiles = [];
+        if (cheapest) tiles.push(["Cheapest paid plan", `${provMark(cheapest.provider)}${provName(cheapest.provider)} ${cheapest.plan} · <span class="num">$${cheapest.price_usd}/mo</span>`]);
+        if (summary.length) tiles.push(["Most per $ (native units)", summary.map((x) => `<strong>${x.unit}</strong>: ${x.lead.name}`).join("<br>")]);
+        const c = (db.changes || [])[0];
+        if (c) {
+          const [prov, , plan] = c.key.split("|");
+          const verb = c.kind === "price_changed" ? `price $${c.from} → $${c.to}` : c.kind === "model_changed" ? `${c.from} → ${c.to}` : c.kind === "limit_added" ? "new limit" : c.kind.replace(/_/g, " ");
+          tiles.push(["Latest change", `${provMark(prov)}${provName(prov)} ${plan} · ${verb} <span class="meta">(${c.date})</span>`]);
+        }
+        if (!tiles.length) return;
+        document.getElementById("bottomLineBody").innerHTML =
+          `<div class="bl-grid">` + tiles.map(([k, v]) => `<div class="bl-tile"><div class="bl-k">${k}</div><div class="bl-v">${v}</div></div>`).join("") + `</div>` +
+          `<p class="bl-note">No single number compares plans across providers — they sell different units (messages, tokens, requests, dollar credits). The closest head-to-head is the <a href="#crossProvider">cross-provider estimate</a>, which normalizes everything to tokens/day behind an adjustable knob. Hard same-unit value is in <a href="#value">Value per $</a>.</p>`;
+        document.getElementById("bottomLine").style.display = "";
+      })();
+
       // Explain what can't be ranked so absent plans read as honesty, not a gap.
       const valued = new Set(rows.map((x) => x.name));
       const reasonOf = (e) =>
@@ -967,9 +998,12 @@
           k === "req-est" ? ' <span class="badge announced">request · est</span>' :
           k === "msg-est" ? ' <span class="badge announced">est</span>' :
           ` <span class="meta">(${k})</span>`;
+        // Relatable second line: tokens/day/$ is honest but abstract, so show an approximate
+        // message-equivalent (tokens ÷ the per-message knob) that a normal reader can feel.
         const row = (x, k) =>
           `<tr><td>${provMark(x.prov)}${x.name}${descriptor(x)}${tagHtml(k)}</td>` +
-          `<td class="num">$${x.price}</td><td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`;
+          `<td class="num">$${x.price}</td>` +
+          `<td class="num">${fmt(Math.round(x.perDollar))}<div class="meta">≈ ${fmt(Math.round(x.perDollar / tpm))} msg/day/$</div></td></tr>`;
         crossBody.innerHTML =
           ranked.map((x) => row(x, x.kind)).join("") +
           (mr.length ? `<tr><td colspan="3" class="crosssep">↓ Real measured usage — different basis (what one account actually consumed, not a ceiling)</td></tr>` + mr.map((x) => row(x, "measured")).join("") : "");
