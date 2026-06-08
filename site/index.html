@@ -173,11 +173,11 @@
         tpmVal.textContent = tpm;
         const conv = rows
           .filter((x) => x.unit === "messages" || x.unit === "tokens")
-          .map((x) => ({ name: x.name, price: x.price, unit: x.unit, tokPerDay: x.unit === "tokens" ? x.perDay : x.perDay * tpm }))
+          .map((x) => ({ name: x.name, model: x.model, price: x.price, unit: x.unit, tokPerDay: x.unit === "tokens" ? x.perDay : x.perDay * tpm }))
           .map((x) => ({ ...x, perDollar: x.tokPerDay / x.price }))
           .sort((a, b) => b.perDollar - a.perDollar);
         crossBody.innerHTML = conv.map((x) =>
-          `<tr><td>${x.name} <span class="meta">(${x.unit})</span></td><td class="num">$${x.price}</td>` +
+          `<tr><td>${x.name}${x.model ? ` <span class="meta">(${x.model})</span>` : ""} <span class="meta">(${x.unit})</span></td><td class="num">$${x.price}</td>` +
           `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
         crossNote.textContent = `Estimate only. Token plans use published tokens; message plans converted at ${tpm} tokens/message. Requests-based plans (e.g. Perplexity) and multiplier-only plans are excluded, not honestly comparable.`;
       }
