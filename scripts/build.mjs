@@ -90,16 +90,38 @@ for (const provider of allProviders) {
     }
   }
 }
-changes.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+// Collapse a same-date remove+add of the SAME limit slot that only swapped the model (e.g. a plan's
+// 160 msgs/3h budget moving from GPT-5.3 to GPT-5.5) into one "model_changed" entry, so a model
+// rename doesn't read as a removal plus an unrelated addition.
+const baseKey = (k) => k.split("|").slice(0, 6).join("|"); // identity without the model segment (idx 6)
+const modelOf = (k) => k.split("|")[6] ?? "";
+const used = new Set();
+const collapsed = [];
+for (let i = 0; i < changes.length; i++) {
+  if (used.has(i)) continue;
+  const c = changes[i];
+  if (c.kind === "limit_added") {
+    const j = changes.findIndex((d, idx) =>
+      !used.has(idx) && d.kind === "limit_removed" && d.date === c.date &&
+      baseKey(d.key) === baseKey(c.key) && modelOf(d.key) !== modelOf(c.key));
+    if (j >= 0) {
+      used.add(i); used.add(j);
+      collapsed.push({ date: c.date, kind: "model_changed", key: c.key, from: modelOf(changes[j].key), to: modelOf(c.key), value: c.to, unit: c.unit, source: c.source });
+      continue;
+    }
+  }
+  collapsed.push(c);
+}
+collapsed.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 
 const out = {
   generated_at: new Date().toISOString(),
   snapshot_count: snapshots.length,
   date_range: snapshots.length ? [snapshots[0].date, snapshots.at(-1).date] : [],
   data_warnings: dataWarnings,
-  changes: changes.reverse(), // newest first
+  changes: collapsed.reverse(), // newest first
   snapshots,
 };
 
 writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
-console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${changes.length} change(s), ${dataWarnings.length} warning(s)`);
+console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${collapsed.length} change(s), ${dataWarnings.length} warning(s)`);

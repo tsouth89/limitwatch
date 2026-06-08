@@ -1,12 +1,62 @@
 {
-  "generated_at": "2026-06-08T05:11:22.740Z",
-  "snapshot_count": 4,
+  "generated_at": "2026-06-08T05:24:32.258Z",
+  "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
     "2026-06-07"
   ],
   "data_warnings": [],
   "changes": [
+    {
+      "date": "2026-06-07",
+      "kind": "model_changed",
+      "key": "OpenAI|ChatGPT|Go||messages|5h|GPT-5.5 Thinking",
+      "from": "GPT-5.4 Thinking",
+      "to": "GPT-5.5 Thinking",
+      "value": 10,
+      "unit": "messages",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
+    {
+      "date": "2026-06-07",
+      "kind": "model_changed",
+      "key": "OpenAI|ChatGPT|Go||messages|3h|GPT-5.5",
+      "from": "GPT-5.3",
+      "to": "GPT-5.5",
+      "value": 160,
+      "unit": "messages",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
+    {
+      "date": "2026-06-07",
+      "kind": "model_changed",
+      "key": "OpenAI|ChatGPT|Pro||messages||GPT-5.5",
+      "from": "GPT-5.3",
+      "to": "GPT-5.5",
+      "value": null,
+      "unit": "messages",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
+    {
+      "date": "2026-06-07",
+      "kind": "model_changed",
+      "key": "OpenAI|ChatGPT|Plus||messages|week|GPT-5.5 Thinking",
+      "from": "GPT-5.4 Thinking",
+      "to": "GPT-5.5 Thinking",
+      "value": 3000,
+      "unit": "messages",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
+    {
+      "date": "2026-06-07",
+      "kind": "model_changed",
+      "key": "OpenAI|ChatGPT|Plus||messages|3h|GPT-5.5",
+      "from": "GPT-5.3",
+      "to": "GPT-5.5",
+      "value": 160,
+      "unit": "messages",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
     {
       "date": "2026-06-07",
       "kind": "price_changed",
@@ -256,11 +306,68 @@
     },
     {
       "schema": 3,
+      "date": "2026-02-28",
+      "covers": [
+        "Replit"
+      ],
+      "note": "Partial historical backfill (Wayback). Records ONLY Replit for this date — diff is scoped to Replit. Earliest archive of replit.com/pricing with rendered content (the mid-January captures are empty JS shells). Plan structure and credits match the June snapshot, so Replit's paid credits held steady across this window.",
+      "entries": [
+        {
+          "provider": "Replit",
+          "product": "Replit",
+          "plan": "Core",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 25,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Replit Core $25 of monthly credits Includes up to 5 collaborators",
+          "source": "http://web.archive.org/web/20260228203147/https://replit.com/pricing",
+          "as_of": "2026-02-28",
+          "verified_on": "2026-02-28",
+          "notes": "Wayback capture 2026-02-28. $25 monthly credit unchanged from June. Subscription price carried at $20/mo (the page emphasizes included credits and annual billing)."
+        },
+        {
+          "provider": "Replit",
+          "product": "Replit",
+          "plan": "Pro",
+          "price_usd": 95,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 100,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Replit Pro $100 $95 per month billed annually ... Everything in Core $100 monthly credits",
+          "source": "http://web.archive.org/web/20260228203147/https://replit.com/pricing",
+          "as_of": "2026-02-28",
+          "verified_on": "2026-02-28",
+          "notes": "Wayback capture 2026-02-28. $100 monthly credit unchanged from June; $95/mo is the annual-billing price shown on the page."
+        }
+      ]
+    },
+    {
+      "schema": 3,
       "date": "2026-04-01",
       "covers": [
-        "Google"
+        "Google",
+        "OpenAI"
       ],
-      "note": "Partial historical backfill (Wayback). Records ONLY Google for this date — diff is scoped to Google. This capture is the first archive that shows the Google AI Plus tier ($7.99/mo), absent from the January capture, so it dates AI Plus's launch to ~Q1 2026. The flagship AI Ultra is still $249.99 here and there is still no 5x Ultra tier and no 'Nx higher usage' multiplier framing (both appear only in the June capture, after the May 2026 limit backlash).",
+      "note": "Partial historical backfill (Wayback). Records Google and OpenAI for this date — diff is scoped to them. Google: first archive showing the AI Plus tier ($7.99/mo, absent in January); the flagship AI Ultra is still $249.99 with no 5x tier and no 'Nx higher usage' framing (both appear only in June). OpenAI: the GPT-5-in-ChatGPT help article still attached message budgets to GPT-5.3 (standard) and GPT-5.4 Thinking; by June both had rolled to GPT-5.5 (the message counts were unchanged).",
       "entries": [
         {
           "provider": "Google",
@@ -336,6 +443,90 @@
           "as_of": "2026-04-01",
           "verified_on": "2026-04-01",
           "notes": "Wayback capture 2026-04-01. Flagship still $249.99/mo with no 5x Ultra tier yet; the price drop to $199.99 and the 5x tier appear only in the June capture. Tracked under the (20x) flagship label for price-lineage continuity."
+        },
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Plus",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 160,
+              "unit": "messages",
+              "window": "3h",
+              "model": "GPT-5.3",
+              "kind": "primary"
+            },
+            {
+              "value": 3000,
+              "unit": "messages",
+              "window": "week",
+              "model": "GPT-5.4 Thinking",
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "ChatGPT Plus and ChatGPT Go users can send up to 160 messages with GPT-5.3 every 3 hours. ... you can manually select GPT-5.4 Thinking from the model picker with a usage limit of up to 3,000 messages per week.",
+          "source": "http://web.archive.org/web/20260401185524/https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "as_of": "2026-04-01",
+          "verified_on": "2026-04-01",
+          "notes": "Wayback capture 2026-04-01. Same message budgets as June (160/3h, 3,000/week) but attached to GPT-5.3 / GPT-5.4 Thinking; both rolled to GPT-5.5 by June. Subscription price carried from current pricing (the help article states limits, not price)."
+        },
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Pro",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": null,
+              "unit": "messages",
+              "window": null,
+              "model": "GPT-5.3",
+              "kind": "primary",
+              "basis": "unlimited"
+            }
+          ],
+          "confidence": "official",
+          "quote": "The ChatGPT Business and Pro plans offer unlimited access to our GPT-5 models, subject to abuse guardrails.",
+          "source": "http://web.archive.org/web/20260401185524/https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "as_of": "2026-04-01",
+          "verified_on": "2026-04-01",
+          "notes": "Wayback capture 2026-04-01. Unlimited access to the GPT-5 line (the era's standard was GPT-5.3; the quote is generic). The default GPT-5 model advanced to GPT-5.5 by June. Subscription price carried from current pricing."
+        },
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Go",
+          "price_usd": 8,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 160,
+              "unit": "messages",
+              "window": "3h",
+              "model": "GPT-5.3",
+              "kind": "primary"
+            },
+            {
+              "value": 10,
+              "unit": "messages",
+              "window": "5h",
+              "model": "GPT-5.4 Thinking",
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "ChatGPT Plus and ChatGPT Go users can send up to 160 messages with GPT-5.3 every 3 hours. ... Go users can send up to 10 messages every 5 hours after enabling Thinking.",
+          "source": "http://web.archive.org/web/20260401185524/https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "as_of": "2026-04-01",
+          "verified_on": "2026-04-01",
+          "notes": "Wayback capture 2026-04-01. Same budgets as June (160/3h, 10/5h Thinking) but on GPT-5.3 / GPT-5.4 Thinking; both rolled to GPT-5.5 by June. Subscription price carried from current pricing."
         }
       ]
     },

@@ -741,6 +741,7 @@
           const [prov,, plan,, unit, window] = keyParts(c.key);
           let txt;
           if (c.kind === "limit_changed") txt = `<strong>${prov} ${plan}</strong> ${unit}/${window}: ${fmt(c.from)} → ${fmt(c.to)}`;
+          else if (c.kind === "model_changed") txt = `<strong>${prov} ${plan}</strong> model: ${c.from} → ${c.to}${c.value != null ? ` <span class="meta">(${fmt(c.value)} ${unit}/${window})</span>` : ""}`;
           else if (c.kind === "price_changed") txt = `<strong>${prov} ${plan}</strong> price: $${c.from} → $${c.to}`;
           else if (c.kind === "limit_added") txt = c.to == null
             ? `<strong>${prov} ${plan}</strong> plan added <span class="meta">(usage unpublished)</span>`
@@ -754,7 +755,14 @@
 
       // Price history sparklines — one row per plan that appears in 2+ snapshots.
       (() => {
-        const globalFirst = db.snapshots[0]?.date;
+        // Earliest snapshot date that COVERS each provider — a plan only counts as "added" if its
+        // provider was already tracked before the plan first appeared (otherwise it's just the first
+        // data point we have for a provider we started tracking late, not a real launch).
+        const provFirst = {};
+        for (const s of db.snapshots) {
+          const cov = s.covers ?? [...new Set(s.entries.map((e) => e.provider))];
+          for (const p of cov) if (!provFirst[p] || s.date < provFirst[p]) provFirst[p] = s.date;
+        }
         const hist = new Map();
         for (const s of db.snapshots) {
           for (const e of s.entries) {
@@ -769,7 +777,7 @@
         const fmtDay = (d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
         const series = [...hist.values()].filter((h) => h.pts.length >= 2 && h.pts.every((p) => typeof p.price === "number"));
         series.sort((a, b) => {
-          const sc = (h) => { const f = h.pts[0].price, l = h.pts.at(-1).price; if (l !== f) return 3 + Math.abs(1 - l / f); return h.pts[0].date !== globalFirst ? 2 : 1; };
+          const sc = (h) => { const f = h.pts[0].price, l = h.pts.at(-1).price; if (l !== f) return 3 + Math.abs(1 - l / f); return h.pts[0].date > (provFirst[h.prov] ?? h.pts[0].date) ? 2 : 1; };
           return sc(b) - sc(a);
         });
         const trends = document.getElementById("trends");
@@ -791,7 +799,7 @@
 
         body.innerHTML = series.map((h) => {
           const first = h.pts[0].price, last = h.pts.at(-1).price;
-          const newAt = h.pts[0].date !== globalFirst ? h.pts[0].date : null;
+          const newAt = h.pts[0].date > (provFirst[h.prov] ?? h.pts[0].date) ? h.pts[0].date : null;
           let badge;
           if (newAt) badge = `<span class="dlt new">added ${fmtDay(newAt)}</span>`;
           else if (last < first) badge = `<span class="dlt down">−${Math.round((1 - last / first) * 100)}%</span>`;

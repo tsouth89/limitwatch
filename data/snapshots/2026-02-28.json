@@ -1,0 +1,54 @@
+{
+  "schema": 3,
+  "date": "2026-02-28",
+  "covers": ["Replit"],
+  "note": "Partial historical backfill (Wayback). Records ONLY Replit for this date — diff is scoped to Replit. Earliest archive of replit.com/pricing with rendered content (the mid-January captures are empty JS shells). Plan structure and credits match the June snapshot, so Replit's paid credits held steady across this window.",
+  "entries": [
+    {
+      "provider": "Replit",
+      "product": "Replit",
+      "plan": "Core",
+      "price_usd": 20,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 25,
+          "unit": "usd_credit",
+          "window": "month",
+          "model": null,
+          "kind": "primary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Replit Core $25 of monthly credits Includes up to 5 collaborators",
+      "source": "http://web.archive.org/web/20260228203147/https://replit.com/pricing",
+      "as_of": "2026-02-28",
+      "verified_on": "2026-02-28",
+      "notes": "Wayback capture 2026-02-28. $25 monthly credit unchanged from June. Subscription price carried at $20/mo (the page emphasizes included credits and annual billing)."
+    },
+    {
+      "provider": "Replit",
+      "product": "Replit",
+      "plan": "Pro",
+      "price_usd": 95,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 100,
+          "unit": "usd_credit",
+          "window": "month",
+          "model": null,
+          "kind": "primary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Replit Pro $100 $95 per month billed annually ... Everything in Core $100 monthly credits",
+      "source": "http://web.archive.org/web/20260228203147/https://replit.com/pricing",
+      "as_of": "2026-02-28",
+      "verified_on": "2026-02-28",
+      "notes": "Wayback capture 2026-02-28. $100 monthly credit unchanged from June; $95/mo is the annual-billing price shown on the page."
+    }
+  ]
+}

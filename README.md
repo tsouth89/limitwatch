@@ -12,10 +12,15 @@ The history is the moat. Snapshots are copyable; a 6-month time series is not.
 
 1. `data/snapshots/YYYY-MM-DD.json` — one dated snapshot per file. Append, never edit history.
 2. `npm run build` (`scripts/build.mjs`) — merges every snapshot into `site/data.json` **and
-   derives the changelog** by diffing consecutive snapshots (limit + price changes).
+   derives the changelog**. Diffs run **per provider**, comparing each snapshot to the previous
+   one that *covers* the same provider, so partial historical snapshots can interleave by date
+   (e.g. a Cursor-only Feb snapshot between two Google snapshots) and still attribute changes to
+   the right dates. A same-date remove+add of one limit slot that only swapped models (e.g. a
+   plan's 160 msgs/3h budget moving GPT-5.3 → GPT-5.5) is collapsed into a single `model_changed`.
 3. `site/index.html` — static page. Renders the latest limits, value-per-dollar bars, a
-   cross-provider token estimate, real measured receipts, and the derived changelog from
-   `site/data.json`. All numbers link back to their source.
+   cross-provider token estimate, real measured receipts, a **price-history sparkline per plan**
+   (every plan that appears in 2+ snapshots), and the derived changelog from `site/data.json`.
+   All numbers link back to their source.
 
 No backend. Hosted as a static site on Cloudflare Pages.
 
