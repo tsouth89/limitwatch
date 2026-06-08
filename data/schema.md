@@ -85,6 +85,21 @@ real ceiling.
 | `community` | Measured/estimated by a third party | TokenMix "~88k tok/5h" |
 | `crowdsourced` | Aggregated user reports (our form) | "I hit limit at N" |
 
+### Claim basis (a rule, not yet a field)
+
+`confidence` answers *how trusted is the source*. A second, orthogonal question is *what kind of
+claim is the number*: a stated hard figure, the provider's own soft estimate, a value derived from
+a multiplier, our measured burn, or honestly absent. Today every entry is a stated figure or `?`,
+so we do **not** carry a `basis` field — adding an enum that only restates `?` would be dead
+scaffolding.
+
+Add an optional per-limit `basis` (`published` | `estimate` | `derived` | `measured` |
+`unpublished`) the first time we ingest an `estimate` or `derived` number, and badge it then.
+**Never store a derived number as if it were published** — that is the exact failure this rule
+guards against (e.g. Anthropic's circulated "225 / 900 msg per 5h" Max figures are 5×/20× the
+Pro estimate, not first-party-published; verified absent across six current Claude help pages on
+2026-06-07, so they are not in the dataset).
+
 ## Hard rules
 
 - **Never edit a past snapshot.** Wrong-then is still the record. Drift is the product.
