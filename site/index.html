@@ -156,8 +156,8 @@
       tip.id = "tip";
       document.body.appendChild(tip);
       let pinned = false;
-      // Offsets exceed the cursor graphic (~24px) so the pointer stays outside the box, not on it.
-      const offX = 22, offY = 30;
+      // Offsets clear the cursor graphic (incl. magnified pointers) so it never sits on the text.
+      const offX = 22, offY = 40;
       const place = (ev) => {
         const w = tip.offsetWidth, h = tip.offsetHeight;
         let x = ev.clientX + offX, y = ev.clientY + offY;       // default: down-right of the cursor
