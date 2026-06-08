@@ -170,11 +170,23 @@
     .event .emeta { font-size: 12.5px; color: var(--muted); margin-top: .15rem; }
     .event .ecount { font-weight: 750; color: var(--ink); }
     .hlrow { display: flex; gap: .6rem; align-items: baseline; padding: .32rem 0; font-size: 13.5px; }
-    .hlrow .hk { flex: none; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .12rem .45rem; border-radius: 5px; }
+    .hk { flex: none; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .12rem .45rem; border-radius: 5px; white-space: nowrap; }
     .hk.model { color: var(--blue-ink); background: var(--blue-soft); }
     .hk.price { color: var(--pos); background: var(--pos-soft); }
     .hk.priceup { color: var(--neg); background: var(--neg-soft); }
     .hk.added { color: var(--violet); background: var(--violet-soft); }
+    .hk.limit { color: var(--muted); background: var(--neutral-soft); }
+    .hk.removed { color: var(--neg); background: var(--neg-soft); }
+    /* Changelog rows */
+    .cllist { display: flex; flex-direction: column; }
+    .clrow { display: flex; gap: .55rem; align-items: baseline; padding: .5rem .1rem; border-bottom: 1px solid var(--line-soft); font-size: 13.5px; }
+    .clrow:last-child { border-bottom: 0; }
+    .clrow > .num { flex: none; color: var(--muted); min-width: 84px; }
+    .clrow .cltxt { flex: 1; }
+    .clrow a { flex: none; }
+    .morebtn { margin-top: .8rem; width: 100%; background: var(--paper-soft); border: 1px solid var(--line); color: var(--blue-ink); font: inherit; font-weight: 700; font-size: 13px; padding: .5rem .9rem; border-radius: 9px; cursor: pointer; transition: background .12s, border-color .12s; }
+    .morebtn:hover { background: var(--hover); border-color: var(--muted-2); }
+    @media (max-width: 560px) { .clrow { flex-wrap: wrap; gap: .35rem .5rem; } .clrow .cltxt { flex: 1 1 100%; order: 3; } }
     code { background: var(--paper-soft); border: 1px solid var(--line); color: var(--ink); padding: .05rem .35rem; border-radius: 4px; font-size: 13px; }
     .controls { position: sticky; top: 0; z-index: 5; background: var(--glass); backdrop-filter: blur(10px); padding: .75rem 0 .7rem; margin-bottom: .55rem; display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; border-bottom: 1px solid var(--line-soft); }
     #search { flex: 1 1 250px; background: var(--paper); border: 1px solid var(--line); border-radius: 7px; color: var(--ink); padding: .48rem .65rem; font: inherit; }
@@ -488,7 +500,8 @@
           <p class="meta">Derived by diffing snapshots. This is the part nobody else tracks: when limits silently move.</p>
         </div>
       </div>
-      <ul class="changelog" id="changelogList"></ul>
+      <div class="cllist" id="changelogList"></div>
+      <button class="morebtn" id="changelogMore" type="button" style="display:none"></button>
     </div>
 
     <div class="card" id="trust">
@@ -533,6 +546,15 @@
       l.unit === "multiplier" ? `${fmt(l.value)}× ${l.baseline ?? "Pro"}` :
       l.unit === "usd_credit" ? `$${fmt(l.value)} usage` :
       `${fmt(l.value)} ${l.unit}`;
+    const winShort = (w) => w == null || w === "" ? "" : ({ week: "wk", month: "mo" }[w] ?? w);
+    // Human-readable "value + unit + window" for the changelog/highlights, where raw rows would
+    // otherwise read like "70 usd_credit/month" or "5 multiplier/5h". Mirrors unitLabel's wording.
+    const niceLimit = (value, unit, window) => {
+      if (unit === "multiplier") return `${fmt(value)}× usage`;                 // baseline isn't tracked per change
+      if (unit === "usd_credit") return `$${fmt(value)} credit${window ? ` / ${winShort(window)}` : ""}`;
+      const w = window ? ` / ${winShort(window)}` : "";
+      return value == null ? `${unit}${w}` : `${fmt(value)} ${unit}${w}`;
+    };
     const keyParts = (k) => k.split("|"); // provider|product|plan|surface|unit|window|model
     // Provider monogram: a small colored square with the provider's initial for fast scanning.
     const PROV_COLOR = { OpenAI: "#10a37f", Anthropic: "#cc785c", Google: "#4285f4", xAI: "#c9d1d9", Perplexity: "#20b8cd", Cursor: "#c9a3ff", GitHub: "#e6edf3", Replit: "#f26207" };
@@ -904,23 +926,44 @@
       }
 
       const cl = document.getElementById("changelogList");
+      const clBtn = document.getElementById("changelogMore");
       if (!db.changes.length) {
-        cl.innerHTML = `<li class="meta">No changes yet, need 2+ snapshots. Drift shows up here as you add weekly snapshots.</li>`;
+        cl.innerHTML = `<p class="empty">No changes yet, need 2+ snapshots. Drift shows up here as you add weekly snapshots.</p>`;
       } else {
-        for (const c of db.changes) {
+        // One chip + one humanized sentence per change. Kind drives the chip colour (reusing the
+        // highlight .hk styles) so the log scans by type, not by reading every line.
+        const KIND = {
+          model_changed:  { cls: "model",   k: "model" },
+          price_changed:  { cls: "price",   k: "price" },   // overridden to priceup on an increase
+          limit_changed:  { cls: "limit",   k: "limit" },
+          limit_added:    { cls: "added",   k: "new" },
+          limit_removed:  { cls: "removed", k: "removed" },
+        };
+        const rowHtml = (c) => {
           const [prov,, plan,, unit, window] = keyParts(c.key);
+          let kind = KIND[c.kind] ?? { cls: "limit", k: c.kind };
           let txt;
-          if (c.kind === "limit_changed") txt = `<strong>${prov} ${plan}</strong> ${unit}/${window}: ${fmt(c.from)} → ${fmt(c.to)}`;
-          else if (c.kind === "model_changed") txt = `<strong>${prov} ${plan}</strong> model: ${c.from} → ${c.to}${c.value != null ? ` <span class="meta">(${fmt(c.value)} ${unit}/${window})</span>` : ""}`;
-          else if (c.kind === "price_changed") txt = `<strong>${prov} ${plan}</strong> price: $${c.from} → $${c.to}`;
+          if (c.kind === "limit_changed") txt = `<strong>${prov} ${plan}</strong> ${niceLimit(c.from, unit, window)} → ${niceLimit(c.to, unit, window)}`;
+          else if (c.kind === "model_changed") txt = `<strong>${prov} ${plan}</strong> ${c.from} → ${c.to}${c.value != null ? ` <span class="meta">(${niceLimit(c.value, unit, window)})</span>` : ""}`;
+          else if (c.kind === "price_changed") { kind = { cls: c.to < c.from ? "price" : "priceup", k: c.to < c.from ? "price ↓" : "price ↑" }; txt = `<strong>${prov} ${plan}</strong> $${c.from} → $${c.to} / mo`; }
           else if (c.kind === "limit_added") txt = c.to == null
             ? `<strong>${prov} ${plan}</strong> plan added <span class="meta">(usage unpublished)</span>`
-            : `<strong>${prov} ${plan}</strong> new limit: ${fmt(c.to)} ${unit}/${window}`;
-          else txt = `<strong>${prov} ${plan}</strong> limit removed (${unit}/${window})`;
-          const li = document.createElement("li");
-          li.innerHTML = `${dateChip(c)} · ${txt} ${c.source ? `<a href="${c.source}" target="_blank" rel="noopener">src</a>` : ""}`;
-          cl.appendChild(li);
-        }
+            : `<strong>${prov} ${plan}</strong> ${niceLimit(c.to, unit, window)}`;
+          else txt = `<strong>${prov} ${plan}</strong> ${niceLimit(null, unit, window)} removed`;
+          return `<div class="clrow">${dateChip(c)} <span class="hk ${kind.cls}">${kind.k}</span> <span class="cltxt">${txt}</span> ${c.source ? `<a href="${c.source}" target="_blank" rel="noopener">src</a>` : ""}</div>`;
+        };
+        const COLLAPSED = 8;
+        let expanded = false;
+        const render = () => {
+          const rows = expanded ? db.changes : db.changes.slice(0, COLLAPSED);
+          cl.innerHTML = rows.map(rowHtml).join("");
+          if (db.changes.length > COLLAPSED) {
+            clBtn.style.display = "";
+            clBtn.textContent = expanded ? "Show less" : `Show all ${db.changes.length} changes`;
+          }
+        };
+        clBtn.addEventListener("click", () => { expanded = !expanded; render(); });
+        render();
       }
 
       // Price history sparklines — one row per plan that appears in 2+ snapshots.
@@ -1041,7 +1084,7 @@
           const [prov, , plan, , unit, window] = c.key.split("|");
           if (c.kind === "model_changed") items.push({ date: c.date, observed_on: c.observed_on, cls: "model", k: "model", html: `<strong>${prov} ${plan}</strong> upgraded ${c.from} → ${c.to}`, source: c.source });
           else if (c.kind === "price_changed") { const drop = c.to < c.from; items.push({ date: c.date, observed_on: c.observed_on, cls: drop ? "price" : "priceup", k: drop ? "price ↓" : "price ↑", html: `<strong>${prov} ${plan}</strong> $${c.from} → $${c.to}`, source: c.source }); }
-          else if (c.kind === "limit_added" && c.to != null) items.push({ date: c.date, observed_on: c.observed_on, cls: "added", k: "new", html: `<strong>${prov} ${plan}</strong> added · ${fmt(c.to)} ${unit}${window ? "/" + window : ""}`, source: c.source });
+          else if (c.kind === "limit_added" && c.to != null) items.push({ date: c.date, observed_on: c.observed_on, cls: "added", k: "new", html: `<strong>${prov} ${plan}</strong> added · ${niceLimit(c.to, unit, window)}`, source: c.source });
         }
         items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
         document.getElementById("highlightsBody").innerHTML = items.length
