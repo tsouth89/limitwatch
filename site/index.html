@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Limit Tracker — plans &amp; usage limits over time</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font: 15px/1.5 system-ui, sans-serif; background: #0d1117; color: #e6edf3; }
+    header { padding: 2rem 1.5rem 1rem; max-width: 960px; margin: 0 auto; }
+    h1 { margin: 0 0 .3rem; font-size: 1.6rem; }
+    .sub { color: #9aa7b4; margin: 0; }
+    main { max-width: 960px; margin: 0 auto; padding: 1rem 1.5rem 4rem; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 1.2rem; margin: 1.2rem 0; }
+    canvas { max-height: 360px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid #21262d; }
+    th { color: #9aa7b4; font-weight: 600; }
+    a { color: #58a6ff; }
+    .meta { color: #6e7681; font-size: 13px; }
+    .pill { display: inline-block; background: #1f6feb22; color: #58a6ff; border-radius: 999px; padding: .05rem .5rem; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Limit Tracker</h1>
+    <p class="sub">Subscription plans, prices, and usage limits across AI providers — tracked over time.</p>
+    <p class="meta" id="meta"></p>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Price per plan ($/month)</h2>
+      <canvas id="priceChart"></canvas>
+    </div>
+    <div class="card">
+      <h2>Latest snapshot</h2>
+      <table id="latestTable">
+        <thead>
+          <tr><th>Provider</th><th>Plan</th><th>$/mo</th><th>Limit</th><th>Window</th><th>Code?</th><th>Source</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const key = (e) => `${e.provider} ${e.product} ${e.plan}`;
+
+    fetch("data.json").then((r) => r.json()).then((db) => {
+      document.getElementById("meta").textContent =
+        `${db.snapshot_count} snapshot(s) · ${db.date_range.join(" → ")} · built ${db.generated_at.slice(0,10)}`;
+
+      const dates = db.snapshots.map((s) => s.date);
+      const series = {};
+      for (const snap of db.snapshots) {
+        for (const e of snap.entries) {
+          const k = key(e);
+          (series[k] ||= {})[snap.date] = e.price_usd;
+        }
+      }
+      const datasets = Object.entries(series).map(([k, byDate], i) => ({
+        label: k,
+        data: dates.map((d) => byDate[d] ?? null),
+        spanGaps: true,
+        tension: 0.2,
+        borderColor: `hsl(${(i * 67) % 360} 70% 60%)`,
+      }));
+
+      new Chart(document.getElementById("priceChart"), {
+        type: "line",
+        data: { labels: dates, datasets },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: "#e6edf3" } } },
+          scales: {
+            x: { ticks: { color: "#9aa7b4" }, grid: { color: "#21262d" } },
+            y: { ticks: { color: "#9aa7b4" }, grid: { color: "#21262d" } },
+          },
+        },
+      });
+
+      const latest = db.snapshots[db.snapshots.length - 1];
+      const tb = document.querySelector("#latestTable tbody");
+      for (const e of latest.entries) {
+        const lim = e.limit_value != null
+          ? `${e.limit_value.toLocaleString()} ${e.limit_unit}`
+          : `? ${e.limit_unit}`;
+        const tr = document.createElement("tr");
+        tr.innerHTML =
+          `<td>${e.provider}</td><td>${e.plan}</td><td>$${e.price_usd}</td>` +
+          `<td>${lim}</td><td>${e.window ?? "—"}</td>` +
+          `<td>${e.includes_code ? "✓" : ""}</td>` +
+          `<td><a href="${e.source}" target="_blank" rel="noopener">src</a></td>`;
+        tb.appendChild(tr);
+      }
+    });
+  </script>
+</body>
+</html>
