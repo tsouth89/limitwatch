@@ -232,6 +232,10 @@
     /* Sticky top nav */
     .topnav { position: sticky; top: 0; z-index: 20; background: var(--glass); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
     main > .card { scroll-margin-top: 76px; }
+    .subsec { margin-top: 1.4rem; padding-top: 1.1rem; border-top: 1px solid var(--line); }
+    .subsec:first-of-type { margin-top: .6rem; padding-top: 0; border-top: 0; }
+    #radarSub { margin-top: 1.3rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+    .subh { font-size: 1.02rem; font-weight: 750; color: var(--ink); margin: 0 0 .3rem; }
     .ltable thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted-2); font-weight: 700; padding: .3rem .5rem; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--paper); }
     .ltable thead th.num { text-align: right; }
     .ltable thead th.sortable { cursor: pointer; user-select: none; }
@@ -395,12 +399,9 @@
       <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
       <div class="navlinks" id="navlinks">
         <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">What's new</a>
-        <a href="#radar" data-section="radar" id="navRadar" style="display:none">Radar</a>
         <a href="#limits" data-section="limits">Limits</a>
-        <a href="#value" data-section="value">Value</a>
-        <a href="#crossProvider" data-section="crossProvider">Estimate</a>
-        <a href="#measuredCard" data-section="measuredCard" id="navMeasured" style="display:none">Measured</a>
-        <a href="#usageReports" data-section="usageReports" id="navReports" style="display:none">Reports</a>
+        <a href="#compare" data-section="compare">Compare</a>
+        <a href="#measured" data-section="measured" id="navMeasured" style="display:none">Measured</a>
         <a href="#trends" data-section="trends" id="navTrends" style="display:none">History</a>
         <a href="#changelog" data-section="changelog">Changelog</a>
         <a href="#trust" data-section="trust">Trust</a>
@@ -433,21 +434,11 @@
       </div>
       <div id="eventsBody"></div>
       <div id="highlightsBody"></div>
-    </div>
-
-    <div class="card" id="radar" style="display:none">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Radar</p>
-          <h2>Auto-flagged news <span class="meta" style="font-weight:400">(unverified)</span></h2>
-          <p class="meta">
-            Items the discovery bot pulled from provider feeds and flagged as limit/pricing-relevant.
-            <strong>Machine-flagged, not verified</strong> — confirmed changes get promoted to
-            <a href="#whatsnew">What's new</a> with a sourced quote. <span class="badge announced">auto</span>
-          </p>
-        </div>
+      <div id="radarSub" style="display:none">
+        <h3 class="subh">On the radar <span class="meta" style="font-weight:400">— auto-flagged, unverified</span></h3>
+        <p class="meta">Items the discovery bot flagged as limit/pricing-relevant. Confirmed ones get promoted above with a sourced quote; the rest are leads to verify. <span class="badge announced">auto</span></p>
+        <div id="radarBody"></div>
       </div>
-      <div id="radarBody"></div>
     </div>
 
     <div class="card" id="limits">
@@ -464,7 +455,7 @@
         <div>
           <p class="eyebrow">Current snapshot</p>
           <h2>Latest published limits</h2>
-          <p class="meta">One row per plan, native units as published. Group by provider or by price tier. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished. <a href="#value">Best value per $ -></a></p>
+          <p class="meta">One row per plan, native units as published. Group by provider or by price tier. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished. <a href="#compare">Best value per $ -></a></p>
         </div>
       </div>
       <details class="howto">
@@ -484,29 +475,24 @@
       <div id="latest"></div>
     </div>
 
-    <div class="card" id="value">
+    <div class="card" id="compare">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Hard-cap math</p>
-          <h2>Value per dollar <span class="meta" style="font-weight:400">(theoretical ceiling)</span></h2>
-          <p class="meta">
-            Throughput per $ if you used the whole limit every window. A <strong>ceiling, not typical</strong> use.
-            Compared only within the same unit. We never silently equate a message to a token.
-            Multiplier-only plans (no published absolute) show as relative and can't be valued.
-          </p>
+          <p class="eyebrow">Compare value</p>
+          <h2>Which plan gives more per dollar</h2>
+          <p class="meta">Two lenses: hard same-unit value (no assumptions), and a normalized cross-provider estimate (with adjustable assumptions). We never silently equate a message to a token.</p>
         </div>
       </div>
-      <div id="valueGroups"></div>
-    </div>
 
-    <div class="card" id="crossProvider">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Best cross-provider view</p>
-          <h2>Cross-provider estimate <span class="meta" style="font-weight:400">(tokens / day / $)</span></h2>
-          <p class="meta">This is the most useful comparison, but it has assumptions. Message caps are converted to tokens, dollar credits are converted using a token price, and requests-only plans stay out because a request is not a token.</p>
-        </div>
+      <div class="subsec">
+        <h3 class="subh">Value per $ <span class="meta" style="font-weight:400">— hard caps, same unit only</span></h3>
+        <p class="meta">Throughput per $ if you used the whole limit every window: a <strong>ceiling, not typical</strong> use. Multiplier-only plans (no published absolute) can't be valued here.</p>
+        <div id="valueGroups"></div>
       </div>
+
+      <div class="subsec">
+        <h3 class="subh">Cross-provider estimate <span class="meta" style="font-weight:400">— normalized to tokens / day / $</span></h3>
+        <p class="meta">The closest head-to-head, but it has assumptions: message caps become tokens, dollar credits convert at a token price. Estimated rows are labelled, not passed off as hard facts.</p>
       <div id="crossPanel">
         <div class="assumption-panel">
           <p class="meta">Tune the assumptions below. The ranking updates live, and the table labels estimated rows instead of pretending they are hard facts.</p>
@@ -529,44 +515,36 @@
         </div>
         <p class="meta" id="crossNote"></p>
       </div>
-    </div>
-
-    <div class="card" id="measuredCard" style="display:none">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Real receipts</p>
-          <h2>What plans actually delivered <span class="meta" style="font-weight:400">(real accounts)</span></h2>
-          <p class="meta">
-            Observed consumption from maxed-out accounts, for plans that publish only a dollar credit.
-            This is <strong>not a cap</strong>; it is what a real billing month delivered in tokens.
-            <span class="badge crowdsourced">crowdsourced</span>
-          </p>
-        </div>
       </div>
-      <div id="measuredBody"></div>
     </div>
 
-    <div class="card" id="usageReports" style="display:none">
+    <div class="card" id="measured" style="display:none">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Field reports</p>
-          <h2>Real usage observations <span class="meta" style="font-weight:400">(read off the usage screen)</span></h2>
-          <p class="meta">
-            What real accounts actually hit on chat subscriptions, read straight from the provider's own
-            usage screen (claude.ai, ChatGPT, Claude Code). These caps are <strong>not in any API</strong>,
-            so this is the only way to measure them. Each row is one observed reading, kept verbatim.
-            <span class="badge crowdsourced">crowdsourced</span>
-          </p>
+          <p class="eyebrow">Real measured usage</p>
+          <h2>What plans actually delivered <span class="meta" style="font-weight:400">(observed, not caps)</span></h2>
+          <p class="meta">Real readings, not published numbers: what a subscription let you do before it throttled, and what a maxed account actually consumed. The only way to see caps that no API exposes. <span class="badge crowdsourced">crowdsourced</span></p>
         </div>
         <a class="submit-btn" href="https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml" target="_blank" rel="noopener">Submit a reading →</a>
       </div>
-      <div id="reportsSummary"></div>
-      <details class="rdetails"><summary>All individual readings</summary>
-      <div class="table-scroll"><table id="reportsTable">
-        <thead><tr><th>Captured</th><th>Plan</th><th>Window</th><th class="num">Observed</th><th class="num">API value</th><th>Note</th></tr></thead>
-        <tbody id="reportsBody"></tbody>
-      </table></div>
-      </details>
+
+      <div id="reportsSub" style="display:none">
+        <h3 class="subh">Subscription cap readings <span class="meta" style="font-weight:400">— chat &amp; Claude Code</span></h3>
+        <p class="meta">Read straight off the provider's usage screen (claude.ai, ChatGPT, Claude Code). These 5-hour / weekly caps are <strong>not in any API</strong>. Each row is one observed reading, kept verbatim.</p>
+        <div id="reportsSummary"></div>
+        <details class="rdetails"><summary>All individual readings</summary>
+        <div class="table-scroll"><table id="reportsTable">
+          <thead><tr><th>Captured</th><th>Plan</th><th>Window</th><th class="num">Observed</th><th class="num">API value</th><th>Note</th></tr></thead>
+          <tbody id="reportsBody"></tbody>
+        </table></div>
+        </details>
+      </div>
+
+      <div id="measuredSub" style="display:none">
+        <h3 class="subh">Credit-plan token receipts <span class="meta" style="font-weight:400">— dollar-credit plans</span></h3>
+        <p class="meta">For plans that publish only a dollar credit (Cursor, Replit): what a real maxed-out billing month actually delivered in tokens. Not a cap, a receipt.</p>
+        <div id="measuredBody"></div>
+      </div>
     </div>
 
     <div class="card" id="trends" style="display:none">
@@ -967,7 +945,7 @@
         if (!tiles.length) return;
         document.getElementById("bottomLineBody").innerHTML =
           `<div class="bl-grid">` + tiles.map(([k, v]) => `<div class="bl-tile"><div class="bl-k">${k}</div><div class="bl-v">${v}</div></div>`).join("") + `</div>` +
-          `<p class="bl-note">No single number compares plans across providers — they sell different units (messages, tokens, requests, dollar credits). The closest head-to-head is the <a href="#crossProvider">cross-provider estimate</a>, which normalizes everything to tokens/day behind an adjustable knob. Hard same-unit value is in <a href="#value">Value per $</a>.</p>`;
+          `<p class="bl-note">No single number compares plans across providers — they sell different units (messages, tokens, requests, dollar credits). The closest head-to-head is the <a href="#compare">cross-provider estimate</a>, which normalizes everything to tokens/day behind an adjustable knob. Hard same-unit value is in <a href="#compare">Value per $</a>.</p>`;
         document.getElementById("bottomLine").style.display = "";
       })();
 
@@ -984,7 +962,7 @@
       const list = (set) => [...set].map(provName).join(", ");
       const phrases = [];
       if (buckets.multiplier.size) phrases.push(`${list(buckets.multiplier)} publish only a multiplier (e.g. "5× Pro") with no absolute number`);
-      if (buckets.credit.size) phrases.push(`${list(buckets.credit)} sell a dollar credit, not a throughput cap — see <a href="#measuredCard">Measured usage</a>`);
+      if (buckets.credit.size) phrases.push(`${list(buckets.credit)} sell a dollar credit, not a throughput cap — see <a href="#measured">Measured usage</a>`);
       if (buckets.unlisted.size) phrases.push(`${list(buckets.unlisted)} list some plans as unlimited or unpublished`);
       if (phrases.length) {
         const ex = document.createElement("p");
@@ -1043,7 +1021,7 @@
         crossBody.innerHTML =
           ranked.map((x) => row(x, x.kind)).join("") +
           (mr.length ? `<tr><td colspan="3" class="crosssep">↓ Real measured usage — different basis (what one account actually consumed, not a ceiling)</td></tr>` + mr.map((x) => row(x, "measured")).join("") : "");
-        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Future-effective announcements are excluded until their effective date. Anthropic chat figures are official per-window estimates (<em>est</em>). Rows below the divider are real measured receipts (realized full-month consumption from one account) — see <a href="#measuredCard">Real receipts</a> for the breakdown. Request plans (e.g. Copilot premium requests) are treated as one interaction each through the same per-message knob (<em>request · est</em>); a premium request in agent mode can burn more than a chat message, so treat it as a rough analog. Multiplier-only plans still can't be converted.`;
+        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Future-effective announcements are excluded until their effective date. Anthropic chat figures are official per-window estimates (<em>est</em>). Rows below the divider are real measured receipts (realized full-month consumption from one account) — see <a href="#measured">Real receipts</a> for the breakdown. Request plans (e.g. Copilot premium requests) are treated as one interaction each through the same per-message knob (<em>request · est</em>); a premium request in agent mode can burn more than a chat message, so treat it as a rough analog. Multiplier-only plans still can't be converted.`;
       }
       tpmEl.addEventListener("input", renderCross);
       cpmEl.addEventListener("input", renderCross);
@@ -1053,7 +1031,8 @@
       const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : fmt(n);
       const measured = latest.entries.filter((e) => e.measured);
       if (measured.length) {
-        document.getElementById("measuredCard").style.display = "";
+        document.getElementById("measured").style.display = "";
+        document.getElementById("measuredSub").style.display = "";
         document.getElementById("navMeasured").style.display = "";
         const mb = document.getElementById("measuredBody");
         mb.innerHTML = `<div class="measured-grid">` + measured.map((e) => {
@@ -1168,8 +1147,9 @@
             `</tr>`;
         }).join("");
         document.getElementById("reportsBody").innerHTML = rows;
-        document.getElementById("usageReports").style.display = "";
-        document.getElementById("navReports").style.display = "";
+        document.getElementById("measured").style.display = "";
+        document.getElementById("reportsSub").style.display = "";
+        document.getElementById("navMeasured").style.display = "";
       })();
 
       const cl = document.getElementById("changelogList");
@@ -1359,8 +1339,10 @@
             <div class="radtitle"><a href="${n.link}" target="_blank" rel="noopener">${esc3(n.title)}</a></div>
             ${n.why ? `<div class="radwhy meta">${esc3(n.why)}</div>` : ""}
           </div>`).join("");
-        document.getElementById("radar").style.display = "";
-        document.getElementById("navRadar").style.display = "";
+        // Radar now lives inside the What's new card as a subsection.
+        document.getElementById("radarSub").style.display = "";
+        document.getElementById("whatsnew").style.display = "";
+        document.getElementById("navWhatsnew").style.display = "";
       })();
 
       // Highlight the nav link for whichever section is centered in the viewport.
@@ -1368,7 +1350,7 @@
       // pinned above as a persistent summary; the nav switches the rest. ----
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const tabOrder = ["whatsnew", "radar", "limits", "value", "crossProvider", "measuredCard", "usageReports", "trends", "changelog", "trust"];
+      const tabOrder = ["whatsnew", "limits", "compare", "measured", "trends", "changelog", "trust"];
       const tabs = tabOrder
         .map((id) => ({ id, el: document.getElementById(id), nav: navMap[id] }))
         .filter((t) => t.el && t.nav && t.nav.style.display !== "none"); // only sections that have data
@@ -1381,6 +1363,14 @@
         history.replaceState(null, "", "#" + id);
       };
       tabs.forEach((t) => t.nav.addEventListener("click", (e) => { e.preventDefault(); showTab(t.id, true); }));
+      const tabSet = new Set(tabs.map((t) => t.id));
+      // Any in-content link to a tab section (e.g. the Bottom Line's "cross-provider estimate") should
+      // switch tabs, not just set the hash on a hidden section.
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest('a[href^="#"]'); if (!a) return;
+        const id = a.getAttribute("href").slice(1);
+        if (tabSet.has(id)) { e.preventDefault(); showTab(id, true); }
+      });
       const initial = tabs.find((t) => t.id === location.hash.slice(1)) || tabs.find((t) => t.id === "limits") || tabs[0];
       if (initial) showTab(initial.id, false);
     }).catch((err) => {
