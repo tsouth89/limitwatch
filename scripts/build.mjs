@@ -51,37 +51,46 @@ function flatten(snap) {
 }
 
 // A snapshot is authoritative for a set of providers: an explicit `covers` list (used by partial
-// historical backfills) or, by default, every provider it contains. Cross-snapshot diffs only
-// consider providers covered by BOTH sides, so a partial snapshot never fabricates "added"/"removed"
-// rows for providers it simply didn't record. Keys are `provider|...`, so the provider is segment 0.
+// historical backfills) or, by default, every provider it contains. Keys are `provider|...`.
 const coverageOf = (snap) => new Set(snap.covers ?? snap.entries.map((e) => e.provider));
+const providerOf = (key) => key.split("|")[0];
 
-// Diff consecutive snapshots → changelog of every value/price change.
+// Derive the changelog PER PROVIDER: for each provider, diff consecutive snapshots that COVER it
+// (skipping snapshots that don't record it). This lets partial historical snapshots interleave by
+// date — e.g. a Cursor-only Feb snapshot between two Google snapshots — and still attribute every
+// change to the correct pair of dates, without ever fabricating drift for an un-recorded provider.
+const flatCache = new Map();
+const flatOf = (snap) => { if (!flatCache.has(snap)) flatCache.set(snap, flatten(snap)); return flatCache.get(snap); };
+const allProviders = new Set();
+for (const s of snapshots) for (const p of coverageOf(s)) allProviders.add(p);
+
 const changes = [];
-for (let i = 1; i < snapshots.length; i++) {
-  const prev = flatten(snapshots[i - 1]);
-  const cur = flatten(snapshots[i]);
-  const date = snapshots[i].date;
-  const prevCov = coverageOf(snapshots[i - 1]);
-  const curCov = coverageOf(snapshots[i]);
-  const inScope = (key) => { const p = key.split("|")[0]; return prevCov.has(p) && curCov.has(p); };
+for (const provider of allProviders) {
+  const seq = snapshots.filter((s) => coverageOf(s).has(provider));
+  for (let i = 1; i < seq.length; i++) {
+    const prev = flatOf(seq[i - 1]);
+    const cur = flatOf(seq[i]);
+    const date = seq[i].date;
+    const mine = (k) => providerOf(k) === provider;
 
-  for (const [k, now] of cur.limits) {
-    if (!inScope(k)) continue;
-    const was = prev.limits.get(k);
-    if (!was) changes.push({ date, kind: "limit_added", key: k, to: now.value, unit: now.unit, source: now.source });
-    else if (was.value !== now.value)
-      changes.push({ date, kind: "limit_changed", key: k, from: was.value, to: now.value, unit: now.unit, source: now.source });
-  }
-  for (const [k] of prev.limits) if (inScope(k) && !cur.limits.has(k)) changes.push({ date, kind: "limit_removed", key: k });
+    for (const [k, now] of cur.limits) {
+      if (!mine(k)) continue;
+      const was = prev.limits.get(k);
+      if (!was) changes.push({ date, kind: "limit_added", key: k, to: now.value, unit: now.unit, source: now.source });
+      else if (was.value !== now.value)
+        changes.push({ date, kind: "limit_changed", key: k, from: was.value, to: now.value, unit: now.unit, source: now.source });
+    }
+    for (const [k] of prev.limits) if (mine(k) && !cur.limits.has(k)) changes.push({ date, kind: "limit_removed", key: k });
 
-  for (const [k, now] of cur.prices) {
-    if (!inScope(k)) continue;
-    const was = prev.prices.get(k);
-    if (was && was.price !== now.price)
-      changes.push({ date, kind: "price_changed", key: k, from: was.price, to: now.price, source: now.source });
+    for (const [k, now] of cur.prices) {
+      if (!mine(k)) continue;
+      const was = prev.prices.get(k);
+      if (was && was.price !== now.price)
+        changes.push({ date, kind: "price_changed", key: k, from: was.price, to: now.price, source: now.source });
+    }
   }
 }
+changes.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 
 const out = {
   generated_at: new Date().toISOString(),

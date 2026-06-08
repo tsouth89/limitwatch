@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-08T04:49:06.684Z",
-  "snapshot_count": 2,
+  "generated_at": "2026-06-08T05:11:22.740Z",
+  "snapshot_count": 4,
   "date_range": [
     "2026-01-15",
     "2026-06-07"
@@ -14,14 +14,6 @@
       "from": 249.99,
       "to": 199.99,
       "source": "https://gemini.google/subscriptions/"
-    },
-    {
-      "date": "2026-06-07",
-      "kind": "limit_added",
-      "key": "Cursor|Cursor|Pro+||usd_credit|month|",
-      "to": 70,
-      "unit": "usd_credit",
-      "source": "https://cursor.com/docs/account/pricing"
     },
     {
       "date": "2026-06-07",
@@ -51,11 +43,28 @@
     },
     {
       "date": "2026-06-07",
-      "kind": "limit_added",
+      "kind": "limit_changed",
       "key": "Google|Gemini|AI Plus||multiplier|5h|",
+      "from": null,
       "to": 2,
       "unit": "multiplier",
       "source": "https://gemini.google/subscriptions/"
+    },
+    {
+      "date": "2026-04-01",
+      "kind": "limit_added",
+      "key": "Google|Gemini|AI Plus||multiplier|5h|",
+      "to": null,
+      "unit": "multiplier",
+      "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/"
+    },
+    {
+      "date": "2026-02-25",
+      "kind": "limit_added",
+      "key": "Cursor|Cursor|Pro+||usd_credit|month|",
+      "to": 70,
+      "unit": "usd_credit",
+      "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing"
     }
   ],
   "snapshots": [
@@ -163,6 +172,170 @@
           "as_of": "2026-01-14",
           "verified_on": "2026-01-14",
           "notes": "Wayback capture 2026-01-14. Included API agent credit unchanged from June. Subscription price carried at the current $200/mo (the docs pricing page states included usage, not the subscription price)."
+        }
+      ]
+    },
+    {
+      "schema": 3,
+      "date": "2026-02-25",
+      "covers": [
+        "Cursor"
+      ],
+      "note": "Partial historical backfill (Wayback). Records ONLY Cursor for this date — the diff is scoped to Cursor so no other provider reads as added/removed. This capture is the first archive that shows the Pro+ ('Pro Plus') tier, which did not exist in the January capture, so it dates Cursor's Pro+ launch to ~Feb 2026. The cursor.com docs pricing page stopped being archived after this date.",
+      "entries": [
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Pro",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Pro includes $20 of API agent usage + generous Auto and Composer",
+          "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
+          "as_of": "2026-02-25",
+          "verified_on": "2026-02-25",
+          "notes": "Wayback capture 2026-02-25. Included API agent credit unchanged from January and June."
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Pro+",
+          "price_usd": 60,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 70,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Pro Plus includes $70 of API agent usage + generous Auto and Composer",
+          "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
+          "as_of": "2026-02-25",
+          "verified_on": "2026-02-25",
+          "notes": "Wayback capture 2026-02-25 — first archive showing the Pro+ ('Pro Plus') tier; it is absent from the Jan 14 capture, so Pro+ launched between mid-Jan and late-Feb 2026. The docs page states included usage ($70 credit), not the subscription price; the $60/mo subscription price is carried from the current pricing."
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Ultra",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 400,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Ultra includes $400 of API agent usage + generous Auto and Composer",
+          "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
+          "as_of": "2026-02-25",
+          "verified_on": "2026-02-25",
+          "notes": "Wayback capture 2026-02-25. Included API agent credit unchanged from January and June; subscription price carried at $200/mo."
+        }
+      ]
+    },
+    {
+      "schema": 3,
+      "date": "2026-04-01",
+      "covers": [
+        "Google"
+      ],
+      "note": "Partial historical backfill (Wayback). Records ONLY Google for this date — diff is scoped to Google. This capture is the first archive that shows the Google AI Plus tier ($7.99/mo), absent from the January capture, so it dates AI Plus's launch to ~Q1 2026. The flagship AI Ultra is still $249.99 here and there is still no 5x Ultra tier and no 'Nx higher usage' multiplier framing (both appear only in the June capture, after the May 2026 limit backlash).",
+      "entries": [
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Plus",
+          "price_usd": 7.99,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Free",
+              "kind": "primary",
+              "basis": "unpublished"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Get more access to new and powerful features to boost your productivity and creativity. $7.99 / month",
+          "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/",
+          "as_of": "2026-04-01",
+          "verified_on": "2026-04-01",
+          "notes": "Wayback capture 2026-04-01 — first archive showing the AI Plus tier; absent from the Jan 15 capture. The page sold it by feature access, not an 'Nx higher usage' multiplier, so the usage limit is recorded as unpublished."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Pro",
+          "price_usd": 19.99,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Free",
+              "kind": "primary",
+              "basis": "unpublished"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Get higher access to new and powerful features to boost your productivity and creativity. $19.99 / month",
+          "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/",
+          "as_of": "2026-04-01",
+          "verified_on": "2026-04-01",
+          "notes": "Wayback capture 2026-04-01. Price unchanged from January; usage still sold by feature access (no multiplier published)."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Ultra (20x)",
+          "price_usd": 249.99,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "AI Pro",
+              "kind": "primary",
+              "basis": "unpublished"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Unlock the highest level of access to the best of Google AI and exclusive features. $249.99 / month",
+          "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/",
+          "as_of": "2026-04-01",
+          "verified_on": "2026-04-01",
+          "notes": "Wayback capture 2026-04-01. Flagship still $249.99/mo with no 5x Ultra tier yet; the price drop to $199.99 and the 5x tier appear only in the June capture. Tracked under the (20x) flagship label for price-lineage continuity."
         }
       ]
     },

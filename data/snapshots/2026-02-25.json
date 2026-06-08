@@ -1,0 +1,77 @@
+{
+  "schema": 3,
+  "date": "2026-02-25",
+  "covers": ["Cursor"],
+  "note": "Partial historical backfill (Wayback). Records ONLY Cursor for this date — the diff is scoped to Cursor so no other provider reads as added/removed. This capture is the first archive that shows the Pro+ ('Pro Plus') tier, which did not exist in the January capture, so it dates Cursor's Pro+ launch to ~Feb 2026. The cursor.com docs pricing page stopped being archived after this date.",
+  "entries": [
+    {
+      "provider": "Cursor",
+      "product": "Cursor",
+      "plan": "Pro",
+      "price_usd": 20,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 20,
+          "unit": "usd_credit",
+          "window": "month",
+          "model": null,
+          "kind": "primary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Pro includes $20 of API agent usage + generous Auto and Composer",
+      "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
+      "as_of": "2026-02-25",
+      "verified_on": "2026-02-25",
+      "notes": "Wayback capture 2026-02-25. Included API agent credit unchanged from January and June."
+    },
+    {
+      "provider": "Cursor",
+      "product": "Cursor",
+      "plan": "Pro+",
+      "price_usd": 60,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 70,
+          "unit": "usd_credit",
+          "window": "month",
+          "model": null,
+          "kind": "primary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Pro Plus includes $70 of API agent usage + generous Auto and Composer",
+      "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
+      "as_of": "2026-02-25",
+      "verified_on": "2026-02-25",
+      "notes": "Wayback capture 2026-02-25 — first archive showing the Pro+ ('Pro Plus') tier; it is absent from the Jan 14 capture, so Pro+ launched between mid-Jan and late-Feb 2026. The docs page states included usage ($70 credit), not the subscription price; the $60/mo subscription price is carried from the current pricing."
+    },
+    {
+      "provider": "Cursor",
+      "product": "Cursor",
+      "plan": "Ultra",
+      "price_usd": 200,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 400,
+          "unit": "usd_credit",
+          "window": "month",
+          "model": null,
+          "kind": "primary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Ultra includes $400 of API agent usage + generous Auto and Composer",
+      "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
+      "as_of": "2026-02-25",
+      "verified_on": "2026-02-25",
+      "notes": "Wayback capture 2026-02-25. Included API agent credit unchanged from January and June; subscription price carried at $200/mo."
+    }
+  ]
+}

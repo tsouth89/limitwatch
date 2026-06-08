@@ -1,0 +1,83 @@
+{
+  "schema": 3,
+  "date": "2026-04-01",
+  "covers": ["Google"],
+  "note": "Partial historical backfill (Wayback). Records ONLY Google for this date — diff is scoped to Google. This capture is the first archive that shows the Google AI Plus tier ($7.99/mo), absent from the January capture, so it dates AI Plus's launch to ~Q1 2026. The flagship AI Ultra is still $249.99 here and there is still no 5x Ultra tier and no 'Nx higher usage' multiplier framing (both appear only in the June capture, after the May 2026 limit backlash).",
+  "entries": [
+    {
+      "provider": "Google",
+      "product": "Gemini",
+      "plan": "AI Plus",
+      "price_usd": 7.99,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": null,
+          "unit": "multiplier",
+          "window": "5h",
+          "model": null,
+          "baseline": "Free",
+          "kind": "primary",
+          "basis": "unpublished"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Get more access to new and powerful features to boost your productivity and creativity. $7.99 / month",
+      "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/",
+      "as_of": "2026-04-01",
+      "verified_on": "2026-04-01",
+      "notes": "Wayback capture 2026-04-01 — first archive showing the AI Plus tier; absent from the Jan 15 capture. The page sold it by feature access, not an 'Nx higher usage' multiplier, so the usage limit is recorded as unpublished."
+    },
+    {
+      "provider": "Google",
+      "product": "Gemini",
+      "plan": "AI Pro",
+      "price_usd": 19.99,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": null,
+          "unit": "multiplier",
+          "window": "5h",
+          "model": null,
+          "baseline": "Free",
+          "kind": "primary",
+          "basis": "unpublished"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Get higher access to new and powerful features to boost your productivity and creativity. $19.99 / month",
+      "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/",
+      "as_of": "2026-04-01",
+      "verified_on": "2026-04-01",
+      "notes": "Wayback capture 2026-04-01. Price unchanged from January; usage still sold by feature access (no multiplier published)."
+    },
+    {
+      "provider": "Google",
+      "product": "Gemini",
+      "plan": "AI Ultra (20x)",
+      "price_usd": 249.99,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": null,
+          "unit": "multiplier",
+          "window": "5h",
+          "model": null,
+          "baseline": "AI Pro",
+          "kind": "primary",
+          "basis": "unpublished"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Unlock the highest level of access to the best of Google AI and exclusive features. $249.99 / month",
+      "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/",
+      "as_of": "2026-04-01",
+      "verified_on": "2026-04-01",
+      "notes": "Wayback capture 2026-04-01. Flagship still $249.99/mo with no 5x Ultra tier yet; the price drop to $199.99 and the 5x tier appear only in the June capture. Tracked under the (20x) flagship label for price-lineage continuity."
+    }
+  ]
+}
