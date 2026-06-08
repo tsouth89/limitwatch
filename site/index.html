@@ -111,6 +111,11 @@
     const fmt = (n) => n == null ? "?" : Number(n).toLocaleString();
     const unitLabel = (l) => l.unit === "multiplier" ? `${fmt(l.value)}× Pro` : `${fmt(l.value)} ${l.unit}`;
     const keyParts = (k) => k.split("|"); // provider|product|plan|unit|window|model
+    // Meta suffix that distinguishes rows from the same plan: model and/or window.
+    const descriptor = (x) => {
+      const parts = [x.model, x.window].filter(Boolean);
+      return parts.length ? ` <span class="meta">(${parts.join(" · ")})</span>` : "";
+    };
 
     fetch("data.json").then((r) => r.json()).then((db) => {
       document.getElementById("meta").textContent =
@@ -145,7 +150,7 @@
         for (const l of e.limits) {
           if (l.value == null || l.unit === "multiplier" || !(l.window in winPerDay)) continue;
           const perDay = l.value * winPerDay[l.window];
-          rows.push({ name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model });
+          rows.push({ name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model, window: l.window });
         }
       }
 
@@ -154,7 +159,7 @@
         const r = rows.filter((x) => x.unit === unit).sort((a, b) => b.perDollar - a.perDollar);
         if (!r.length) continue;
         const rowsHtml = r.map((x) =>
-          `<tr><td>${x.name}${x.model ? ` <span class="meta">(${x.model})</span>` : ""}</td>` +
+          `<tr><td>${x.name}${descriptor(x)}</td>` +
           `<td class="num">$${x.price}</td><td class="num">${fmt(Math.round(x.perDay))}</td>` +
           `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
         const h = document.createElement("div");
@@ -173,11 +178,11 @@
         tpmVal.textContent = tpm;
         const conv = rows
           .filter((x) => x.unit === "messages" || x.unit === "tokens")
-          .map((x) => ({ name: x.name, model: x.model, price: x.price, unit: x.unit, tokPerDay: x.unit === "tokens" ? x.perDay : x.perDay * tpm }))
+          .map((x) => ({ name: x.name, model: x.model, window: x.window, price: x.price, unit: x.unit, tokPerDay: x.unit === "tokens" ? x.perDay : x.perDay * tpm }))
           .map((x) => ({ ...x, perDollar: x.tokPerDay / x.price }))
           .sort((a, b) => b.perDollar - a.perDollar);
         crossBody.innerHTML = conv.map((x) =>
-          `<tr><td>${x.name}${x.model ? ` <span class="meta">(${x.model})</span>` : ""} <span class="meta">(${x.unit})</span></td><td class="num">$${x.price}</td>` +
+          `<tr><td>${x.name}${descriptor(x)} <span class="meta">(${x.unit})</span></td><td class="num">$${x.price}</td>` +
           `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
         crossNote.textContent = `Estimate only. Token plans use published tokens; message plans converted at ${tpm} tokens/message. Requests-based plans (e.g. Perplexity) and multiplier-only plans are excluded, not honestly comparable.`;
       }
