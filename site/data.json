@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T14:18:46.579Z",
+  "generated_at": "2026-06-08T20:07:02.592Z",
   "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
@@ -306,6 +306,30 @@
       "api_equiv_basis": "Anthropic API list price, Opus 4.8 (in $5 / out $25 / cw-1h $10 / cr $0.50 per 1M). Value comparison, not the cap mechanic.",
       "reporter": "self",
       "evidence": "scripts/cc-usage.mjs --since <now-2h> (only ai-limit-tracker present, confirming a single in-window session). In-app panel: 5-hour 47% resets 3h."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "5h",
+      "captured_at": "2026-06-08T14:19:19Z",
+      "metric": "percent",
+      "observed": 100,
+      "account": "personal",
+      "limit_hit": true,
+      "model": "Claude Opus 4.8",
+      "value_basis": "floor",
+      "note": "Personal Pro account, 5-hour limit MAXED OUT (cap hit, user-reported). Cleanest 5h point yet: one continuous Claude Code session, single project (ai-limit-tracker), all Opus 4.8 — no cross-session or cross-account ambiguity. A contiguous burst of 450 assistant turns over ~3.5h (10:49-14:19 UTC) filled the window. Measured Claude Code burn to the cap-hit was ~$69 API-equivalent at list rates. Because the cap was actually HIT (cumulative = 100%), this $69 is a hard LOWER BOUND on the full 5h ceiling: it counts Claude Code transcript burn only, so any claude.ai chat in the window would sit on top. So the 5h cap is >=~$69 API-equiv. This corroborates the earlier partial reading (75% -> ~$71/5h): the 5h ceiling clusters around ~$69-71 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "usage_tokens": {
+        "input": 36265,
+        "output": 293182,
+        "cache_write": 2551429,
+        "cache_read": 71881622
+      },
+      "api_equiv_usd": 68.97,
+      "api_equiv_basis": "Anthropic API list price, Opus 4.8 (in $5 / out $25 / cw-1h $10 / cr $0.50 per 1M). Value comparison, not the cap mechanic.",
+      "reporter": "self",
+      "evidence": "scripts/cc-usage.mjs aggregation of the personal ai-limit-tracker transcript for the maxed window (span 2026-06-08T10:49:17Z..14:19:19Z, 450 turns, deduped by message.id). In-app 5-hour indicator hit 100% (throttled)."
     }
   ],
   "snapshots": [
