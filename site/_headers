@@ -1,7 +1,22 @@
-# Cloudflare Pages headers
-# Data refreshes weekly; let it cache short so updates show fast, edge still absorbs load.
+# Cloudflare Pages response headers.
+# The page is a daily-changing dataset, so the HTML + data must always revalidate — otherwise a
+# fresh deploy keeps showing a stale copy on refresh (no-cache = "store but revalidate before use",
+# i.e. a conditional request that returns 304 when nothing changed, so it stays cheap).
+
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
 /data.json
-  Cache-Control: public, max-age=300, s-maxage=300
+  Cache-Control: no-cache
+
+# Rarely-changing assets can sit in cache for a day.
+/favicon.svg
+  Cache-Control: public, max-age=86400
+/og.png
+  Cache-Control: public, max-age=86400
+
+# Security headers for everything.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

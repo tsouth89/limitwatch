@@ -480,7 +480,9 @@
       addEventListener("scroll", () => { if (!pinned) hide(); }, true);
     })();
 
-    fetch("data.json").then((r) => r.json()).then((db) => {
+    // cache: "no-cache" forces a conditional revalidation (304 when unchanged), so a fresh build's
+    // data shows on the next load instead of a stale copy. Pairs with site/_headers below.
+    fetch("data.json", { cache: "no-cache" }).then((r) => r.json()).then((db) => {
       const latest = db.snapshots.at(-1);
       const todayIso = new Date().toISOString().slice(0, 10);
       const isFutureDate = (d) => d && d > todayIso;
