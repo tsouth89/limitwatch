@@ -496,7 +496,7 @@
         </div>
       </div>
       <div class="table-scroll"><table id="reportsTable">
-        <thead><tr><th>Captured</th><th>Plan</th><th>Window</th><th class="num">Observed</th><th>Note</th></tr></thead>
+        <thead><tr><th>Captured</th><th>Plan</th><th>Window</th><th class="num">Observed</th><th class="num">API value</th><th>Note</th></tr></thead>
         <tbody id="reportsBody"></tbody>
       </table></div>
     </div>
@@ -955,6 +955,18 @@
           r.metric === "tokens" ? (r.observed >= 1e6 ? `${(r.observed / 1e6).toFixed(1)}M tokens` : `${fmt(r.observed)} tokens`) :
           `${fmt(r.observed)} ${r.metric}`;
         const esc2 = (s) => (s ?? "").replace(/"/g, "&quot;");
+        // API-equivalent value: what the session's tokens would cost at the model's API rate. When
+        // the reading is a % of a window, extrapolate to the full-window value (the moat number).
+        const apiVal = (r) => {
+          if (r.api_equiv_usd == null) return `<span class="meta">—</span>`;
+          const tip = r.api_equiv_basis ? ` data-tip="${esc2(r.api_equiv_basis)}"` : "";
+          const base = `<span class="q"${tip}>$${fmt(r.api_equiv_usd)}</span>`;
+          if (r.metric === "percent" && r.observed) {
+            const full = Math.round(r.api_equiv_usd / (r.observed / 100));
+            return `${base} <span class="meta">→ ~$${fmt(full)}/window</span>`;
+          }
+          return base;
+        };
         const rows = [...reports].sort((a, b) => (a.captured_at < b.captured_at ? 1 : -1)).map((r) => {
           const hit = r.limit_hit ? ` <span class="badge warning">cap hit</span>` : "";
           const reset = r.reset_at ? ` <span class="meta">· resets ${fmtTs(r.reset_at)}</span>` : "";
@@ -965,6 +977,7 @@
             `<td>${provMark(r.provider)}<strong>${r.plan}</strong> <span class="meta">· ${r.surface}</span>${model}</td>` +
             `<td class="meta">${r.window}${reset}</td>` +
             `<td class="num">${obs(r)}${hit}</td>` +
+            `<td class="num">${apiVal(r)}</td>` +
             `<td class="meta">${r.note ?? ""}${ev}</td>` +
             `</tr>`;
         }).join("");
