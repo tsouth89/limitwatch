@@ -498,8 +498,8 @@
       "measured": {
         "confidence": "crowdsourced",
         "source": "Cursor dashboard, account-owner screenshot",
-        "period": "May 28 - Jun 28, 2026",
-        "as_of": "2026-06-28",
+        "period": "Apr 28 - May 28, 2026",
+        "as_of": "2026-05-28",
         "realized_tokens_month": 294100000,
         "api_pool_usd_stated": 20,
         "api_pool_usd_observed": 33,
@@ -543,8 +543,8 @@
       "measured": {
         "confidence": "crowdsourced",
         "source": "Cursor dashboard, account-owner screenshots (2 billing months)",
-        "period": "May 30 - Jun 30, 2026 (also May 26 - Jun 26)",
-        "as_of": "2026-06-30",
+        "period": "Apr 30 - May 30, 2026 (also Apr 26 - May 26)",
+        "as_of": "2026-05-30",
         "realized_tokens_month": 840800000,
         "realized_tokens_month_range": [
           275800000,
