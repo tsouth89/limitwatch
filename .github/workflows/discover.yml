@@ -1,0 +1,59 @@
+name: news-discovery
+
+# Polls provider news/changelog feeds (data/feeds.json) for NEW announcements and opens an issue
+# when something appears — and, if the ANTHROPIC_API_KEY secret is set, filters to just the
+# limit/pricing-relevant items and drafts events.json stubs. Runs in the cloud, not on a home PC.
+# It proposes only; a human reviews the issue and edits data/events.json. Complements
+# weekly-source-watch (which diffs known pricing pages rather than discovering new posts).
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Daily 12:23 UTC (off the hour to dodge scheduler congestion).
+    - cron: "23 12 * * *"
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Discover new provider news
+        env:
+          # Optional: add the repo secret to enable relevance filtering + event drafting.
+          # Without it the job still lists new items for manual triage.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/discover.mjs
+
+      - name: Open issue if new items found
+        if: hashFiles('data/_discover-summary.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "News discovery: new provider item(s) ($(date -u +%Y-%m-%d))" \
+            --body-file data/_discover-summary.md \
+            --label "discovery" || \
+          gh issue create \
+            --title "News discovery: new provider item(s) ($(date -u +%Y-%m-%d))" \
+            --body-file data/_discover-summary.md
+
+      - name: Commit advanced discovery state
+        run: |
+          rm -f data/_discover-summary.md
+          if ! git diff --quiet -- data/discover-state.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/discover-state.json
+            git commit -m "chore: advance discovery state [skip ci]"
+            git push
+          else
+            echo "No discovery state change to commit."
+          fi

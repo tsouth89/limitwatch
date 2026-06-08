@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "watch": "node scripts/fetch.mjs",
+    "discover": "node scripts/discover.mjs",
     "ratelimits": "node scripts/fetch-ratelimits.mjs",
     "usage": "node scripts/cc-usage.mjs",
     "burn-log": "node scripts/burn-log.mjs"

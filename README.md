@@ -83,6 +83,24 @@ snapshots — human stays in the loop. Use `--http-only` to skip the browser sou
 - **Full coverage, local:** `scripts/watch-and-report.ps1` (scheduled task) runs all sources
   incl. the headed-browser OpenAI pages.
 
+## Discover new announcements
+
+`npm run watch` only diffs pages you already track, so it can't catch a *new* announcement (e.g.
+"Copilot moves to usage-based billing"). `npm run discover` (`scripts/discover.mjs`) polls the
+provider news/changelog **feeds** in `data/feeds.json` (only verified, working RSS/Atom feeds; gaps
+are recorded in `no_feed`) and reports items it hasn't seen before. State lives in
+`data/discover-state.json`; the first run seeds a silent baseline.
+
+- **Without an API key:** lists the new items for manual triage.
+- **With `ANTHROPIC_API_KEY`:** one cheap batched call filters to just the items that change a
+  subscription limit / quota / price, and drafts an `events.json` stub for each (verify the quote
+  against the source before merging — it never auto-publishes).
+
+**In CI, off your PC:** `.github/workflows/discover.yml` runs this daily and opens an issue when
+something new appears. Add the `ANTHROPIC_API_KEY` repo secret to turn on relevance filtering;
+without it the issue still lists raw items. Feeds are plain HTTP, so no headed browser is needed —
+the Cloudflare-protected pages stay on the diff-based `watch` path.
+
 ## Capture measured usage (subscription caps)
 
 The 5-hour and weekly subscription caps (Claude.ai/Claude Code, ChatGPT) are **not exposed by any
