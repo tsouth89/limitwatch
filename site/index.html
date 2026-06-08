@@ -57,22 +57,92 @@
     table.ltable { table-layout: fixed; }
     .star { color: #e3b341; cursor: help; }
     .pname { color: #9aa7b4; font-weight: 400; }
+
+    html { scroll-behavior: smooth; }
+    tbody tr { transition: background .12s ease; }
+    tbody tr:hover td { background: #1c2330; }
+
+    /* Sticky top nav */
+    .topnav { position: sticky; top: 0; z-index: 20; background: rgba(13,17,23,.85); backdrop-filter: blur(10px); border-bottom: 1px solid #21262d; }
+    .topnav .inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; padding: .55rem 1.5rem; }
+    .brand { display: flex; align-items: center; gap: .5rem; font-weight: 700; font-size: 1.02rem; letter-spacing: -.01em; color: #e6edf3; text-decoration: none; }
+    .brand img { width: 22px; height: 22px; display: block; }
+    .navlinks { margin-left: auto; display: flex; gap: .15rem; flex-wrap: wrap; }
+    .navlinks a { color: #9aa7b4; text-decoration: none; font-size: 13px; padding: .3rem .6rem; border-radius: 6px; transition: color .12s, background .12s; }
+    .navlinks a:hover { color: #e6edf3; background: #161b22; }
+    .navlinks a.active { color: #58a6ff; background: rgba(31,111,235,.12); }
+
+    /* Hero */
+    header.hero { padding: 2.2rem 1.5rem 1.2rem; }
+    .hero h1 { font-size: 2rem; margin: 0 0 .4rem; letter-spacing: -.02em; }
+    .hero .tag { color: #9aa7b4; font-size: 1.05rem; line-height: 1.45; margin: 0 0 1.2rem; max-width: 62ch; }
+    .stats { display: flex; flex-wrap: wrap; gap: .6rem; }
+    .stat { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: .5rem .85rem; min-width: 90px; }
+    .stat .n { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .stat .l { font-size: 11px; color: #6e7681; text-transform: uppercase; letter-spacing: .05em; margin-top: .15rem; }
+    .key { display: flex; flex-wrap: wrap; gap: .35rem .9rem; align-items: center; margin: 1.1rem 0 0; font-size: 12.5px; color: #6e7681; }
+
+    /* Provider monogram */
+    .pmark { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 5px; font-size: 10.5px; font-weight: 700; vertical-align: -3px; margin-right: .4rem; background: color-mix(in srgb, var(--c) 22%, transparent); color: var(--c); }
+
+    /* Section scroll offset so headings clear the sticky nav */
+    .card { scroll-margin-top: 64px; }
+    .controls { top: 50px; }
+
+    /* Value-per-dollar bars */
+    .vbars { margin-bottom: 1.2rem; }
+    .vbars h3 { font-size: 1rem; margin: .2rem 0 .1rem; text-transform: capitalize; }
+    .vcap { font-size: 12px; color: #6e7681; margin: 0 0 .6rem; }
+    .vrow { display: grid; grid-template-columns: minmax(140px, 38%) 1fr; gap: .5rem .8rem; align-items: center; padding: .25rem 0; }
+    .vrow .vname { font-size: 13.5px; }
+    .vrow .vname .price { color: #6e7681; }
+    .vtrack { position: relative; background: #0d1117; border: 1px solid #21262d; border-radius: 6px; height: 22px; overflow: hidden; }
+    .vfill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, #1f6feb55, #1f6febaa); border-right: 1px solid #58a6ff66; }
+    .vval { position: absolute; right: .5rem; top: 50%; transform: translateY(-50%); font-size: 12px; font-variant-numeric: tabular-nums; color: #e6edf3; }
+
+    /* Sub-tabs */
+    .subtabs { display: flex; gap: .35rem; margin: .2rem 0 1rem; }
+    .subtab { cursor: pointer; border: 1px solid #30363d; border-radius: 999px; padding: .2rem .7rem; font-size: 12.5px; color: #9aa7b4; background: #0d1117; user-select: none; }
+    .subtab.active { background: rgba(31,111,235,.15); color: #58a6ff; border-color: rgba(31,111,235,.33); }
+
+    /* Footer */
+    footer { max-width: 1000px; margin: 0 auto; padding: 1.5rem; border-top: 1px solid #21262d; color: #6e7681; font-size: 13px; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center; }
+    footer a { color: #9aa7b4; }
+    footer .spacer { margin-left: auto; }
+
+    @media (max-width: 640px) {
+      .navlinks { display: none; }
+      .hero h1 { font-size: 1.7rem; }
+      .table-scroll { overflow-x: auto; }
+    }
   </style>
 </head>
 <body>
-  <header>
+  <nav class="topnav">
+    <div class="inner">
+      <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
+      <div class="navlinks" id="navlinks">
+        <a href="#limits" data-section="limits">Limits</a>
+        <a href="#value" data-section="value">Value</a>
+        <a href="#measuredCard" data-section="measuredCard" id="navMeasured" style="display:none">Measured</a>
+        <a href="#changelog" data-section="changelog">Changelog</a>
+        <a href="#trust" data-section="trust">Trust</a>
+      </div>
+    </div>
+  </nav>
+  <header class="hero" id="top">
     <h1>LimitWatch</h1>
-    <p class="sub">Official AI subscription limits across providers, tracked over time. Every number links to its source.</p>
-    <p class="meta" id="meta"></p>
-    <p class="legend meta">
-      <span class="badge official">official</span> provider page
-      <span class="badge announced">announced</span> blog/exec post
-      <span class="badge community">community</span> 3rd-party measured
-      <span class="badge crowdsourced">crowdsourced</span> user reports
-    </p>
+    <p class="tag">Official AI subscription limits across providers, tracked over time. Every number links to its source — and we log when limits quietly drift.</p>
+    <div class="stats" id="stats"></div>
+    <div class="key">
+      <span><span class="badge official">official</span> provider page</span>
+      <span><span class="badge announced">announced</span> blog/exec post</span>
+      <span><span class="badge community">community</span> 3rd-party measured</span>
+      <span><span class="badge crowdsourced">crowdsourced</span> user reports</span>
+    </div>
   </header>
   <main>
-    <div class="card">
+    <div class="card" id="limits">
       <div class="controls">
         <input id="search" type="search" placeholder="Search provider, plan, or model…" aria-label="Search plans" />
         <div class="chips" id="groupBy">
@@ -86,15 +156,19 @@
       <div id="latest"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="value">
       <h2>Value per dollar <span class="meta" style="font-weight:400">(theoretical ceiling)</span></h2>
       <p class="meta">
         Throughput per $ if you used the whole limit every window. A <strong>ceiling, not typical</strong> use.
         Compared only within the same unit. We never silently equate a message to a token.
         Multiplier-only plans (no published absolute) show as relative and can't be valued.
       </p>
+      <div class="subtabs" id="valueTabs">
+        <span class="subtab active" data-tab="native">By native unit</span>
+        <span class="subtab" data-tab="cross">Cross-provider (estimate)</span>
+      </div>
       <div id="valueGroups"></div>
-      <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #21262d;">
+      <div id="crossPanel" style="display:none">
         <h3 style="font-size:1rem; margin:0 0 .4rem;">Cross-provider estimate</h3>
         <p class="meta">The only honest way to line up messages vs tokens: pick how many tokens a message is worth. This knob is the assumption, so drag it.</p>
         <label class="meta">tokens per message:
@@ -119,13 +193,13 @@
       <div id="measuredBody"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="changelog">
       <h2>Limit changelog</h2>
       <p class="meta">Derived by diffing snapshots. This is the part nobody else tracks: when limits silently move.</p>
-      <ul class="changelog" id="changelog"></ul>
+      <ul class="changelog" id="changelogList"></ul>
     </div>
 
-    <div class="card">
+    <div class="card" id="trust">
       <h2>Why you can trust this</h2>
       <ul class="meta">
         <li>Every number carries a confidence tier and a link to its source. Hover any dotted limit to read the exact source sentence.</li>
@@ -135,6 +209,12 @@
     </div>
   </main>
 
+  <footer>
+    <span>LimitWatch — open data, AI-built.</span>
+    <a href="https://github.com/tsouth89/limitwatch" target="_blank" rel="noopener">Source &amp; raw data on GitHub</a>
+    <span class="spacer" id="buildInfo"></span>
+  </footer>
+
   <script>
     const fmt = (n) => n == null ? "?" : Number(n).toLocaleString();
     const unitLabel = (l) =>
@@ -142,6 +222,9 @@
       l.unit === "usd_credit" ? `$${fmt(l.value)} usage` :
       `${fmt(l.value)} ${l.unit}`;
     const keyParts = (k) => k.split("|"); // provider|product|plan|surface|unit|window|model
+    // Provider monogram: a small colored square with the provider's initial for fast scanning.
+    const PROV_COLOR = { OpenAI: "#10a37f", Anthropic: "#cc785c", Google: "#4285f4", xAI: "#c9d1d9", Perplexity: "#20b8cd", Cursor: "#c9a3ff", GitHub: "#e6edf3", Replit: "#f26207" };
+    const provMark = (p) => `<span class="pmark" style="--c:${PROV_COLOR[p] ?? "#8b949e"}">${(p ?? "?")[0]}</span>`;
     // Meta suffix that distinguishes rows from the same plan: model and/or window.
     const descriptor = (x) => {
       const parts = [x.model, x.window].filter(Boolean);
@@ -186,10 +269,16 @@
     })();
 
     fetch("data.json").then((r) => r.json()).then((db) => {
-      document.getElementById("meta").textContent =
-        `${db.snapshot_count} snapshot(s) · ${db.date_range.join(" → ")} · ${db.changes.length} recorded change(s) · built ${db.generated_at.slice(0,10)}`;
-
       const latest = db.snapshots.at(-1);
+
+      const stat = (n, l) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+      document.getElementById("stats").innerHTML =
+        stat(new Set(latest.entries.map((e) => e.provider)).size, "providers") +
+        stat(latest.entries.length, "plans") +
+        stat(db.changes.length, "changes logged") +
+        stat(db.snapshot_count, "snapshots") +
+        stat(db.date_range.at(-1), "last updated");
+      document.getElementById("buildInfo").textContent = `built ${db.generated_at.slice(0, 10)}`;
 
       // ---- Latest limits: one row per plan, grouped by provider or price, with search + filter ----
       const shortWin = (w) => w == null ? "" : ({ week: "wk", month: "mo" }[w] ?? w);
@@ -241,7 +330,7 @@
       const COLS = `<colgroup><col style="width:30%"><col style="width:9%"><col style="width:37%"><col style="width:12%"><col style="width:12%"></colgroup>`;
       const rowHtml = (e, showProvider) => {
         const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
-        const name = showProvider ? `<span class="pname">${e.provider}</span> <strong>${e.plan}</strong>` : `<strong>${e.plan}</strong>`;
+        const name = showProvider ? `${provMark(e.provider)}<span class="pname">${e.provider}</span> <strong>${e.plan}</strong>` : `<strong>${e.plan}</strong>`;
         return `<tr>` +
           `<td>${name}${surf}${leaderStar(e)}</td>` +
           `<td class="num">$${e.price_usd}</td>` +
@@ -269,7 +358,7 @@
         if (groupMode === "provider") {
           for (const prov of providers) {
             const rows = shown.filter((e) => e.provider === prov).sort((a, b) => a.price_usd - b.price_usd);
-            if (rows.length) html += groupBlock(prov, rows, false);
+            if (rows.length) html += groupBlock(provMark(prov) + prov, rows, false);
           }
         } else {
           for (const band of PRICE_BANDS) {
@@ -316,7 +405,7 @@
           // Exclude soft/estimate limits from the ceiling tables — they are not hard caps.
           if (l.value == null || l.unit === "multiplier" || l.basis === "estimate" || !(l.window in winPerDay)) continue;
           const perDay = l.value * winPerDay[l.window];
-          rows.push({ name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model, window: l.window });
+          rows.push({ prov: e.provider, name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model, window: l.window });
         }
       }
 
@@ -324,14 +413,21 @@
       for (const unit of ["messages", "tokens", "requests"]) {
         const r = rows.filter((x) => x.unit === unit).sort((a, b) => b.perDollar - a.perDollar);
         if (!r.length) continue;
-        const rowsHtml = r.map((x) =>
-          `<tr><td>${x.name}${descriptor(x)}</td>` +
-          `<td class="num">$${x.price}</td><td class="num">${fmt(Math.round(x.perDay))}</td>` +
-          `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
+        const max = Math.max(...r.map((x) => x.perDollar)) || 1;
+        const barsHtml = r.map((x) => {
+          const pct = Math.max(2, Math.round((x.perDollar / max) * 100));
+          const tip = `${fmt(Math.round(x.perDay))} ${unit}/day ceiling · $${x.price}/mo`;
+          return `<div class="vrow">` +
+            `<div class="vname">${provMark(x.prov)}${x.name}${descriptor(x)} <span class="price">$${x.price}</span></div>` +
+            `<div class="vtrack q" data-tip="${tip}"><div class="vfill" style="width:${pct}%"></div>` +
+            `<span class="vval">${fmt(Math.round(x.perDollar))}</span></div>` +
+            `</div>`;
+        }).join("");
         const h = document.createElement("div");
-        h.style.marginBottom = "1rem";
-        h.innerHTML = `<h3 style="font-size:1rem;margin:.2rem 0 .4rem;text-transform:capitalize">${UNIT_LABEL[unit]}</h3>` +
-          `<table><thead><tr><th>Provider / Plan</th><th>$/mo</th><th class="num">${unit}/day (ceiling)</th><th class="num">${unit}/day per $</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
+        h.className = "vbars";
+        h.innerHTML = `<h3>${UNIT_LABEL[unit]}</h3>` +
+          `<p class="vcap">${unit} per $ per day — higher is better. Bars are relative to the category leader; hover for the daily ceiling.</p>` +
+          barsHtml;
         vg.appendChild(h);
       }
 
@@ -355,11 +451,20 @@
       tpmEl.addEventListener("input", renderCross);
       renderCross();
 
+      document.getElementById("valueTabs").addEventListener("click", (ev) => {
+        const t = ev.target.closest(".subtab"); if (!t) return;
+        [...ev.currentTarget.children].forEach((c) => c.classList.toggle("active", c === t));
+        const cross = t.dataset.tab === "cross";
+        document.getElementById("valueGroups").style.display = cross ? "none" : "";
+        document.getElementById("crossPanel").style.display = cross ? "" : "none";
+      });
+
       // ---- Measured usage (real accounts) — turns a $ credit into observed tokens ----
       const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : fmt(n);
       const measured = latest.entries.filter((e) => e.measured);
       if (measured.length) {
         document.getElementById("measuredCard").style.display = "";
+        document.getElementById("navMeasured").style.display = "";
         const mb = document.getElementById("measuredBody");
         mb.innerHTML = measured.map((e) => {
           const m = e.measured;
@@ -389,7 +494,7 @@
         }).join("");
       }
 
-      const cl = document.getElementById("changelog");
+      const cl = document.getElementById("changelogList");
       if (!db.changes.length) {
         cl.innerHTML = `<li class="meta">No changes yet, need 2+ snapshots. Drift shows up here as you add weekly snapshots.</li>`;
       } else {
@@ -405,6 +510,21 @@
           cl.appendChild(li);
         }
       }
+
+      // Highlight the nav link for whichever section is centered in the viewport.
+      const navMap = {};
+      document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
+      const sections = ["limits", "value", "measuredCard", "changelog", "trust"]
+        .map((id) => document.getElementById(id))
+        .filter((el) => el && el.style.display !== "none");
+      const io = new IntersectionObserver((entries) => {
+        for (const en of entries) {
+          if (!en.isIntersecting) continue;
+          Object.values(navMap).forEach((a) => a.classList.remove("active"));
+          navMap[en.target.id]?.classList.add("active");
+        }
+      }, { rootMargin: "-45% 0px -50% 0px" });
+      sections.forEach((s) => io.observe(s));
     });
   </script>
 </body>
