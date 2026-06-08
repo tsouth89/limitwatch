@@ -252,9 +252,10 @@
     .navlinks a.active { color: var(--blue); background: var(--blue-soft); }
 
     /* Hero */
-    header.hero { padding: 2.8rem 1.5rem 1.2rem; }
-    .hero .kicker { color: var(--blue); font-size: 12px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 .55rem; }
-    .hero .tag { color: var(--muted); font-size: 1.12rem; line-height: 1.5; margin: 0 0 1.25rem; max-width: 66ch; }
+    header.hero { padding: 1.5rem 1.5rem 1rem; }
+    .hero h1 { font-size: 2.1rem; }
+    .hero h1 .kicker { display: block; color: var(--blue); font-size: 12px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 .15rem; }
+    .hero .tag { color: var(--muted); font-size: 1.02rem; line-height: 1.45; margin: .35rem 0 1rem; max-width: 64ch; }
     .stats { display: flex; flex-wrap: wrap; gap: .6rem; }
     .stat { background: var(--glass); border: 1px solid var(--line); border-radius: 11px; padding: .65rem .9rem; min-width: 104px; box-shadow: var(--shadow-sm); }
     .stat .n { font-size: 1.35rem; font-weight: 850; font-variant-numeric: tabular-nums; line-height: 1.05; color: var(--ink); }
@@ -411,17 +412,10 @@
     </div>
   </nav>
   <header class="hero" id="top">
-    <p class="kicker">AI usage limits, with receipts</p>
-    <h1>LimitWatch</h1>
-    <p class="tag">Compare what AI subscriptions actually let you use. Every limit links to a source, opaque credits get called out, and dated snapshots make quiet limit changes visible.</p>
+    <h1><span class="kicker">AI usage limits, with receipts</span>LimitWatch</h1>
+    <p class="tag">What AI subscriptions actually let you use: compared, source-linked, and tracked as limits quietly change.</p>
     <div class="stats" id="stats"></div>
     <div class="notice" id="dataNotice"></div>
-    <div class="key">
-      <span><span class="badge official">official</span> provider page</span>
-      <span><span class="badge announced">announced</span> blog/exec post</span>
-      <span><span class="badge community">community</span> 3rd-party measured</span>
-      <span><span class="badge crowdsourced">crowdsourced</span> user reports</span>
-    </div>
   </header>
   <main>
     <div class="card bottomline" id="bottomLine" style="display:none">
@@ -610,6 +604,12 @@
         <li>We store only as-published facts. Per-day / $-value / cross-provider math is derived in your browser, never baked into the data.</li>
         <li>Raw dated snapshots are public and version-controlled. The git history is the audit trail.</li>
       </ul>
+      <div class="key">
+        <span><span class="badge official">official</span> provider page</span>
+        <span><span class="badge announced">announced</span> blog/exec post</span>
+        <span><span class="badge community">community</span> 3rd-party measured</span>
+        <span><span class="badge crowdsourced">crowdsourced</span> user reports</span>
+      </div>
     </div>
   </main>
 
