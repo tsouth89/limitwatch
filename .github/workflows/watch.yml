@@ -1,13 +1,16 @@
 name: weekly-source-watch
 
-# Checks Anthropic (HTTP) official pages for changes and opens an issue if anything moved.
-# OpenAI pages are Cloudflare-protected and need a headed desktop browser, so they are NOT
-# run here. The PRIMARY weekly run is the local PC scheduled task (scripts/watch-and-report.ps1),
-# which covers all sources incl. OpenAI. This workflow is a manual-dispatch cloud backup for
-# the Anthropic HTTP sources (run it anytime your PC has been off).
+# Checks the HTTP-fetchable official/primary pages for changes and opens an issue if anything
+# moved. OpenAI pages are Cloudflare-protected and need a headed desktop browser, so they are
+# NOT run here. The local PC scheduled task (scripts/watch-and-report.ps1) still covers ALL
+# sources incl. OpenAI; this workflow runs the HTTP-only subset automatically every week so
+# drift detection keeps working even when the PC is off, and can also be dispatched manually.
 
 on:
   workflow_dispatch: {}
+  schedule:
+    # Mondays 13:17 UTC (off the top of the hour to avoid GitHub's scheduler congestion).
+    - cron: "17 13 * * 1"
 
 permissions:
   contents: write

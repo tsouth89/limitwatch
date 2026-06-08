@@ -1,6 +1,6 @@
 {
   "anthropic-api-rate-limits": {
-    "hash": "bc675d28bfeec0eb",
+    "hash": "207cf11cca4acf78",
     "checked": "2026-06-08",
     "len": 17027,
     "method": "http"
@@ -22,5 +22,47 @@
     "checked": "2026-06-08",
     "len": 9587,
     "method": "browser"
+  },
+  "google-gemini-subscriptions": {
+    "hash": "d0cb6bad37613924",
+    "checked": "2026-06-08",
+    "len": 17182,
+    "method": "http"
+  },
+  "github-copilot-plans": {
+    "hash": "e62416af78a91f1e",
+    "checked": "2026-06-08",
+    "len": 18309,
+    "method": "http"
+  },
+  "github-copilot-premium-requests": {
+    "hash": "d41a233aa3e6c9d1",
+    "checked": "2026-06-08",
+    "len": 16806,
+    "method": "http"
+  },
+  "replit-pricing": {
+    "hash": "f1054916a7481802",
+    "checked": "2026-06-08",
+    "len": 3619,
+    "method": "http"
+  },
+  "cursor-pricing-docs": {
+    "hash": "188ce4c3c8498c93",
+    "checked": "2026-06-08",
+    "len": 28,
+    "method": "http"
+  },
+  "xai-supergrok-limits": {
+    "hash": "47bdc1bda1426059",
+    "checked": "2026-06-08",
+    "len": 20090,
+    "method": "http"
+  },
+  "perplexity-pro-pricing": {
+    "hash": "88d6233745eb2db5",
+    "checked": "2026-06-08",
+    "len": 18556,
+    "method": "http"
   }
 }

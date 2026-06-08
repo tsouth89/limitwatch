@@ -80,6 +80,22 @@
       "url": "https://cursor.com/docs/account/pricing",
       "tier": "official",
       "method": "http"
+    },
+    {
+      "id": "xai-supergrok-limits",
+      "provider": "xAI",
+      "label": "SuperGrok / Heavy usage limits (community evidence we cite)",
+      "url": "https://jingrey.com/tools/current-supergrok-usage-limits/",
+      "tier": "community",
+      "method": "http"
+    },
+    {
+      "id": "perplexity-pro-pricing",
+      "provider": "Perplexity",
+      "label": "Perplexity Pro/Max pricing & limits (community evidence we cite)",
+      "url": "https://www.finout.io/blog/perplexity-pricing-in-2026",
+      "tier": "community",
+      "method": "http"
     }
   ]
 }
