@@ -542,6 +542,11 @@
       const parts = [x.model, x.window].filter(Boolean);
       return parts.length ? ` <span class="meta">(${parts.join(" · ")})</span>` : "";
     };
+    // Render a change's date. When a curated REAL effective date replaced the diff-detected one,
+    // surface the original observed (snapshot) date in a tooltip so the provenance stays visible.
+    const dateChip = (c, cls = "num") => c.observed_on
+      ? `<span class="${cls} q" data-tip="Effective ${c.date} · first seen in a snapshot dated ${c.observed_on}">${c.date}</span>`
+      : `<span class="${cls}">${c.date}</span>`;
 
     // Custom tooltip: native title doesn't respond to click and is flaky. It tracks the cursor so
     // the pointer always sits at the same outer corner, offset far enough to clear the help-cursor
@@ -913,7 +918,7 @@
             : `<strong>${prov} ${plan}</strong> new limit: ${fmt(c.to)} ${unit}/${window}`;
           else txt = `<strong>${prov} ${plan}</strong> limit removed (${unit}/${window})`;
           const li = document.createElement("li");
-          li.innerHTML = `<span class="num">${c.date}</span> · ${txt} ${c.source ? `<a href="${c.source}" target="_blank" rel="noopener">src</a>` : ""}`;
+          li.innerHTML = `${dateChip(c)} · ${txt} ${c.source ? `<a href="${c.source}" target="_blank" rel="noopener">src</a>` : ""}`;
           cl.appendChild(li);
         }
       }
@@ -1034,14 +1039,14 @@
         const items = [];
         for (const c of db.changes) {
           const [prov, , plan, , unit, window] = c.key.split("|");
-          if (c.kind === "model_changed") items.push({ date: c.date, cls: "model", k: "model", html: `<strong>${prov} ${plan}</strong> upgraded ${c.from} → ${c.to}`, source: c.source });
-          else if (c.kind === "price_changed") { const drop = c.to < c.from; items.push({ date: c.date, cls: drop ? "price" : "priceup", k: drop ? "price ↓" : "price ↑", html: `<strong>${prov} ${plan}</strong> $${c.from} → $${c.to}`, source: c.source }); }
-          else if (c.kind === "limit_added" && c.to != null) items.push({ date: c.date, cls: "added", k: "new", html: `<strong>${prov} ${plan}</strong> added · ${fmt(c.to)} ${unit}${window ? "/" + window : ""}`, source: c.source });
+          if (c.kind === "model_changed") items.push({ date: c.date, observed_on: c.observed_on, cls: "model", k: "model", html: `<strong>${prov} ${plan}</strong> upgraded ${c.from} → ${c.to}`, source: c.source });
+          else if (c.kind === "price_changed") { const drop = c.to < c.from; items.push({ date: c.date, observed_on: c.observed_on, cls: drop ? "price" : "priceup", k: drop ? "price ↓" : "price ↑", html: `<strong>${prov} ${plan}</strong> $${c.from} → $${c.to}`, source: c.source }); }
+          else if (c.kind === "limit_added" && c.to != null) items.push({ date: c.date, observed_on: c.observed_on, cls: "added", k: "new", html: `<strong>${prov} ${plan}</strong> added · ${fmt(c.to)} ${unit}${window ? "/" + window : ""}`, source: c.source });
         }
         items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
         document.getElementById("highlightsBody").innerHTML = items.length
           ? `<p class="meta" style="margin:.85rem 0 .35rem;font-weight:700;color:var(--ink)">Recent highlights</p>` +
-            items.map((i) => `<div class="hlrow"><span class="num">${i.date}</span> <span class="hk ${i.cls}">${i.k}</span> <span>${i.html}</span> ${i.source ? `<a href="${i.source}" target="_blank" rel="noopener">src</a>` : ""}</div>`).join("")
+            items.map((i) => `<div class="hlrow">${dateChip(i)} <span class="hk ${i.cls}">${i.k}</span> <span>${i.html}</span> ${i.source ? `<a href="${i.source}" target="_blank" rel="noopener">src</a>` : ""}</div>`).join("")
           : "";
 
         if (evs.length || items.length) {

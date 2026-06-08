@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "note": "REAL effective dates for changelog entries. A snapshot diff only knows the date a change was first OBSERVED (often a backfill date, so many changes pile onto one day). Each rule pins the true date of a change. A rule matches a change when every field it specifies is equal; unspecified fields are wildcards. First matching rule wins. The original observed date is preserved as observed_on for the tooltip. Leave date as \"\" until you can source it; blank rules are ignored, so the change keeps its observed date. Matchable fields: kind, provider, plan, model (the NEW model for model_changed), from, to.",
+  "rules": [
+    {
+      "date": "",
+      "kind": "model_changed",
+      "provider": "OpenAI",
+      "to": "GPT-5.5",
+      "note": "Day GPT-5.5 (base) rolled out to ChatGPT Go/Plus/Pro. Source: help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
+    {
+      "date": "",
+      "kind": "model_changed",
+      "provider": "OpenAI",
+      "to": "GPT-5.5 Thinking",
+      "note": "Day GPT-5.5 Thinking rolled out to ChatGPT Go/Plus. Often same day as base GPT-5.5; set separately if it differed."
+    },
+    {
+      "date": "",
+      "kind": "price_changed",
+      "provider": "Google",
+      "plan": "AI Ultra (20x)",
+      "note": "Day Google AI Ultra (20x) price dropped $249.99 to $199.99. Source: gemini.google/subscriptions/"
+    },
+    {
+      "date": "",
+      "kind": "limit_added",
+      "provider": "Google",
+      "note": "Day Google published the per-plan multiplier system (Ultra 20x/5x, Pro, Plus). Set per-plan rules with a plan field if the dates differ."
+    }
+  ]
+}

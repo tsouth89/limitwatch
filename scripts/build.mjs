@@ -114,6 +114,32 @@ for (let i = 0; i < changes.length; i++) {
 }
 collapsed.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 
+// Curated REAL effective dates. A snapshot diff only knows the date a change was first OBSERVED
+// (often a backfill date, so many cluster on one day), not when it actually happened. Optional
+// data/change-dates.json supplies the true date for changes we can source; the original observed
+// date is kept as `observed_on` for transparency. Unmatched changes are unaffected.
+let changeDateRules = [];
+try {
+  const cd = JSON.parse(readFileSync(join(root, "data", "change-dates.json"), "utf8"));
+  if (!Array.isArray(cd.rules)) throw new Error("change-dates.json: rules not array");
+  changeDateRules = cd.rules;
+} catch (err) { if (err.code !== "ENOENT") throw err; }
+const keyParts = (k) => { const p = (k ?? "").split("|"); return { provider: p[0], product: p[1], plan: p[2], surface: p[3], unit: p[4], window: p[5], model: p[6] }; };
+const ruleMatches = (c, r) => {
+  const p = keyParts(c.key);
+  const eq = (val, want) => want == null || String(val) === String(want);
+  return eq(c.kind, r.kind) && eq(p.provider, r.provider) && eq(p.plan, r.plan)
+    && eq(p.model, r.model) && eq(c.from, r.from) && eq(c.to, r.to);
+};
+for (const c of collapsed) {
+  const r = changeDateRules.find((rule) => ruleMatches(c, rule));
+  if (!r || !r.date) continue;  // unmatched, or a scaffold rule whose date isn't filled in yet
+  if (r.date > today) dataWarnings.push(`change-dates.json: effective date ${r.date} for ${c.kind} ${c.key} is after ${today}`);
+  if (r.date !== c.date) c.observed_on = c.date;  // keep the diff-detected date for the tooltip
+  c.date = r.date;
+}
+collapsed.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
 // Time-bounded events (promos / temporary boosts). Validated and passed through; the site computes
 // active/upcoming/ended from `today` so they expire on their own. Optional file.
 const EVENT_REQUIRED = ["id", "provider", "title", "kind", "starts_on", "confidence", "quote", "source"];
