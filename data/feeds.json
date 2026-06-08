@@ -5,10 +5,9 @@
     { "provider": "GitHub", "product": "Copilot", "url": "https://github.blog/changelog/feed/", "format": "rss" },
     { "provider": "GitHub", "product": "Copilot", "url": "https://github.blog/feed/", "format": "rss" },
     { "provider": "OpenAI", "product": "ChatGPT", "url": "https://openai.com/news/rss.xml", "format": "rss" },
-    { "provider": "Anthropic", "product": "Claude", "url": "https://www.anthropic.com/news", "format": "html", "base": "https://www.anthropic.com", "link_pattern": "/news/[A-Za-z0-9\\-]+" }
+    { "provider": "Anthropic", "product": "Claude", "url": "https://www.anthropic.com/news", "format": "html", "base": "https://www.anthropic.com", "link_pattern": "/news/[A-Za-z0-9\\-]+" },
+    { "provider": "Google", "product": "Gemini", "url": "https://blog.google/products/gemini/rss/", "format": "rss" },
+    { "provider": "Cursor", "product": "Cursor", "url": "https://www.cursor.com/changelog", "format": "html", "base": "https://www.cursor.com", "link_pattern": "/changelog/[A-Za-z0-9\\-]+" }
   ],
-  "no_feed": [
-    { "provider": "Google", "reason": "Gemini updates are spread across blog.google / DeepMind; no single clean server-rendered product index wired yet." },
-    { "provider": "Cursor", "reason": "cursor.com/changelog is a JS-rendered SPA returning no links to plain fetch; needs a browser HTML watch." }
-  ]
+  "no_feed": []
 }
