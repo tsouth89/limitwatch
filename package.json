@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "watch": "node scripts/fetch.mjs"
+    "watch": "node scripts/fetch.mjs",
+    "ratelimits": "node scripts/fetch-ratelimits.mjs"
   },
   "license": "MIT",
   "dependencies": {
