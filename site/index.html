@@ -258,6 +258,13 @@
     .notice { border: 1px solid var(--amber-line); background: var(--amber-soft); color: var(--amber); border-radius: 8px; padding: .75rem .9rem; margin: 1rem 0 0; font-size: 13.5px; display: none; }
     .notice strong { color: var(--ink); }
     .notice.notice-error { border-color: var(--neg-line); background: var(--neg-soft); color: var(--neg); }
+    .rsumrow { display: grid; grid-template-columns: minmax(140px, 1fr) auto; gap: .15rem .9rem; align-items: baseline; padding: .55rem 0; border-bottom: 1px solid var(--line-soft); }
+    .rsumrow:last-child { border-bottom: 0; }
+    .rsumval { text-align: right; }
+    .rsumval .lead { font-weight: 700; color: var(--ink); }
+    .rsummeta { grid-column: 1 / -1; margin-top: -.1rem; }
+    .rdetails { margin-top: 1rem; }
+    .rdetails > summary { cursor: pointer; color: var(--muted); font-size: 13px; padding: .3rem 0; }
 
     /* Provider monogram */
     .pmark { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 5px; font-size: 10.5px; font-weight: 800; vertical-align: -3px; margin-right: .4rem; background: color-mix(in srgb, var(--c) 18%, var(--paper)); color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 32%, var(--paper)); }
@@ -515,10 +522,13 @@
         </div>
         <a class="submit-btn" href="https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml" target="_blank" rel="noopener">Submit a reading →</a>
       </div>
+      <div id="reportsSummary"></div>
+      <details class="rdetails"><summary>All individual readings</summary>
       <div class="table-scroll"><table id="reportsTable">
         <thead><tr><th>Captured</th><th>Plan</th><th>Window</th><th class="num">Observed</th><th class="num">API value</th><th>Note</th></tr></thead>
         <tbody id="reportsBody"></tbody>
       </table></div>
+      </details>
     </div>
 
     <div class="card" id="trends" style="display:none">
@@ -993,6 +1003,42 @@
         const reports = db.usage_reports ?? [];
         if (!reports.length) return;  // card stays hidden until the first reading lands
         const fmtTs = (ts) => new Date(ts).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "UTC", timeZoneName: "short" });
+
+        // ---- Rollup: collapse the (%, burn) pairs into one implied per-window budget per account,
+        // so you read a few lines instead of every verbatim row. Only percent readings that carry a
+        // measured $ value contribute (observed-only rows have nothing to extrapolate).
+        (() => {
+          const fmtUsd = (n) => `$${Math.round(n)}`;
+          const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : "—");
+          const winOrder = { "5h": 0, day: 1, week: 2, month: 3 };
+          const groups = {};
+          for (const r of reports) {
+            if (r.metric !== "percent" || r.api_equiv_usd == null || !r.observed) continue;
+            (groups[`${r.provider}|${r.account ?? "unknown"}|${r.plan}|${r.window}`] ||= []).push(r);
+          }
+          const keys = Object.keys(groups).sort((a, b) => (winOrder[a.split("|")[3]] ?? 9) - (winOrder[b.split("|")[3]] ?? 9));
+          if (!keys.length) return;
+          const rows = keys.map((k) => {
+            const [prov, acct, plan, window] = k.split("|");
+            const rs = groups[k].slice().sort((a, b) => (a.captured_at < b.captured_at ? 1 : -1));
+            const implied = rs.map((r) => r.api_equiv_usd / (r.observed / 100));
+            const lo = Math.min(...implied), hi = Math.max(...implied);
+            const isFloor = rs.some((r) => r.value_basis === "floor");
+            const rangeTxt = rs.length > 1 ? `${fmtUsd(lo)}–${fmtUsd(hi)}` : fmtUsd(lo);
+            const spread = hi > 0 ? (hi - lo) / hi : 0;
+            const shape = rs.length > 1
+              ? (spread < 0.1 ? `<span class="num">${rs.length} readings</span>, consistent (looks linear)` : `<span class="num">${rs.length} readings</span>, spread ${Math.round(spread * 100)}%`)
+              : `<span class="num">1 reading</span>`;
+            return `<div class="rsumrow">
+              <div class="rsumlabel">${provMark(prov)} <strong>${cap(acct)}</strong> <span class="meta">· ${plan} · ${shortWin(window)}</span></div>
+              <div class="rsumval"><span class="lead">~${rangeTxt}</span> <span class="meta">/ ${shortWin(window)} API-equiv${isFloor ? ` <span class="badge community">floor</span>` : ""}</span></div>
+              <div class="rsummeta meta">${shape} · latest ${fmt(rs[0].observed)}%</div>
+            </div>`;
+          }).join("");
+          document.getElementById("reportsSummary").innerHTML =
+            `<p class="meta" style="margin:.2rem 0 .6rem"><strong>Implied per-window budget</strong> — each reading's measured burn extrapolated to a full window (burn ÷ %). Floors are lower bounds (Claude Code only). Two close readings that agree suggest a token-based cap.</p>` + rows;
+        })();
+
         const obs = (r) =>
           r.metric === "percent" ? `${fmt(r.observed)}%` :
           r.metric === "tokens" ? (r.observed >= 1e6 ? `${(r.observed / 1e6).toFixed(1)}M tokens` : `${fmt(r.observed)} tokens`) :
