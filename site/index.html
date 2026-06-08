@@ -818,7 +818,7 @@
           const key = `${e.provider}|${e.plan}|${l.unit}|${l.model ?? ""}`;
           const prev = byKey.get(key);
           if (!prev || perDay < prev.perDay)
-            byKey.set(key, { prov: e.provider, name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, model: l.model, cap: l.value, window: l.window });
+            byKey.set(key, { prov: e.provider, name: `${provName(e.provider)} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, model: l.model, cap: l.value, window: l.window });
         }
       }
       const rows = [...byKey.values()].map((x) => ({ ...x, perWindowDollar: x.cap / x.price }));
@@ -878,10 +878,10 @@
         e.limits.some((l) => l.unit === "usd_credit") ? "credit" : "unlisted";
       const buckets = { multiplier: new Set(), credit: new Set(), unlisted: new Set() };
       for (const e of latest.entries) {
-        if (valued.has(`${e.provider} ${e.plan}`)) continue;
+        if (valued.has(`${provName(e.provider)} ${e.plan}`)) continue;
         buckets[reasonOf(e)].add(e.provider);
       }
-      const list = (set) => [...set].join(", ");
+      const list = (set) => [...set].map(provName).join(", ");
       const phrases = [];
       if (buckets.multiplier.size) phrases.push(`${list(buckets.multiplier)} publish only a multiplier (e.g. "5× Pro") with no absolute number`);
       if (buckets.credit.size) phrases.push(`${list(buckets.credit)} sell a dollar credit, not a throughput cap — see <a href="#measuredCard">Measured usage</a>`);
@@ -907,14 +907,17 @@
         const bind = {};  // collapse multi-window message/token caps to the tightest per plan+model
         for (const e of latest.entries) {
           if (isFutureDate(e.effective_on)) continue;
-          const name = `${e.provider} ${e.plan}` + (e.surface ? ` <span class="meta">· ${e.surface}</span>` : "");
+          const name = `${provName(e.provider)} ${e.plan}` + (e.surface ? ` <span class="meta">· ${e.surface}</span>` : "");
           const base = { prov: e.provider, name, price: e.price_usd };
           if (e.measured) { measured.push({ ...base, tokPerDay: e.measured.realized_tokens_month / 30 }); continue; }
           for (const l of e.limits) {
             if (l.value == null) continue;
-            if ((l.unit === "tokens" || l.unit === "messages") && (l.window in winPerDay)) {
+            if ((l.unit === "tokens" || l.unit === "messages" || l.unit === "requests") && (l.window in winPerDay)) {
+              // A "request" (e.g. Copilot premium request) is one interaction, like a message, so it
+              // converts through the same tokens-per-interaction knob. Flagged est; a premium request
+              // in agent mode can burn far more than a chat message, so this is a rough analog.
               const tokPerDay = l.unit === "tokens" ? l.value * winPerDay[l.window] : l.value * winPerDay[l.window] * tpm;
-              const kind = l.unit === "tokens" ? "tokens" : (l.basis === "estimate" ? "msg-est" : "messages");
+              const kind = l.unit === "tokens" ? "tokens" : l.unit === "requests" ? "req-est" : (l.basis === "estimate" ? "msg-est" : "messages");
               const key = `${e.provider}|${e.plan}|${e.surface ?? ""}|${l.model ?? ""}|${kind}`;
               if (!bind[key] || tokPerDay < bind[key].tokPerDay) bind[key] = { ...base, model: l.model, window: l.window, kind, tokPerDay };
             } else if (l.unit === "usd_credit" && e.credit_bills_at_api) {
@@ -928,6 +931,7 @@
         const tagHtml = (k) =>
           k === "measured" ? ' <span class="badge crowdsourced">measured</span>' :
           k === "credit-est" ? ' <span class="badge announced">credit · est</span>' :
+          k === "req-est" ? ' <span class="badge announced">request · est</span>' :
           k === "msg-est" ? ' <span class="badge announced">est</span>' :
           ` <span class="meta">(${k})</span>`;
         const row = (x, k) =>
@@ -936,7 +940,7 @@
         crossBody.innerHTML =
           ranked.map((x) => row(x, x.kind)).join("") +
           (mr.length ? `<tr><td colspan="3" class="crosssep">↓ Real measured usage — different basis (what one account actually consumed, not a ceiling)</td></tr>` + mr.map((x) => row(x, "measured")).join("") : "");
-        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Future-effective announcements are excluded until their effective date. Anthropic chat figures are official per-window estimates (<em>est</em>). Rows below the divider are real measured receipts (realized full-month consumption from one account) — see <a href="#measuredCard">Real receipts</a> for the breakdown. Requests-only and multiplier-only plans can't be converted.`;
+        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Future-effective announcements are excluded until their effective date. Anthropic chat figures are official per-window estimates (<em>est</em>). Rows below the divider are real measured receipts (realized full-month consumption from one account) — see <a href="#measuredCard">Real receipts</a> for the breakdown. Request plans (e.g. Copilot premium requests) are treated as one interaction each through the same per-message knob (<em>request · est</em>); a premium request in agent mode can burn more than a chat message, so treat it as a rough analog. Multiplier-only plans still can't be converted.`;
       }
       tpmEl.addEventListener("input", renderCross);
       cpmEl.addEventListener("input", renderCross);
