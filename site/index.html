@@ -117,9 +117,28 @@
     .knobs { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; align-items: center; margin: .2rem 0 .5rem; }
     .table-scroll { overflow-x: auto; }
 
+    /* How to read this (disclosure) */
+    details.howto { border: 1px solid #30363d; border-radius: 8px; background: #0d1117; margin: .2rem 0 1rem; }
+    details.howto summary { cursor: pointer; padding: .5rem .8rem; color: #9aa7b4; font-size: 13px; list-style: none; }
+    details.howto summary::-webkit-details-marker { display: none; }
+    details.howto summary::before { content: "▸"; color: #6e7681; margin-right: .4rem; }
+    details.howto[open] summary::before { content: "▾"; }
+    details.howto .body { padding: 0 .8rem .7rem; font-size: 13px; color: #9aa7b4; }
+    details.howto .body > div { margin: .45rem 0; }
+    details.howto .badge { margin-right: .15rem; }
+
     @media (max-width: 640px) {
       .navlinks { display: none; }
       .hero h1 { font-size: 1.7rem; }
+      /* Limits table → stacked cards */
+      .ltable colgroup { display: none; }
+      .ltable, .ltable tbody { display: block; }
+      .ltable tr { display: block; border: 1px solid #30363d; border-radius: 8px; padding: .55rem .75rem; margin-bottom: .6rem; }
+      .ltable tr:hover td { background: transparent; }
+      .ltable td { display: block; border: none; padding: .12rem 0; }
+      .ltable td.cardtitle { font-size: 1.05rem; margin-bottom: .25rem; }
+      .ltable td[data-label]::before { content: attr(data-label); display: block; color: #6e7681; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; }
+      .vrow { grid-template-columns: 1fr; gap: .15rem; padding: .35rem 0; }
     }
   </style>
 </head>
@@ -159,6 +178,20 @@
       </div>
       <h2>Latest published limits</h2>
       <p class="meta">One row per plan, native units as published. Group by provider or by price tier. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished. <a href="#value">Best value per $ →</a></p>
+      <details class="howto">
+        <summary>How to read this</summary>
+        <div class="body">
+          <div><strong>Confidence</strong> —
+            <span class="badge official">official</span> provider page ·
+            <span class="badge announced">announced</span> blog/exec post ·
+            <span class="badge community">community</span> 3rd-party measured ·
+            <span class="badge crowdsourced">crowdsourced</span> user reports
+          </div>
+          <div><strong>Sources</strong> — values with a dotted underline are quotes: hover to read the exact source sentence, click to pin it. Every row also links its <code>src</code>.</div>
+          <div><strong>Units</strong> — <code>messages</code>, <code>tokens</code>, and <code>requests</code> are absolute caps. <code>5× Pro</code> is a relative multiplier with no published absolute. <code>$20 usage</code> is a monthly dollar credit, not a throughput cap.</div>
+          <div><strong>Windows</strong> — <code>/3h</code> <code>/4h</code> <code>/5h</code> <code>/day</code> <code>/wk</code> <code>/mo</code> is the refresh period. <code>?</code> means the provider hasn't published a number.</div>
+        </div>
+      </details>
       <div id="latest"></div>
     </div>
 
@@ -331,11 +364,11 @@
         const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
         const name = showProvider ? `${provMark(e.provider)}<span class="pname">${e.provider}</span> <strong>${e.plan}</strong>` : `<strong>${e.plan}</strong>`;
         return `<tr>` +
-          `<td>${name}${surf}</td>` +
-          `<td class="num">$${e.price_usd}</td>` +
-          `<td>${limitCell(e)}</td>` +
-          `<td><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
-          `<td><a href="${e.source}" target="_blank" rel="noopener">src</a> <span class="meta">${e.verified_on}</span></td>` +
+          `<td class="cardtitle">${name}${surf}</td>` +
+          `<td class="num" data-label="Price / mo">$${e.price_usd}</td>` +
+          `<td data-label="Limits">${limitCell(e)}</td>` +
+          `<td data-label="Confidence"><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
+          `<td data-label="Source"><a href="${e.source}" target="_blank" rel="noopener">src</a> <span class="meta">${e.verified_on}</span></td>` +
           `</tr>`;
       };
       const groupBlock = (title, entries, showProvider) =>
