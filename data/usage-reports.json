@@ -22,12 +22,12 @@
       "plan": "Pro",
       "surface": "Claude Code",
       "window": "5h",
-      "captured_at": "2026-06-08T11:46:00Z",
+      "captured_at": "2026-06-08T11:51:00Z",
       "metric": "percent",
-      "observed": 72,
+      "observed": 75,
       "limit_hit": false,
       "model": "Claude Opus 4.8 (fast, medium reasoning)",
-      "note": "Single continuous session from 0% at window start. 371 Opus turns over ~57 min reached 72% of the 5h cap (in-app indicator; may lag a few min). Session token usage: 266,673 output + 36,585 fresh input + 3,328,905 cache-write + 47,332,221 cache-read = 50.96M total incl cache reads, 3.63M excl. So ~3.6M fresh (or ~51M incl cache) tokens = 72% of one 5h Opus window. Cap estimate is a range because cache reads are weighted below fresh input.",
+      "note": "Single continuous session from 0% at window start. 385 Opus turns over ~1h02m reached 75% of the 5h cap (in-app indicator; may lag a few min). Session token usage: 283,476 output + 36,742 fresh input + 3,341,442 cache-write + 50,597,493 cache-read tokens. Priced at the Opus 4.8 API rate (input $5, output $25, 5-min cache-write $6.25, cache-read $0.50 per 1M), that is ~$53 of API-equivalent value for 75% of the window, implying ~$71 of API-equivalent Opus usage per full 5h window on a $20/mo Pro plan. (API-equivalent is a value comparison; the actual cap mechanic is not published.)",
       "reporter": "self",
       "evidence": "Claude Code session transcript + in-app 5h usage indicator"
     }
