@@ -515,7 +515,13 @@
             "pct": 100
           }
         ],
-        "notes": "Realized consumption for one billing month, not a cap. The API pool ran ~$33 against a stated 'at least $20' floor: gpt-5.5-medium used 42.8% of the pool for 30M tokens; at the Pro+-validated rate of ~$0.47/M that is ~$13.9, implying a ~$33 pool. Auto+Composer hit 100% and overflowed 16.9M tokens into the API pool. ~95% of all tokens are subsidized Auto."
+        "derived_usd_per_mtok": [
+          {
+            "model": "gpt-5.5-medium",
+            "usd_per_mtok": 0.47
+          }
+        ],
+        "notes": "Realized consumption for one billing month, not a cap. The API pool ran ~$33 against a stated 'at least $20' floor: gpt-5.5-medium used 42.8% of the pool for 30M tokens; at the Pro+-validated rate of ~$0.47/M that is ~$13.9, implying a ~$33 pool. Other API-pool models aren't individually itemized on the Pro screenshot, so only the observed gpt-5.5-medium rate is listed; see Pro+ for the full per-model rate card (rates are model-intrinsic API prices, shared across plans). Auto+Composer hit 100% and overflowed 16.9M tokens into the API pool. ~95% of all tokens are subsidized Auto."
       }
     },
     {
