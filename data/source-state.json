@@ -12,9 +12,9 @@
     "method": "http"
   },
   "openai-gpt55-help": {
-    "hash": "7c7e223446b1675c",
+    "hash": "b5bc316e291bb3f2",
     "checked": "2026-06-08",
-    "len": 7796,
+    "len": 7797,
     "method": "browser"
   },
   "openai-pricing": {
@@ -60,9 +60,15 @@
     "method": "http"
   },
   "perplexity-pro-pricing": {
-    "hash": "88d6233745eb2db5",
+    "hash": "70025507e1ea04b8",
     "checked": "2026-06-08",
-    "len": 18556,
+    "len": 18535,
     "method": "http"
+  },
+  "openai-go-help": {
+    "hash": "fd1413d23590c92e",
+    "checked": "2026-06-08",
+    "len": 5092,
+    "method": "browser"
   }
 }
