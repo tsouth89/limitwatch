@@ -231,6 +231,7 @@
 
     /* Sticky top nav */
     .topnav { position: sticky; top: 0; z-index: 20; background: var(--glass); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+    main > .card { scroll-margin-top: 76px; }
     .topnav .inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; padding: .55rem 1.5rem; }
     .brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: 1.02rem; letter-spacing: 0; color: var(--ink); text-decoration: none; }
     .brand img { width: 22px; height: 22px; display: block; }
@@ -339,7 +340,11 @@
     .receipt table { margin-top: .45rem; font-size: 12.5px; }
 
     @media (max-width: 640px) {
-      .navlinks { display: none; }
+      /* Nav becomes a horizontally-scrollable tab strip (tabs need to stay reachable on mobile). */
+      .navlinks { margin-left: 0; width: 100%; flex-wrap: nowrap; overflow-x: auto; gap: .2rem; padding-bottom: .2rem; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .navlinks::-webkit-scrollbar { display: none; }
+      .navlinks a { white-space: nowrap; flex: 0 0 auto; }
+      .topnav .inner { flex-wrap: wrap; }
       .theme-toggle { margin-left: auto; }
       .hero h1 { font-size: 1.7rem; }
       /* Limits table → stacked cards */
@@ -1327,19 +1332,25 @@
       })();
 
       // Highlight the nav link for whichever section is centered in the viewport.
+      // ---- Tabs: show ONE section at a time instead of an endless stack. The Bottom Line stays
+      // pinned above as a persistent summary; the nav switches the rest. ----
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const sections = ["whatsnew", "radar", "limits", "value", "crossProvider", "measuredCard", "usageReports", "trends", "changelog", "trust"]
-        .map((id) => document.getElementById(id))
-        .filter((el) => el && el.style.display !== "none");
-      const io = new IntersectionObserver((entries) => {
-        for (const en of entries) {
-          if (!en.isIntersecting) continue;
-          Object.values(navMap).forEach((a) => a.classList.remove("active"));
-          navMap[en.target.id]?.classList.add("active");
-        }
-      }, { rootMargin: "-45% 0px -50% 0px" });
-      sections.forEach((s) => io.observe(s));
+      const tabOrder = ["whatsnew", "radar", "limits", "value", "crossProvider", "measuredCard", "usageReports", "trends", "changelog", "trust"];
+      const tabs = tabOrder
+        .map((id) => ({ id, el: document.getElementById(id), nav: navMap[id] }))
+        .filter((t) => t.el && t.nav && t.nav.style.display !== "none"); // only sections that have data
+      const showTab = (id, scroll) => {
+        tabs.forEach((t) => {
+          t.el.style.display = t.id === id ? "" : "none";
+          t.nav.classList.toggle("active", t.id === id);
+        });
+        if (scroll) document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        history.replaceState(null, "", "#" + id);
+      };
+      tabs.forEach((t) => t.nav.addEventListener("click", (e) => { e.preventDefault(); showTab(t.id, true); }));
+      const initial = tabs.find((t) => t.id === location.hash.slice(1)) || tabs.find((t) => t.id === "limits") || tabs[0];
+      if (initial) showTab(initial.id, false);
     }).catch((err) => {
       // Static site, single data source: if data.json fails to load or parse, say so instead of
       // leaving a blank skeleton. Keeps the page honest under a network blip or a bad deploy.
