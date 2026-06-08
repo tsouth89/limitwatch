@@ -4,3 +4,5 @@ node_modules/
 _*.txt
 _*.log
 data/_watch-summary.md
+shot-*.png
+_verify.png
