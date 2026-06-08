@@ -599,6 +599,10 @@
     // Provider monogram: a small colored square with the provider's initial for fast scanning.
     const PROV_COLOR = { OpenAI: "#10a37f", Anthropic: "#cc785c", Google: "#4285f4", xAI: "#c9d1d9", Perplexity: "#20b8cd", Cursor: "#c9a3ff", GitHub: "#e6edf3", Replit: "#f26207" };
     const provMark = (p) => `<span class="pmark" style="--c:${PROV_COLOR[p] ?? "#8b949e"}">${(p ?? "?")[0]}</span>`;
+    // Display name only — the data key stays the raw provider so filtering/grouping/changelog are
+    // untouched. Some providers are better known by their product (GitHub's coding plans = Copilot).
+    const PROV_DISPLAY = { GitHub: "GitHub Copilot" };
+    const provName = (p) => PROV_DISPLAY[p] ?? p;
     // Meta suffix that distinguishes rows from the same plan: model and/or window.
     const descriptor = (x) => {
       const parts = [x.model, x.window].filter(Boolean);
@@ -724,14 +728,14 @@
       const matches = (e) => {
         if (active.size && !active.has(e.provider)) return false;
         if (!query) return true;
-        const hay = `${e.provider} ${e.product} ${e.plan} ${e.surface ?? ""} ${e.limits.map((l) => `${l.unit} ${l.model ?? ""}`).join(" ")}`.toLowerCase();
+        const hay = `${e.provider} ${provName(e.provider)} ${e.product} ${e.plan} ${e.surface ?? ""} ${e.limits.map((l) => `${l.unit} ${l.model ?? ""}`).join(" ")}`.toLowerCase();
         return hay.includes(query);
       };
 
       const COLS = `<colgroup><col style="width:30%"><col style="width:9%"><col style="width:37%"><col style="width:12%"><col style="width:12%"></colgroup>`;
       const rowHtml = (e, showProvider) => {
         const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
-        const name = showProvider ? `${provMark(e.provider)}<span class="pname">${e.provider}</span> <strong>${e.plan}</strong>` : `<strong>${e.plan}</strong>`;
+        const name = showProvider ? `${provMark(e.provider)}<span class="pname">${provName(e.provider)}</span> <strong>${e.plan}</strong>` : `<strong>${e.plan}</strong>`;
         const future = isFutureDate(e.as_of) || isFutureDate(e.verified_on) ? ` <span class="badge warning">date check</span>` : "";
         const upcoming = isFutureDate(e.effective_on) ? ` <span class="badge announced">upcoming ${e.effective_on}</span>` : "";
         return `<tr>` +
@@ -761,7 +765,7 @@
         if (groupMode === "provider") {
           for (const prov of providers) {
             const rows = shown.filter((e) => e.provider === prov).sort((a, b) => a.price_usd - b.price_usd);
-            if (rows.length) html += groupBlock(provMark(prov) + prov, rows, false);
+            if (rows.length) html += groupBlock(provMark(prov) + provName(prov), rows, false);
           }
         } else {
           for (const band of PRICE_BANDS) {
@@ -777,7 +781,7 @@
       const renderChips = () => {
         chipsEl.innerHTML =
           `<span class="chip ${active.size ? "" : "active"}" data-all>All</span>` +
-          providers.map((p) => `<span class="chip ${active.has(p) ? "active" : ""}" data-prov="${p}">${p}</span>`).join("");
+          providers.map((p) => `<span class="chip ${active.has(p) ? "active" : ""}" data-prov="${p}">${provName(p)}</span>`).join("");
       };
       chipsEl.addEventListener("click", (ev) => {
         const c = ev.target.closest(".chip");
