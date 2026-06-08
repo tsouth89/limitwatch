@@ -1,26 +1,91 @@
 {
-  "generated_at": "2026-06-08T00:35:52.373Z",
+  "generated_at": "2026-06-08T00:41:02.862Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
     "2026-06-07"
   ],
+  "changes": [],
   "snapshots": [
     {
+      "schema": 2,
       "date": "2026-06-07",
       "entries": [
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Plus",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 160,
+              "unit": "messages",
+              "window": "3h",
+              "model": "GPT-5.5",
+              "kind": "primary"
+            },
+            {
+              "value": 3000,
+              "unit": "messages",
+              "window": "week",
+              "model": "GPT-5.5 Thinking",
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "ChatGPT Plus and ChatGPT Go users can send up to 160 messages with GPT-5.5 every 3 hours. GPT-5.5 Thinking has a limit of 3,000 messages per week.",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "3h is a rolling window from first message. Falls back to mini model after cap."
+        },
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Pro",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "messages",
+              "window": null,
+              "model": "GPT-5.5",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "ChatGPT Pro offers unlimited access to the flagship model with dedicated GPU capacity.",
+          "source": "https://www.nxcode.io/resources/news/claude-max-vs-chatgpt-pro-2026-premium-ai-comparison",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "\"Unlimited\" subject to abuse guardrails; no published hard cap."
+        },
         {
           "provider": "Anthropic",
           "product": "Claude",
           "plan": "Pro",
           "price_usd": 20,
           "period": "month",
-          "limit_value": 45,
-          "limit_unit": "messages",
-          "window": "5h",
           "includes_code": true,
-          "notes": "approx; ~45 msg per 5h window, gone in 1-2h of focused Claude Code use",
-          "source": "https://www.verdent.ai/guides/claude-code-pricing-2026"
+          "limits": [
+            {
+              "value": 1,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "The Pro plan gives roughly 45 messages per 5-hour window; on May 6, 2026 Anthropic doubled the 5-hour limits for every paid plan.",
+          "source": "https://devtoolpicks.com/blog/anthropic-doubled-claude-code-rate-limits-spacex-2026",
+          "as_of": "2026-05-06",
+          "verified_on": "2026-06-07",
+          "notes": "Anthropic publishes a token budget, not a message count. Community estimate ~45 msg/5h pre-May-6, doubled after. Pro = 1x baseline for the Max multipliers."
         },
         {
           "provider": "Anthropic",
@@ -28,12 +93,22 @@
           "plan": "Max 5x",
           "price_usd": 100,
           "period": "month",
-          "limit_value": null,
-          "limit_unit": "tokens",
-          "window": "5h",
           "includes_code": true,
-          "notes": "5x Pro usage limits",
-          "source": "https://intuitionlabs.ai/articles/claude-max-plan-pricing-usage-limits"
+          "limits": [
+            {
+              "value": 5,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Anthropic positions Max in two tiers: 5x more usage per session than Pro and 20x more usage per session than Pro.",
+          "source": "https://intuitionlabs.ai/articles/claude-max-plan-pricing-usage-limits",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Multiplier is official; absolute token count is not published as a stable figure."
         },
         {
           "provider": "Anthropic",
@@ -41,38 +116,29 @@
           "plan": "Max 20x",
           "price_usd": 200,
           "period": "month",
-          "limit_value": 88000,
-          "limit_unit": "tokens",
-          "window": "5h",
           "includes_code": true,
-          "notes": "~88k tokens per 5h window; 20x Pro quota",
-          "source": "https://intuitionlabs.ai/articles/claude-max-plan-pricing-usage-limits"
-        },
-        {
-          "provider": "OpenAI",
-          "product": "ChatGPT",
-          "plan": "Plus",
-          "price_usd": 20,
-          "period": "month",
-          "limit_value": null,
-          "limit_unit": "messages",
-          "window": "3h",
-          "includes_code": true,
-          "notes": "high-volume; users rarely hit limits. Codex CLI included",
-          "source": "https://www.eesel.ai/blog/openai-codex-pricing"
-        },
-        {
-          "provider": "OpenAI",
-          "product": "ChatGPT",
-          "plan": "Pro",
-          "price_usd": 200,
-          "period": "month",
-          "limit_value": null,
-          "limit_unit": "messages",
-          "window": null,
-          "includes_code": true,
-          "notes": "unlimited flagship access + dedicated GPU capacity",
-          "source": "https://www.nxcode.io/resources/news/claude-max-vs-chatgpt-pro-2026-premium-ai-comparison"
+          "limits": [
+            {
+              "value": 20,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "kind": "primary"
+            },
+            {
+              "value": 88000,
+              "unit": "tokens",
+              "window": "5h",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "Claude Max 20x ($200/month) comes in at ~88,000 tokens per 5-hour window.",
+          "source": "https://intuitionlabs.ai/articles/claude-max-plan-pricing-usage-limits",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Multiplier (20x) is official; the 88k token/5h figure is a community estimate."
         }
       ]
     }
