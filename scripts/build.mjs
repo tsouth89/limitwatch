@@ -12,6 +12,8 @@ const REQUIRED = ["provider", "product", "plan", "confidence", "quote", "source"
 const TIERS = ["official", "announced", "community", "crowdsourced"];
 
 const files = readdirSync(snapDir).filter((f) => f.endsWith(".json")).sort();
+const today = new Date().toISOString().slice(0, 10);
+const dataWarnings = [];
 
 const snapshots = files.map((f) => {
   const snap = JSON.parse(readFileSync(join(snapDir, f), "utf8"));
@@ -22,6 +24,9 @@ const snapshots = files.map((f) => {
     for (const k of REQUIRED) if (!e[k]) throw new Error(`${f}: ${e.plan ?? "?"} missing ${k}`);
     if (!TIERS.includes(e.confidence)) throw new Error(`${f}: ${e.plan} bad confidence "${e.confidence}"`);
     if (!Array.isArray(e.limits)) throw new Error(`${f}: ${e.plan} limits not array`);
+    if (e.as_of > today) dataWarnings.push(`${f}: ${e.provider} ${e.plan} as_of ${e.as_of} is after ${today}`);
+    if (e.verified_on > today) dataWarnings.push(`${f}: ${e.provider} ${e.plan} verified_on ${e.verified_on} is after ${today}`);
+    if (e.measured?.as_of > today) dataWarnings.push(`${f}: ${e.provider} ${e.plan} measured as_of ${e.measured.as_of} is after ${today}`);
   }
   return snap;
 });
@@ -70,9 +75,10 @@ const out = {
   generated_at: new Date().toISOString(),
   snapshot_count: snapshots.length,
   date_range: snapshots.length ? [snapshots[0].date, snapshots.at(-1).date] : [],
+  data_warnings: dataWarnings,
   changes: changes.reverse(), // newest first
   snapshots,
 };
 
 writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
-console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${changes.length} change(s)`);
+console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${changes.length} change(s), ${dataWarnings.length} warning(s)`);

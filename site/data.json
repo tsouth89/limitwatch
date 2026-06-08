@@ -1,9 +1,16 @@
 {
-  "generated_at": "2026-06-08T03:08:22.796Z",
+  "generated_at": "2026-06-08T03:49:45.990Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
     "2026-06-07"
+  ],
+  "data_warnings": [
+    "2026-06-07.json: Anthropic Pro as_of 2026-06-15 is after 2026-06-08",
+    "2026-06-07.json: Anthropic Max 5x as_of 2026-06-15 is after 2026-06-08",
+    "2026-06-07.json: Anthropic Max 20x as_of 2026-06-15 is after 2026-06-08",
+    "2026-06-07.json: Cursor Pro measured as_of 2026-06-28 is after 2026-06-08",
+    "2026-06-07.json: Cursor Pro+ measured as_of 2026-06-30 is after 2026-06-08"
   ],
   "changes": [],
   "snapshots": [

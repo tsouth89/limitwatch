@@ -12,7 +12,7 @@ The history is the moat. Snapshots are copyable; a 6-month time series is not.
 
 1. `data/snapshots/YYYY-MM-DD.json` — one dated snapshot per file. Append, never edit history.
 2. `node scripts/build.mjs` — merges every snapshot into `site/data.json`.
-3. `site/index.html` — static page, renders charts from `site/data.json` (Chart.js via CDN).
+3. `site/index.html` — static page, renders tables and value bars from `site/data.json`.
 
 No backend. Host on GitHub Pages / Netlify free tier.
 
