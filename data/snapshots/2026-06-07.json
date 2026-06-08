@@ -49,11 +49,41 @@
         }
       ],
       "confidence": "official",
-      "quote": "ChatGPT Pro offers unlimited access to the flagship model with dedicated GPU capacity.",
-      "source": "https://www.nxcode.io/resources/news/claude-max-vs-chatgpt-pro-2026-premium-ai-comparison",
+      "quote": "The ChatGPT Business and Pro plans offer unlimited access to our GPT-5 models, subject to abuse guardrails.",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
       "as_of": "2026-06-07",
       "verified_on": "2026-06-07",
-      "notes": "\"Unlimited\" subject to abuse guardrails; no published hard cap."
+      "notes": "\"Unlimited\" subject to abuse guardrails; no published hard cap. GPT-5.5 Pro (research-grade) included."
+    },
+    {
+      "provider": "OpenAI",
+      "product": "ChatGPT",
+      "plan": "Go",
+      "price_usd": 8,
+      "period": "month",
+      "includes_code": false,
+      "limits": [
+        {
+          "value": 160,
+          "unit": "messages",
+          "window": "3h",
+          "model": "GPT-5.5",
+          "kind": "primary"
+        },
+        {
+          "value": 10,
+          "unit": "messages",
+          "window": "5h",
+          "model": "GPT-5.5 Thinking",
+          "kind": "secondary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "ChatGPT Plus and ChatGPT Go users can send up to 160 messages with GPT-5.5 every 3 hours.",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+      "as_of": "2026-06-07",
+      "verified_on": "2026-06-07",
+      "notes": "Thinking quote: \"Go users can send up to 10 messages every 5 hours after enabling Thinking.\" Price $8/mo (US) per chatgpt.com/pricing; US Go shows ads. Falls back to mini model after the 3h cap."
     },
     {
       "provider": "Anthropic",

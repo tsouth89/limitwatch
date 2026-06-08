@@ -34,6 +34,14 @@
       "method": "browser"
     },
     {
+      "id": "openai-go-help",
+      "provider": "OpenAI",
+      "label": "What is ChatGPT Go (Go plan limits)",
+      "url": "https://help.openai.com/en/articles/11989085-what-is-chatgpt-go",
+      "tier": "official",
+      "method": "browser"
+    },
+    {
       "id": "cursor-pricing-docs",
       "provider": "Cursor",
       "label": "Cursor plans & included usage",
