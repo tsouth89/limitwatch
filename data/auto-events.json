@@ -1,0 +1,5 @@
+{
+  "schema": 1,
+  "note": "Auto-published events from scripts/discover.mjs. Machine-extracted, but every quote is verified to appear VERBATIM in the cited source before publishing, and only high-certainty items pass. Tagged auto:true and badged on-site. build.mjs merges these with the hand-curated data/events.json; a manual event with the same id/source supersedes. Safe to hand-correct or delete any entry.",
+  "events": []
+}

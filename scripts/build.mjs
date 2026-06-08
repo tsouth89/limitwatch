@@ -158,6 +158,26 @@ try {
   if (err.code !== "ENOENT") throw err;
 }
 
+// Auto-published events (scripts/discover.mjs). Same schema + validation as hand-curated events;
+// every one is quote-verified against its source before landing here. Merged in, tagged auto, and
+// deduped against manual events by id (a human-curated entry always wins).
+try {
+  const ae = JSON.parse(readFileSync(join(root, "data", "auto-events.json"), "utf8"));
+  if (Array.isArray(ae.events)) {
+    const manualIds = new Set(events.map((e) => e.id));
+    const manualSrc = new Set(events.map((e) => e.source));
+    for (const e of ae.events) {
+      for (const k of EVENT_REQUIRED) if (e[k] == null) throw new Error(`auto-events.json: ${e.id ?? "?"} missing ${k}`);
+      if (!TIERS.includes(e.confidence)) throw new Error(`auto-events.json: ${e.id} bad confidence "${e.confidence}"`);
+      if (e.ends_on && e.ends_on < e.starts_on) throw new Error(`auto-events.json: ${e.id} ends_on before starts_on`);
+      if (manualIds.has(e.id) || manualSrc.has(e.source)) continue;   // a hand-curated event supersedes
+      events.push({ ...e, auto: true });
+    }
+  }
+} catch (err) {
+  if (err.code !== "ENOENT") throw err;
+}
+
 // Self-reported / crowdsourced usage observations (chat-subscription caps that no API exposes).
 // Light validation only — these are honest field reports, kept verbatim. Optional file.
 const REPORT_REQUIRED = ["provider", "plan", "surface", "window", "captured_at", "metric", "observed"];

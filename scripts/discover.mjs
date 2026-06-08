@@ -24,6 +24,18 @@ const decode = (s) => (s ?? "")
   .trim();
 const tag = (block, name) => decode(block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`, "i"))?.[1] ?? "");
 
+// Strip an HTML page down to readable text (drop script/style, tags -> spaces, decode entities).
+const stripHtml = (html) => decode(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+// Normalize for verbatim matching: lowercase, collapse every non-alphanumeric run to one space.
+const normForMatch = (s) => (s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+// The anti-hallucination guard: a quote may publish ONLY if it appears (normalized) in the source
+// page text. Requires a meaningful length so trivial fragments can't pass.
+const quoteInSource = (quote, pageText) => {
+  const q = normForMatch(quote);
+  if (q.split(" ").length < 6 || q.length < 30) return false;
+  return normForMatch(pageText).includes(q);
+};
+
 // Minimal RSS/Atom item extraction — no deps. Handles <item> (RSS) and <entry> (Atom).
 function parseFeed(xml) {
   const items = [];
@@ -156,4 +168,63 @@ if (relevant && relevant.length) {
   news.items = news.items.slice(0, 40);   // keep the radar recent
   writeFileSync(newsPath, JSON.stringify(news, null, 2));
   console.log(`news.json: +${added} flagged item(s) (${news.items.length} total)`);
+}
+
+// Pull a structured event (with a VERBATIM quote) from an article's text. One LLM call per candidate.
+async function extractEvent(item, pageText, model) {
+  const prompt = `You extract a structured "limit/pricing change" event from an AI provider's article, for a site that tracks subscription usage limits and consumer plan pricing over time.\n\nProvider: ${item.provider}${item.product ? " / " + item.product : ""}\nArticle title: ${item.title}\nArticle text (may be truncated):\n"""${pageText.slice(0, 7000)}"""\n\nReturn ONE JSON object, no prose:\n{\n  "is_limit_change": <true only if this announces a concrete change to a consumer subscription usage limit/quota/rate cap or plan price/credit>,\n  "certainty": "high|medium|low",\n  "quote": "<a SINGLE sentence copied EXACTLY, character-for-character, from the article text above that states the change. Do not paraphrase, fix, or shorten it. If no such sentence exists, set is_limit_change false.>",\n  "title": "<= 80 char headline of the change",\n  "kind": "limit_boost|limit_cut|pricing_change|promo|new_plan",\n  "applies_to": ["plan names mentioned, e.g. Pro, Pro+"] ,\n  "window": "5h|3h|day|week|month|null",\n  "factor": <number like 1.5 for +50%, 2 for 2x, or null>,\n  "starts_on": "YYYY-MM-DD or null",\n  "ends_on": "YYYY-MM-DD or null",\n  "permanent": <true|false>,\n  "confidence": "official|announced"\n}\nThe quote MUST be a verbatim substring of the article text. Be conservative: low certainty if unsure.`;
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "x-api-key": process.env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+      body: JSON.stringify({ model, max_tokens: 700, messages: [{ role: "user", content: prompt }] }),
+    });
+    const body = await res.json();
+    const text = body?.content?.[0]?.text ?? "{}";
+    return JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
+  } catch (e) { console.log(`[auto] extract failed: ${e.message}`); return null; }
+}
+
+// AUTO-PROMOTE: for high-confidence flagged items, fetch the article, extract an event with a
+// verbatim quote, and publish it ONLY if the quote string-matches the source page. This makes a
+// hallucinated quote impossible to ship; the LLM's interpretation (kind/factor) is still machine
+// output, so these are tagged auto:true and badged on-site for transparency + easy correction.
+if (process.env.ANTHROPIC_API_KEY && relevant && relevant.length) {
+  const model = process.env.ANTHROPIC_DISCOVER_MODEL || "claude-haiku-4-5-20251001";
+  const autoPath = join(root, "data", "auto-events.json");
+  const auto = existsSync(autoPath) ? JSON.parse(readFileSync(autoPath, "utf8")) : { schema: 1, note: "Auto-published events. Machine-extracted, but every quote is verified to appear verbatim in the cited source before publishing (see scripts/discover.mjs). Tagged auto:true and badged on-site. A human may correct or delete any entry; build.mjs merges these with the hand-curated data/events.json.", events: [] };
+  const haveSrc = new Set(auto.events.map((e) => e.source));
+  const haveId = new Set(auto.events.map((e) => e.id));
+  let promoted = 0, checked = 0;
+  for (const r of relevant) {
+    const it = fresh[r.index];
+    if (!it || haveSrc.has(it.link)) continue;
+    checked++;
+    let pageText = "";
+    try { const res = await fetch(it.link, { headers: { "user-agent": "Mozilla/5.0 LimitWatch-discover" } }); if (res.ok) pageText = stripHtml(await res.text()); } catch {}
+    if (pageText.length < 200) { console.log(`[auto] no article text, skip ${it.link}`); continue; }
+    const ev = await extractEvent(it, pageText, model);
+    if (!ev || !ev.is_limit_change || ev.certainty !== "high" || !ev.quote) continue;
+    if (!quoteInSource(ev.quote, pageText)) { console.log(`[auto] quote NOT verbatim in source, skip ${it.link}`); continue; }
+    const yr = (ev.starts_on || it.date || nowIso).slice(0, 4);
+    const slug = (ev.title || it.title).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48);
+    const id = `auto-${it.provider.toLowerCase()}-${slug}-${yr}`;
+    if (haveId.has(id)) continue;
+    auto.events.unshift({
+      id, provider: it.provider, product: it.product ?? null,
+      applies_to: Array.isArray(ev.applies_to) ? ev.applies_to : [],
+      title: (ev.title || it.title).slice(0, 80), kind: ev.kind || r.kind,
+      window: ev.window && ev.window !== "null" ? ev.window : null,
+      factor: typeof ev.factor === "number" ? ev.factor : null,
+      starts_on: (ev.starts_on && /^\d{4}-\d{2}-\d{2}$/.test(ev.starts_on)) ? ev.starts_on : (it.date ? new Date(it.date).toISOString().slice(0, 10) : nowIso.slice(0, 10)),
+      ends_on: (ev.ends_on && /^\d{4}-\d{2}-\d{2}$/.test(ev.ends_on)) ? ev.ends_on : null,
+      permanent: ev.permanent !== false,
+      confidence: ev.confidence === "official" ? "official" : "announced",
+      quote: ev.quote, source: it.link, auto: true, flagged_at: nowIso,
+    });
+    haveId.add(id); haveSrc.add(it.link); promoted++;
+  }
+  auto.events = auto.events.slice(0, 60);
+  writeFileSync(autoPath, JSON.stringify(auto, null, 2));
+  console.log(`auto-events: checked ${checked}, +${promoted} auto-published (quote-verified)`);
 }

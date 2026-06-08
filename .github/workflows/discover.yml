@@ -48,11 +48,11 @@ jobs:
       - name: Commit advanced discovery state + radar
         run: |
           rm -f data/_discover-summary.md
-          if ! git diff --quiet -- data/discover-state.json data/news.json; then
+          if ! git diff --quiet -- data/discover-state.json data/news.json data/auto-events.json; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add data/discover-state.json data/news.json
-            git commit -m "data: advance discovery state + news radar"
+            git add data/discover-state.json data/news.json data/auto-events.json
+            git commit -m "data: discovery state + news radar + auto-events"
             git push
           else
             echo "No discovery state change to commit."

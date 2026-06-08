@@ -1319,8 +1319,9 @@
             status = `<span class="estatus ended">Ended</span>`;
             count = `ran ${fmtD(e.starts_on)}–${fmtD(e.ends_on)}`;
           }
+          const autoBadge = e.auto ? ` <span class="badge announced q" data-tip="Auto-published by the discovery bot. The quote was verified to appear verbatim in the cited source before going live; the classification (kind/dates/plans) is machine-made — correct or remove via data/auto-events.json.">auto</span>` : "";
           return `<div class="event">${status}<div class="ebody">
-            <div class="etitle">${e.title} <span class="q" data-tip="${esc(e.quote)}">ⓘ</span></div>
+            <div class="etitle">${e.title} <span class="q" data-tip="${esc(e.quote)}">ⓘ</span>${autoBadge}</div>
             <div class="emeta">${scope} · ${count} ${e.source ? `· <a href="${e.source}" target="_blank" rel="noopener">src</a>` : ""}</div>
           </div></div>`;
         }).join("");
