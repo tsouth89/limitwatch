@@ -42,6 +42,17 @@
     .num { font-variant-numeric: tabular-nums; }
     .changelog li { margin-bottom: .4rem; }
     code { background: #21262d; padding: .05rem .35rem; border-radius: 4px; font-size: 13px; }
+    .controls { position: sticky; top: 0; z-index: 5; background: #161b22; padding: .7rem 0 .6rem; margin-bottom: .4rem; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; border-bottom: 1px solid #21262d; }
+    #search { flex: 1 1 220px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; padding: .4rem .6rem; font: inherit; }
+    #search:focus { outline: none; border-color: #1f6feb; }
+    .chips { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .chip { cursor: pointer; border: 1px solid #30363d; border-radius: 999px; padding: .15rem .6rem; font-size: 12px; color: #9aa7b4; background: #0d1117; user-select: none; }
+    .chip:hover { border-color: #6e7681; }
+    .chip.active { background: #1f6feb26; color: #58a6ff; border-color: #1f6feb55; }
+    .pgroup h3 { font-size: 1.02rem; margin: 1.1rem 0 .2rem; padding-bottom: .2rem; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; align-items: baseline; }
+    .pgroup:first-child h3 { margin-top: .3rem; }
+    .pgroup .pcount { font-size: 12px; font-weight: 400; color: #6e7681; }
+    .empty { color: #6e7681; padding: 1rem 0; }
   </style>
 </head>
 <body>
@@ -58,14 +69,13 @@
   </header>
   <main>
     <div class="card">
+      <div class="controls">
+        <input id="search" type="search" placeholder="Search provider, plan, or model…" aria-label="Search plans" />
+        <div class="chips" id="provChips"></div>
+      </div>
       <h2>Latest published limits</h2>
-      <p class="meta">Native units, as published. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished.</p>
-      <table id="latest">
-        <thead><tr>
-          <th>Provider / Plan</th><th>$/mo</th><th>Limit</th><th>Window</th><th>Model</th><th>Source</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
+      <p class="meta">Grouped by provider, one row per plan, native units as published. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished.</p>
+      <div id="latest"></div>
     </div>
 
     <div class="card">
@@ -135,24 +145,71 @@
         `${db.snapshot_count} snapshot(s) · ${db.date_range.join(" → ")} · ${db.changes.length} recorded change(s) · built ${db.generated_at.slice(0,10)}`;
 
       const latest = db.snapshots.at(-1);
-      const tb = document.querySelector("#latest tbody");
-      for (const e of latest.entries) {
-        e.limits.forEach((l, idx) => {
-          const tr = document.createElement("tr");
-          const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
-          const name = idx === 0
-            ? `<strong>${e.provider}</strong> ${e.plan}${surf} <span class="badge ${e.confidence}">${e.confidence}</span>`
-            : `<span class="meta">↳ ${e.product} ${e.plan}${surf}</span>`;
-          tr.innerHTML =
-            `<td>${name}</td>` +
-            `<td class="num">$${e.price_usd}</td>` +
-            `<td class="num"><span class="q" title="${e.quote.replace(/"/g,'&quot;')}">${unitLabel(l)}</span></td>` +
-            `<td>${l.window ?? "-"}</td>` +
-            `<td class="meta">${l.model ?? "all"}</td>` +
-            `<td><a href="${e.source}" target="_blank" rel="noopener">src</a> · <span class="meta">${e.verified_on}</span></td>`;
-          tb.appendChild(tr);
-        });
+
+      // ---- Latest limits: grouped by provider, one row per plan, with search + filter ----
+      const shortWin = (w) => w == null ? "" : ({ week: "wk", month: "mo" }[w] ?? w);
+      // One plan's limits collapsed into a single cell (countable units carry a window; multipliers/credits read on their own).
+      const limitCell = (e) => e.limits.map((l) => {
+        const win = (l.window && l.unit !== "multiplier" && l.unit !== "usd_credit") ? `/${shortWin(l.window)}` : "";
+        const credWin = l.unit === "usd_credit" && l.window ? ` <span class="meta">/ ${shortWin(l.window)}</span>` : "";
+        const model = l.model ? ` <span class="meta">(${l.model})</span>` : "";
+        return `${unitLabel(l)}${win}${credWin}${model}`;
+      }).join("<br>");
+
+      const providers = [...new Set(latest.entries.map((e) => e.provider))];
+      const active = new Set();           // empty = all
+      let query = "";
+
+      const matches = (e) => {
+        if (active.size && !active.has(e.provider)) return false;
+        if (!query) return true;
+        const hay = `${e.provider} ${e.product} ${e.plan} ${e.surface ?? ""} ${e.limits.map((l) => `${l.unit} ${l.model ?? ""}`).join(" ")}`.toLowerCase();
+        return hay.includes(query);
+      };
+
+      const latestEl = document.getElementById("latest");
+      function renderLatest() {
+        const shown = latest.entries.filter(matches);
+        if (!shown.length) { latestEl.innerHTML = `<p class="empty">No plans match.</p>`; return; }
+        let html = "";
+        for (const prov of providers) {
+          const rows = shown.filter((e) => e.provider === prov).sort((a, b) => a.price_usd - b.price_usd);
+          if (!rows.length) continue;
+          html += `<div class="pgroup"><h3>${prov}<span class="pcount">${rows.length} plan${rows.length > 1 ? "s" : ""}</span></h3><table><tbody>`;
+          for (const e of rows) {
+            const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
+            html +=
+              `<tr>` +
+              `<td><strong>${e.plan}</strong>${surf}</td>` +
+              `<td class="num">$${e.price_usd}</td>` +
+              `<td><span class="q" title="${e.quote.replace(/"/g, "&quot;")}">${limitCell(e)}</span></td>` +
+              `<td><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
+              `<td><a href="${e.source}" target="_blank" rel="noopener">src</a> <span class="meta">${e.verified_on}</span></td>` +
+              `</tr>`;
+          }
+          html += `</tbody></table></div>`;
+        }
+        latestEl.innerHTML = html;
       }
+
+      const chipsEl = document.getElementById("provChips");
+      const renderChips = () => {
+        chipsEl.innerHTML =
+          `<span class="chip ${active.size ? "" : "active"}" data-all>All</span>` +
+          providers.map((p) => `<span class="chip ${active.has(p) ? "active" : ""}" data-prov="${p}">${p}</span>`).join("");
+      };
+      chipsEl.addEventListener("click", (ev) => {
+        const c = ev.target.closest(".chip");
+        if (!c) return;
+        if (c.dataset.all !== undefined) active.clear();
+        else { const p = c.dataset.prov; active.has(p) ? active.delete(p) : active.add(p); }
+        renderChips(); renderLatest();
+      });
+      document.getElementById("search").addEventListener("input", (ev) => {
+        query = ev.target.value.trim().toLowerCase(); renderLatest();
+      });
+      renderChips();
+      renderLatest();
 
       // ---- Value per dollar (derived, never stored) ----
       const winPerDay = { "3h": 8, "4h": 6, "5h": 4.8, day: 1, week: 1 / 7, month: 1 / 30 };
