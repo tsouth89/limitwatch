@@ -111,6 +111,20 @@ Rules:
 Per-limit `confidence`, `source`, `quote`, `as_of`, and `basis` override the entry-level values
 for that one limit (used when a single plan mixes a hard multiplier with a soft archived estimate).
 
+## Partial snapshots (`covers`, optional)
+
+A snapshot may set top-level `"covers": ["Google", "Cursor"]` to declare it only records those
+providers. Used for **historical backfills** where archives (Wayback) only let us verify some
+providers for a given date. The changelog diff between two snapshots is scoped to providers
+covered by **both**, so a partial snapshot never fabricates "added"/"removed" rows for the
+providers it simply didn't record. A snapshot without `covers` is authoritative for every
+provider it lists (a normal full snapshot). Within a covered provider you must still list **every**
+plan that existed then, or omitted plans will read as drift.
+
+Backfill values must come verbatim from a dated archive capture (cite the
+`http://web.archive.org/web/<timestamp>/<url>` URL as `source`, set `as_of`/`verified_on` to the
+capture date). If a number can't be read from the capture, leave it `null` (unpublished) — never guess.
+
 ## Hard rules
 
 - **Never edit a past snapshot.** Wrong-then is still the record. Drift is the product.

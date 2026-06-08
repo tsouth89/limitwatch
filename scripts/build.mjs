@@ -50,22 +50,33 @@ function flatten(snap) {
   return { limits, prices };
 }
 
+// A snapshot is authoritative for a set of providers: an explicit `covers` list (used by partial
+// historical backfills) or, by default, every provider it contains. Cross-snapshot diffs only
+// consider providers covered by BOTH sides, so a partial snapshot never fabricates "added"/"removed"
+// rows for providers it simply didn't record. Keys are `provider|...`, so the provider is segment 0.
+const coverageOf = (snap) => new Set(snap.covers ?? snap.entries.map((e) => e.provider));
+
 // Diff consecutive snapshots → changelog of every value/price change.
 const changes = [];
 for (let i = 1; i < snapshots.length; i++) {
   const prev = flatten(snapshots[i - 1]);
   const cur = flatten(snapshots[i]);
   const date = snapshots[i].date;
+  const prevCov = coverageOf(snapshots[i - 1]);
+  const curCov = coverageOf(snapshots[i]);
+  const inScope = (key) => { const p = key.split("|")[0]; return prevCov.has(p) && curCov.has(p); };
 
   for (const [k, now] of cur.limits) {
+    if (!inScope(k)) continue;
     const was = prev.limits.get(k);
     if (!was) changes.push({ date, kind: "limit_added", key: k, to: now.value, unit: now.unit, source: now.source });
     else if (was.value !== now.value)
       changes.push({ date, kind: "limit_changed", key: k, from: was.value, to: now.value, unit: now.unit, source: now.source });
   }
-  for (const [k] of prev.limits) if (!cur.limits.has(k)) changes.push({ date, kind: "limit_removed", key: k });
+  for (const [k] of prev.limits) if (inScope(k) && !cur.limits.has(k)) changes.push({ date, kind: "limit_removed", key: k });
 
   for (const [k, now] of cur.prices) {
+    if (!inScope(k)) continue;
     const was = prev.prices.get(k);
     if (was && was.price !== now.price)
       changes.push({ date, kind: "price_changed", key: k, from: was.price, to: now.price, source: now.source });

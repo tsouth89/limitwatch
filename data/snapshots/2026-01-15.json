@@ -1,0 +1,104 @@
+{
+  "schema": 3,
+  "date": "2026-01-15",
+  "covers": ["Google", "Cursor"],
+  "note": "Partial historical backfill from the Wayback Machine. `covers` lists the only providers this snapshot records, so the changelog diff is scoped to them (it will NOT report every other provider as 'added'). Every value below is taken verbatim from a dated archive capture; unverifiable values are left unpublished rather than guessed.",
+  "entries": [
+    {
+      "provider": "Google",
+      "product": "Gemini",
+      "plan": "AI Pro",
+      "price_usd": 19.99,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": null,
+          "unit": "multiplier",
+          "window": "5h",
+          "model": null,
+          "baseline": "Free",
+          "kind": "primary",
+          "basis": "unpublished"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Get higher access to new and powerful features to boost your productivity and creativity. $19.99 / month",
+      "source": "http://web.archive.org/web/20260115024110/https://gemini.google/subscriptions/",
+      "as_of": "2026-01-15",
+      "verified_on": "2026-01-15",
+      "notes": "Wayback capture 2026-01-15. In January the page sold plans by feature access, not an 'Nx higher usage' multiplier (that framing appears only after the May 2026 limit backlash), so the usage limit is recorded as unpublished."
+    },
+    {
+      "provider": "Google",
+      "product": "Gemini",
+      "plan": "AI Ultra (20x)",
+      "price_usd": 249.99,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": null,
+          "unit": "multiplier",
+          "window": "5h",
+          "model": null,
+          "baseline": "AI Pro",
+          "kind": "primary",
+          "basis": "unpublished"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Unlock the highest level of access to the best of Google AI and exclusive features. $249.99 / month",
+      "source": "http://web.archive.org/web/20260115024110/https://gemini.google/subscriptions/",
+      "as_of": "2026-01-15",
+      "verified_on": "2026-01-15",
+      "notes": "Wayback capture 2026-01-15. January had a single 'Google AI Ultra' flagship at $249.99/mo (plus a $124.99/mo-for-3-months promo); no AI Plus or 5x Ultra tier existed yet, and usage was not stated as a multiplier. Tracked under the (20x) flagship label for price-lineage continuity. The flagship price later dropped to $199.99 (May 2026)."
+    },
+    {
+      "provider": "Cursor",
+      "product": "Cursor",
+      "plan": "Pro",
+      "price_usd": 20,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 20,
+          "unit": "usd_credit",
+          "window": "month",
+          "model": null,
+          "kind": "primary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Pro includes $20 of API agent usage + additional bonus usage",
+      "source": "http://web.archive.org/web/20260114022837/https://cursor.com/docs/account/pricing",
+      "as_of": "2026-01-14",
+      "verified_on": "2026-01-14",
+      "notes": "Wayback capture 2026-01-14. Included API agent credit unchanged from June. The Pro+ tier did not exist on the January pricing page."
+    },
+    {
+      "provider": "Cursor",
+      "product": "Cursor",
+      "plan": "Ultra",
+      "price_usd": 200,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 400,
+          "unit": "usd_credit",
+          "window": "month",
+          "model": null,
+          "kind": "primary"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Ultra includes $400 of API agent usage + additional bonus usage",
+      "source": "http://web.archive.org/web/20260114022837/https://cursor.com/docs/account/pricing",
+      "as_of": "2026-01-14",
+      "verified_on": "2026-01-14",
+      "notes": "Wayback capture 2026-01-14. Included API agent credit unchanged from June. Subscription price carried at the current $200/mo (the docs pricing page states included usage, not the subscription price)."
+    }
+  ]
+}
