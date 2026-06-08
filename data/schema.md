@@ -85,20 +85,30 @@ real ceiling.
 | `community` | Measured/estimated by a third party | TokenMix "~88k tok/5h" |
 | `crowdsourced` | Aggregated user reports (our form) | "I hit limit at N" |
 
-### Claim basis (a rule, not yet a field)
+### Claim basis (per-limit `basis`, v3)
 
 `confidence` answers *how trusted is the source*. A second, orthogonal question is *what kind of
-claim is the number*: a stated hard figure, the provider's own soft estimate, a value derived from
-a multiplier, our measured burn, or honestly absent. Today every entry is a stated figure or `?`,
-so we do **not** carry a `basis` field — adding an enum that only restates `?` would be dead
-scaffolding.
+claim is the number*. Optional per-limit `basis`:
 
-Add an optional per-limit `basis` (`published` | `estimate` | `derived` | `measured` |
-`unpublished`) the first time we ingest an `estimate` or `derived` number, and badge it then.
-**Never store a derived number as if it were published** — that is the exact failure this rule
-guards against (e.g. Anthropic's circulated "225 / 900 msg per 5h" Max figures are 5×/20× the
-Pro estimate, not first-party-published; verified absent across six current Claude help pages on
-2026-06-07, so they are not in the dataset).
+| `basis` | Meaning |
+|---|---|
+| `published` (default) | A stated hard figure on a provider page. Omit the field. |
+| `estimate` | The provider's own soft "expect around N" guidance, not a hard cap. |
+| `derived` | Computed by us from a multiplier or other figure. |
+| `measured` | Our observed burn data (usually lives in the `measured` block instead). |
+| `unpublished` | Honestly absent; show `?`. |
+
+Rules:
+- **Never store a number we derived as `published`.** If we did the math, it's `derived`.
+- A provider's *own* published estimate is `confidence: official` + `basis: estimate` — official
+  source, soft claim. Example: Anthropic's "≈45 / ≥225 / ≥900 messages per 5h" for Pro / Max 5x /
+  20x. These come from the now-retired usage articles (ids 8324991, 11014257 — live URLs 404 as of
+  2026-06-07); we cite the Wayback snapshots and set `as_of` to the snapshot date.
+- `estimate` and `measured` limits are **excluded from the value-per-dollar / cross-provider
+  tables** — those compare hard caps only.
+
+Per-limit `confidence`, `source`, `quote`, `as_of`, and `basis` override the entry-level values
+for that one limit (used when a single plan mixes a hard multiplier with a soft archived estimate).
 
 ## Hard rules
 

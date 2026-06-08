@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T02:07:48.120Z",
+  "generated_at": "2026-06-08T02:24:53.938Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
@@ -109,6 +109,18 @@
               "model": null,
               "baseline": "Free",
               "kind": "primary"
+            },
+            {
+              "value": 45,
+              "unit": "messages",
+              "window": "5h",
+              "model": null,
+              "kind": "secondary",
+              "basis": "estimate",
+              "confidence": "official",
+              "quote": "If your conversations are relatively short (approximately 200 English sentences, assuming your sentences are around 15-20 words), you can expect to send around 45 messages every 5 hours, often more depending on Claude's current capacity.",
+              "source": "http://web.archive.org/web/20250728132422/https://support.anthropic.com/en/articles/8324991-about-claude-pro-usage",
+              "as_of": "2025-07-28"
             }
           ],
           "confidence": "official",
@@ -116,7 +128,7 @@
           "source": "https://support.claude.com/en/articles/8325606-what-is-the-pro-plan",
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Anthropic publishes a token budget, not a message count: the current Pro page no longer states a per-window message figure (the often-cited ~45 msg/5h is stale/community). Pro is the 1x baseline for the Max 5x/20x multipliers. Price $20/mo ($17/mo annual) per claude.com/pricing. Claude Code 5-hour limits were doubled on 2026-05-06 (no token pool published)."
+          "notes": "Anthropic publishes a token budget, not a message count. The ~45 msg/5h figure is an official estimate from the now-retired 'About Claude's Pro Plan Usage' article (id 8324991, live URL now 404); cited here via the 2025-07-28 Wayback snapshot and tagged basis=estimate. It predates the 2026-05-06 Claude Code 5-hour doubling and may be stale for current chat. Pro is the 1x baseline for the Max 5x/20x multipliers. Price $20/mo ($17/mo annual) per claude.com/pricing."
         },
         {
           "provider": "Anthropic",
@@ -133,6 +145,18 @@
               "model": null,
               "baseline": "Pro",
               "kind": "primary"
+            },
+            {
+              "value": 225,
+              "unit": "messages",
+              "window": "5h",
+              "model": null,
+              "kind": "secondary",
+              "basis": "estimate",
+              "confidence": "official",
+              "quote": "If your conversations are relatively short and use a less compute-intensive model, with the Max plan at 5x more usage, you can expect to send at least 225 messages every five hours, and with the Max plan at 20x more usage, at least 900 messages every five hours, often more depending on message length, conversation length, and Claude's current capacity.",
+              "source": "http://web.archive.org/web/20250910111758/https://support.anthropic.com/en/articles/11014257-about-claude-s-max-plan-usage",
+              "as_of": "2025-09-10"
             }
           ],
           "confidence": "official",
@@ -140,7 +164,7 @@
           "source": "https://claude.com/pricing",
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Multiplier is official; absolute token count is not published as a stable figure. Max 5x from $100/mo."
+          "notes": "Multiplier is official; absolute token count is not published as a stable figure. Max 5x from $100/mo. The 'at least 225 msg/5h' figure is an official estimate from the now-retired 'About Claude's Max Plan Usage' article (id 11014257, live URL now 404), cited via the 2025-09-10 Wayback snapshot; predates the 2026-05-06 Claude Code doubling."
         },
         {
           "provider": "Anthropic",
@@ -157,6 +181,18 @@
               "model": null,
               "baseline": "Pro",
               "kind": "primary"
+            },
+            {
+              "value": 900,
+              "unit": "messages",
+              "window": "5h",
+              "model": null,
+              "kind": "secondary",
+              "basis": "estimate",
+              "confidence": "official",
+              "quote": "If your conversations are relatively short and use a less compute-intensive model, with the Max plan at 5x more usage, you can expect to send at least 225 messages every five hours, and with the Max plan at 20x more usage, at least 900 messages every five hours, often more depending on message length, conversation length, and Claude's current capacity.",
+              "source": "http://web.archive.org/web/20250910111758/https://support.anthropic.com/en/articles/11014257-about-claude-s-max-plan-usage",
+              "as_of": "2025-09-10"
             }
           ],
           "confidence": "official",
@@ -164,7 +200,7 @@
           "source": "https://claude.com/pricing",
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Multiplier (20x) is official; absolute token count not published. Community estimate ~88,000 tokens per 5h window (intuitionlabs.ai). Max 20x $200/mo."
+          "notes": "Multiplier (20x) is official; absolute token count not published. Community estimate ~88,000 tokens per 5h window (intuitionlabs.ai). Max 20x $200/mo. The 'at least 900 msg/5h' figure is an official estimate from the now-retired 'About Claude's Max Plan Usage' article (id 11014257, live URL now 404), cited via the 2025-09-10 Wayback snapshot; predates the 2026-05-06 Claude Code doubling."
         },
         {
           "provider": "Anthropic",

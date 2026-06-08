@@ -183,12 +183,19 @@
 
       // ---- Latest limits: grouped by provider, one row per plan, with search + filter ----
       const shortWin = (w) => w == null ? "" : ({ week: "wk", month: "mo" }[w] ?? w);
-      // One plan's limits collapsed into a single cell (countable units carry a window; multipliers/credits read on their own).
+      // One plan's limits collapsed into a single cell. Each limit carries its own tooltip
+      // (quote), an optional basis tag (e.g. "estimate"), and its own source link when it
+      // differs from the plan's primary source (e.g. an archived first-party page).
+      const esc = (s) => (s ?? "").replace(/"/g, "&quot;");
       const limitCell = (e) => e.limits.map((l) => {
         const win = (l.window && l.unit !== "multiplier" && l.unit !== "usd_credit") ? `/${shortWin(l.window)}` : "";
         const credWin = l.unit === "usd_credit" && l.window ? ` <span class="meta">/ ${shortWin(l.window)}</span>` : "";
         const model = l.model ? ` <span class="meta">(${l.model})</span>` : "";
-        return `${unitLabel(l)}${win}${credWin}${model}`;
+        const basis = l.basis && l.basis !== "published" ? ` <span class="meta">· ${l.basis}</span>` : "";
+        const altSrc = l.source && l.source !== e.source
+          ? ` <a href="${l.source}" target="_blank" rel="noopener" class="meta">src${l.as_of ? " " + l.as_of : ""}</a>` : "";
+        const tip = esc(l.quote ?? e.quote);
+        return `<span class="q" data-tip="${tip}">${unitLabel(l)}${win}${credWin}${model}</span>${basis}${altSrc}`;
       }).join("<br>");
 
       const providers = [...new Set(latest.entries.map((e) => e.provider))];
@@ -217,7 +224,7 @@
               `<tr>` +
               `<td><strong>${e.plan}</strong>${surf}</td>` +
               `<td class="num">$${e.price_usd}</td>` +
-              `<td><span class="q" data-tip="${e.quote.replace(/"/g, "&quot;")}">${limitCell(e)}</span></td>` +
+              `<td>${limitCell(e)}</td>` +
               `<td><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
               `<td><a href="${e.source}" target="_blank" rel="noopener">src</a> <span class="meta">${e.verified_on}</span></td>` +
               `</tr>`;
@@ -254,7 +261,8 @@
       const rows = [];
       for (const e of latest.entries) {
         for (const l of e.limits) {
-          if (l.value == null || l.unit === "multiplier" || !(l.window in winPerDay)) continue;
+          // Exclude soft/estimate limits from the ceiling tables — they are not hard caps.
+          if (l.value == null || l.unit === "multiplier" || l.basis === "estimate" || !(l.window in winPerDay)) continue;
           const perDay = l.value * winPerDay[l.window];
           rows.push({ name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model, window: l.window });
         }
