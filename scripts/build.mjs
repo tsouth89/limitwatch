@@ -15,7 +15,7 @@ const files = readdirSync(snapDir).filter((f) => f.endsWith(".json")).sort();
 
 const snapshots = files.map((f) => {
   const snap = JSON.parse(readFileSync(join(snapDir, f), "utf8"));
-  if (snap.schema !== 2) throw new Error(`${f}: expected schema 2`);
+  if (snap.schema !== 2 && snap.schema !== 3) throw new Error(`${f}: expected schema 2 or 3`);
   if (!snap.date) throw new Error(`${f}: missing date`);
   if (!Array.isArray(snap.entries)) throw new Error(`${f}: entries not array`);
   for (const e of snap.entries) {
@@ -37,7 +37,8 @@ function flatten(snap) {
   for (const e of snap.entries) {
     prices.set(priceKey(e), { price: e.price_usd, confidence: e.confidence, source: e.source });
     for (const l of e.limits) {
-      limits.set(limitKey(e, l), { value: l.value, unit: l.unit, window: l.window, confidence: e.confidence, source: e.source });
+      // limit-level confidence/source override the entry default when present (schema 3).
+      limits.set(limitKey(e, l), { value: l.value, unit: l.unit, window: l.window, confidence: l.confidence ?? e.confidence, source: l.source ?? e.source });
     }
   }
   return { limits, prices };

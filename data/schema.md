@@ -1,11 +1,14 @@
-# Snapshot schema (v2)
+# Snapshot schema (v3)
+
+> v3 adds two optional, backward-compatible things: per-limit `confidence`/`source` overrides,
+> and an entry-level `measured` block for observed-consumption data (see end).
 
 Core rule: **store only as-published facts. Derive everything (per-day, $/unit, cross-provider) at display time.**
 A snapshot never holds a computed number presented as a fact.
 
 ```jsonc
 {
-  "schema": 2,
+  "schema": 3,
   "date": "2026-06-07",          // ISO date this snapshot was recorded
   "entries": [
     {
@@ -40,6 +43,34 @@ A snapshot never holds a computed number presented as a fact.
   ]
 }
 ```
+
+## `measured` block (v3, optional) — observed consumption, not a cap
+
+For plans that publish only a dollar credit (Cursor, Replit), the official number is opaque:
+it doesn't say what the $ buys in tokens. The `measured` block records what a real maxed-out
+account actually consumed in a billing month, plus anything derived from it. It is rendered in
+its own "Measured usage" section and is **never** mixed into the official ceiling/value tables.
+
+```jsonc
+"measured": {
+  "confidence": "crowdsourced",         // crowdsourced (own account) | community (3rd-party)
+  "source": "Cursor dashboard, account-owner screenshot",
+  "period": "May 28 - Jun 28, 2026",
+  "as_of": "2026-06-28",
+  "realized_tokens_month": 294100000,   // total tokens consumed in the month (observed, not a cap)
+  "realized_tokens_month_range": [a, b],// optional: spread across multiple observed months
+  "api_pool_usd_stated": 20,            // the official "$X of usage" figure
+  "api_pool_usd_observed": 33,          // back-calculated real pool (null if it matches stated)
+  "breakdown": [ { "item": "API", "tokens": 48500000, "pct": 73.9 } ],
+  "derived_usd_per_mtok": [ { "model": "gpt-5.5-medium", "usd_per_mtok": 0.47 } ],
+  "notes": "How the numbers were derived; anomalies excluded."
+}
+```
+
+Method: the dashboard's per-row `Usage %` is the share of that pool's **dollar** budget. With the
+official pool $ known, `$/token = (pct/100 × pool$) ÷ tokens`. Cross-validate one model across
+months; if it agrees, the method holds and any divergence in the stated pool $ is a floor, not the
+real ceiling.
 
 ## Confidence tiers (badged + colored on the site)
 

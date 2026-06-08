@@ -91,6 +91,16 @@
       </div>
     </div>
 
+    <div class="card" id="measuredCard" style="display:none">
+      <h2>Measured usage <span class="meta" style="font-weight:400">(real accounts)</span></h2>
+      <p class="meta">
+        What included usage <strong>actually delivered</strong> on real maxed-out accounts, for plans that publish only a dollar credit.
+        This is observed consumption in one billing month, <strong>not a cap</strong>. It's how we turn an opaque
+        <code>$X usage</code> credit into real tokens. <span class="badge crowdsourced">crowdsourced</span>
+      </p>
+      <div id="measuredBody"></div>
+    </div>
+
     <div class="card">
       <h2>Limit changelog</h2>
       <p class="meta">Derived by diffing snapshots. This is the part nobody else tracks: when limits silently move.</p>
@@ -191,6 +201,40 @@
       }
       tpmEl.addEventListener("input", renderCross);
       renderCross();
+
+      // ---- Measured usage (real accounts) — turns a $ credit into observed tokens ----
+      const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : fmt(n);
+      const measured = latest.entries.filter((e) => e.measured);
+      if (measured.length) {
+        document.getElementById("measuredCard").style.display = "";
+        const mb = document.getElementById("measuredBody");
+        mb.innerHTML = measured.map((e) => {
+          const m = e.measured;
+          const perDollar = m.realized_tokens_month / e.price_usd;
+          const range = m.realized_tokens_month_range
+            ? ` <span class="meta">(observed ${mtok(m.realized_tokens_month_range[0])}–${mtok(m.realized_tokens_month_range[1])}/mo)</span>` : "";
+          const poolGap = (m.api_pool_usd_observed != null && m.api_pool_usd_observed !== m.api_pool_usd_stated)
+            ? `<p class="meta" style="margin:.3rem 0 0">⚠ API pool stated <strong>$${m.api_pool_usd_stated}</strong> but ran ~<strong>$${m.api_pool_usd_observed}</strong> measured (the "$${m.api_pool_usd_stated}" is a floor).</p>` : "";
+          const models = (m.derived_usd_per_mtok ?? []).map((d) =>
+            `<tr><td>${d.model}</td><td class="num">$${d.usd_per_mtok.toFixed(2)}/M</td></tr>`).join("");
+          const modelTbl = models
+            ? `<table style="margin-top:.5rem;max-width:420px"><thead><tr><th>Model (API pool)</th><th class="num">derived $/M tok</th></tr></thead><tbody>${models}</tbody></table>` : "";
+          const brk = (m.breakdown ?? []).map((b) => `${b.item} ${mtok(b.tokens)} (${b.pct}%)`).join(" · ");
+          return `<div style="margin-bottom:1.2rem">
+            <h3 style="font-size:1rem;margin:.2rem 0 .3rem">${e.provider} ${e.plan}
+              <span class="meta">$${e.price_usd}/mo · ${m.period}</span>
+              <span class="badge ${m.confidence}">${m.confidence}</span></h3>
+            <p style="margin:.2rem 0">
+              <strong class="num">${mtok(m.realized_tokens_month)}</strong> tokens/mo realized${range} ·
+              <strong class="num">${mtok(perDollar)}</strong> tokens per $
+            </p>
+            <p class="meta" style="margin:.2rem 0">${brk}</p>
+            ${poolGap}
+            ${modelTbl}
+            <p class="meta" style="margin:.4rem 0 0"><span class="q" title="${(m.notes ?? "").replace(/"/g, '&quot;')}">how this was derived ⓘ</span> · source: ${m.source}</p>
+          </div>`;
+        }).join("");
+      }
 
       const cl = document.getElementById("changelog");
       if (!db.changes.length) {

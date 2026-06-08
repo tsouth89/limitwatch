@@ -1,5 +1,5 @@
 {
-  "schema": 2,
+  "schema": 3,
   "date": "2026-06-07",
   "entries": [
     {
@@ -380,7 +380,21 @@
       "source": "https://cursor.com/docs/account/pricing",
       "as_of": "2026-06-07",
       "verified_on": "2026-06-07",
-      "notes": "Two separate monthly pools: API agent usage (the $ figure) plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount."
+      "notes": "Two separate monthly pools: API agent usage (the $ figure) plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount.",
+      "measured": {
+        "confidence": "crowdsourced",
+        "source": "Cursor dashboard, account-owner screenshot",
+        "period": "May 28 - Jun 28, 2026",
+        "as_of": "2026-06-28",
+        "realized_tokens_month": 294100000,
+        "api_pool_usd_stated": 20,
+        "api_pool_usd_observed": 33,
+        "breakdown": [
+          { "item": "API", "tokens": 48500000, "pct": 73.9 },
+          { "item": "Auto + Composer", "tokens": 245600000, "pct": 100.0 }
+        ],
+        "notes": "Realized consumption for one billing month, not a cap. The API pool ran ~$33 against a stated 'at least $20' floor: gpt-5.5-medium used 42.8% of the pool for 30M tokens; at the Pro+-validated rate of ~$0.47/M that is ~$13.9, implying a ~$33 pool. Auto+Composer hit 100% and overflowed 16.9M tokens into the API pool. ~95% of all tokens are subsidized Auto."
+      }
     },
     {
       "provider": "Cursor",
@@ -403,7 +417,29 @@
       "source": "https://cursor.com/docs/account/pricing",
       "as_of": "2026-06-07",
       "verified_on": "2026-06-07",
-      "notes": "Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount."
+      "notes": "Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount.",
+      "measured": {
+        "confidence": "crowdsourced",
+        "source": "Cursor dashboard, account-owner screenshots (2 billing months)",
+        "period": "May 30 - Jun 30, 2026 (also May 26 - Jun 26)",
+        "as_of": "2026-06-30",
+        "realized_tokens_month": 840800000,
+        "realized_tokens_month_range": [275800000, 840800000],
+        "api_pool_usd_stated": 70,
+        "api_pool_usd_observed": 70,
+        "breakdown": [
+          { "item": "API", "tokens": 64000000, "pct": 43.2 },
+          { "item": "Auto + Composer", "tokens": 776800000, "pct": 99.8 }
+        ],
+        "derived_usd_per_mtok": [
+          { "model": "claude-4.5-sonnet", "usd_per_mtok": 0.30 },
+          { "model": "claude-opus-thinking", "usd_per_mtok": 0.44 },
+          { "model": "gpt-5.5-medium", "usd_per_mtok": 0.47 },
+          { "model": "gpt-5.5-high", "usd_per_mtok": 0.96 },
+          { "model": "claude-opus-4-8-thinking-high", "usd_per_mtok": 1.25 }
+        ],
+        "notes": "Derived $/M token = (pct/100 x $70 pool) / tokens. gpt-5.5-medium cross-validates at $0.46-0.49/M across two months (~5% agreement), confirming the method. Realized total varies 276M-841M tokens/mo by activity (not a cap). Anomaly excluded: claude-4.6-opus-high-thinking showed 8.3M tokens at 0.0% (likely promo/unbilled)."
+      }
     },
     {
       "provider": "Cursor",
