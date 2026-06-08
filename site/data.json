@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T11:06:15.126Z",
+  "generated_at": "2026-06-08T11:11:45.861Z",
   "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
@@ -54,97 +54,107 @@
   ],
   "changes": [
     {
-      "date": "2026-06-07",
+      "date": "2026-05-19",
+      "kind": "price_changed",
+      "key": "Google|Gemini|AI Ultra (20x)",
+      "from": 249.99,
+      "to": 199.99,
+      "source": "https://gemini.google/subscriptions/",
+      "observed_on": "2026-06-07"
+    },
+    {
+      "date": "2026-05-19",
+      "kind": "limit_changed",
+      "key": "Google|Gemini|AI Ultra (20x)||multiplier|5h|",
+      "from": null,
+      "to": 20,
+      "unit": "multiplier",
+      "source": "https://gemini.google/subscriptions/",
+      "observed_on": "2026-06-07"
+    },
+    {
+      "date": "2026-05-19",
+      "kind": "limit_added",
+      "key": "Google|Gemini|AI Ultra (5x)||multiplier|5h|",
+      "to": 5,
+      "unit": "multiplier",
+      "source": "https://gemini.google/subscriptions/",
+      "observed_on": "2026-06-07"
+    },
+    {
+      "date": "2026-05-19",
+      "kind": "limit_changed",
+      "key": "Google|Gemini|AI Pro||multiplier|5h|",
+      "from": null,
+      "to": 4,
+      "unit": "multiplier",
+      "source": "https://gemini.google/subscriptions/",
+      "observed_on": "2026-06-07"
+    },
+    {
+      "date": "2026-05-19",
+      "kind": "limit_changed",
+      "key": "Google|Gemini|AI Plus||multiplier|5h|",
+      "from": null,
+      "to": 2,
+      "unit": "multiplier",
+      "source": "https://gemini.google/subscriptions/",
+      "observed_on": "2026-06-07"
+    },
+    {
+      "date": "2026-04-23",
       "kind": "model_changed",
       "key": "OpenAI|ChatGPT|Go||messages|5h|GPT-5.5 Thinking",
       "from": "GPT-5.4 Thinking",
       "to": "GPT-5.5 Thinking",
       "value": 10,
       "unit": "messages",
-      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+      "observed_on": "2026-06-07"
     },
     {
-      "date": "2026-06-07",
+      "date": "2026-04-23",
       "kind": "model_changed",
       "key": "OpenAI|ChatGPT|Go||messages|3h|GPT-5.5",
       "from": "GPT-5.3",
       "to": "GPT-5.5",
       "value": 160,
       "unit": "messages",
-      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+      "observed_on": "2026-06-07"
     },
     {
-      "date": "2026-06-07",
+      "date": "2026-04-23",
       "kind": "model_changed",
       "key": "OpenAI|ChatGPT|Pro||messages||GPT-5.5",
       "from": "GPT-5.3",
       "to": "GPT-5.5",
       "value": null,
       "unit": "messages",
-      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+      "observed_on": "2026-06-07"
     },
     {
-      "date": "2026-06-07",
+      "date": "2026-04-23",
       "kind": "model_changed",
       "key": "OpenAI|ChatGPT|Plus||messages|week|GPT-5.5 Thinking",
       "from": "GPT-5.4 Thinking",
       "to": "GPT-5.5 Thinking",
       "value": 3000,
       "unit": "messages",
-      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+      "observed_on": "2026-06-07"
     },
     {
-      "date": "2026-06-07",
+      "date": "2026-04-23",
       "kind": "model_changed",
       "key": "OpenAI|ChatGPT|Plus||messages|3h|GPT-5.5",
       "from": "GPT-5.3",
       "to": "GPT-5.5",
       "value": 160,
       "unit": "messages",
-      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
-    },
-    {
-      "date": "2026-06-07",
-      "kind": "price_changed",
-      "key": "Google|Gemini|AI Ultra (20x)",
-      "from": 249.99,
-      "to": 199.99,
-      "source": "https://gemini.google/subscriptions/"
-    },
-    {
-      "date": "2026-06-07",
-      "kind": "limit_changed",
-      "key": "Google|Gemini|AI Ultra (20x)||multiplier|5h|",
-      "from": null,
-      "to": 20,
-      "unit": "multiplier",
-      "source": "https://gemini.google/subscriptions/"
-    },
-    {
-      "date": "2026-06-07",
-      "kind": "limit_added",
-      "key": "Google|Gemini|AI Ultra (5x)||multiplier|5h|",
-      "to": 5,
-      "unit": "multiplier",
-      "source": "https://gemini.google/subscriptions/"
-    },
-    {
-      "date": "2026-06-07",
-      "kind": "limit_changed",
-      "key": "Google|Gemini|AI Pro||multiplier|5h|",
-      "from": null,
-      "to": 4,
-      "unit": "multiplier",
-      "source": "https://gemini.google/subscriptions/"
-    },
-    {
-      "date": "2026-06-07",
-      "kind": "limit_changed",
-      "key": "Google|Gemini|AI Plus||multiplier|5h|",
-      "from": null,
-      "to": 2,
-      "unit": "multiplier",
-      "source": "https://gemini.google/subscriptions/"
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+      "observed_on": "2026-06-07"
     },
     {
       "date": "2026-04-01",

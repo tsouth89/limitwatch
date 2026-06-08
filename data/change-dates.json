@@ -3,31 +3,38 @@
   "note": "REAL effective dates for changelog entries. A snapshot diff only knows the date a change was first OBSERVED (often a backfill date, so many changes pile onto one day). Each rule pins the true date of a change. A rule matches a change when every field it specifies is equal; unspecified fields are wildcards. First matching rule wins. The original observed date is preserved as observed_on for the tooltip. Leave date as \"\" until you can source it; blank rules are ignored, so the change keeps its observed date. Matchable fields: kind, provider, plan, model (the NEW model for model_changed), from, to.",
   "rules": [
     {
-      "date": "",
+      "date": "2026-04-23",
       "kind": "model_changed",
       "provider": "OpenAI",
       "to": "GPT-5.5",
-      "note": "Day GPT-5.5 (base) rolled out to ChatGPT Go/Plus/Pro. Source: help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+      "note": "OpenAI 'Introducing GPT-5.5' (Apr 23, 2026) rolled GPT-5.5 to ChatGPT Plus/Pro/Business/Enterprise + Codex; Go accesses it via the model picker (no distinct Go go-live date published). Default-for-everyone (GPT-5.5 Instant) followed May 5. Source: openai.com/index/introducing-gpt-5-5/"
     },
     {
-      "date": "",
+      "date": "2026-04-23",
       "kind": "model_changed",
       "provider": "OpenAI",
       "to": "GPT-5.5 Thinking",
-      "note": "Day GPT-5.5 Thinking rolled out to ChatGPT Go/Plus. Often same day as base GPT-5.5; set separately if it differed."
+      "note": "Same Apr 23, 2026 launch post lists GPT-5.5 Thinking for Plus/Pro/Business/Enterprise. Go-supported now, exact Go go-live not separately published."
     },
     {
-      "date": "",
+      "date": "2026-05-19",
       "kind": "price_changed",
       "provider": "Google",
       "plan": "AI Ultra (20x)",
-      "note": "Day Google AI Ultra (20x) price dropped $249.99 to $199.99. Source: gemini.google/subscriptions/"
+      "note": "Google I/O 2026 (May 19, 2026) cut AI Ultra from $250 to $200, same 20x-over-Pro capability. Source: thenewstack.io/google-ai-ultra-pricing/"
     },
     {
-      "date": "",
+      "date": "2026-05-19",
+      "kind": "limit_changed",
+      "provider": "Google",
+      "note": "Google I/O 2026 (May 19, 2026) published the per-plan compute multipliers (Plus 2x, Pro 4x, Ultra 20x). Operationally, the Gemini Help page says usage-limit changes start May 17, 2026; May 19 is the public announcement."
+    },
+    {
+      "date": "2026-05-19",
       "kind": "limit_added",
       "provider": "Google",
-      "note": "Day Google published the per-plan multiplier system (Ultra 20x/5x, Pro, Plus). Set per-plan rules with a plan field if the dates differ."
+      "to": 5,
+      "note": "New $100 AI Ultra (5x) tier launched at Google I/O 2026 (May 19, 2026), 5x higher usage limits than Pro. Scoped to to=5 so it does not match the genuine Apr 1 'AI Plus added (usage unpublished)' row."
     }
   ]
 }
