@@ -1,0 +1,91 @@
+name: Usage reading
+description: Report a real usage observation read off a provider's usage screen (claude.ai, ChatGPT, Claude Code, etc.). These chat-subscription caps are in no API, so field reports are the only way to measure them.
+title: "[usage] <provider> <plan> — <what you saw>"
+labels: ["usage-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing a reading. Record **what the usage screen actually showed**, not a guess or an inferred cap. A maintainer adds verified reports to `data/usage-reports.json`; the git history is the audit trail.
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider
+      options: [Anthropic, OpenAI, Google, xAI, Perplexity, Other]
+    validations:
+      required: true
+  - type: input
+    id: plan
+    attributes:
+      label: Plan
+      description: e.g. Pro, Max 5x, Plus, Go
+      placeholder: Pro
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface (where you read it)
+      options: [claude.ai, desktop app, Claude Code, chatgpt.com, other]
+    validations:
+      required: true
+  - type: dropdown
+    id: window
+    attributes:
+      label: Cap window this observes
+      options: ["5h", "day", "week", "month"]
+    validations:
+      required: true
+  - type: input
+    id: captured_at
+    attributes:
+      label: When you read it
+      description: Date and time (with timezone if you can). e.g. 2026-06-08 14:30 UTC
+    validations:
+      required: true
+  - type: dropdown
+    id: metric
+    attributes:
+      label: What the number means
+      options: [messages, percent, tokens]
+    validations:
+      required: true
+  - type: input
+    id: observed
+    attributes:
+      label: Observed value
+      description: The number at capture — messages sent before the cap, percent used, or tokens.
+      placeholder: "72"
+    validations:
+      required: true
+  - type: dropdown
+    id: limit_hit
+    attributes:
+      label: Did the cap actually throttle at this reading?
+      options: ["no", "yes — hit the cap"]
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model in use (optional)
+      placeholder: Claude Opus 4.8
+  - type: textarea
+    id: note
+    attributes:
+      label: Note
+      description: Verbatim wording from the usage screen plus any context (how many messages, session length, etc.).
+    validations:
+      required: true
+  - type: input
+    id: evidence
+    attributes:
+      label: Evidence (optional)
+      description: Link to a screenshot, or a short description of one.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: This is a real reading I observed, recorded as shown (no guessed or inferred numbers).
+          required: true

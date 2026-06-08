@@ -186,6 +186,8 @@
     .clrow a { flex: none; }
     .morebtn { margin-top: .8rem; width: 100%; background: var(--paper-soft); border: 1px solid var(--line); color: var(--blue-ink); font: inherit; font-weight: 700; font-size: 13px; padding: .5rem .9rem; border-radius: 9px; cursor: pointer; transition: background .12s, border-color .12s; }
     .morebtn:hover { background: var(--hover); border-color: var(--muted-2); }
+    .submit-btn { flex: none; align-self: flex-start; white-space: nowrap; text-decoration: none; background: var(--blue-soft); border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent); color: var(--blue-ink); font-weight: 700; font-size: 13px; padding: .45rem .8rem; border-radius: 9px; transition: background .12s, border-color .12s; }
+    .submit-btn:hover { background: color-mix(in srgb, var(--blue) 16%, var(--paper)); border-color: var(--blue); }
     @media (max-width: 560px) { .clrow { flex-wrap: wrap; gap: .35rem .5rem; } .clrow .cltxt { flex: 1 1 100%; order: 3; } }
     code { background: var(--paper-soft); border: 1px solid var(--line); color: var(--ink); padding: .05rem .35rem; border-radius: 4px; font-size: 13px; }
     .controls { position: sticky; top: 0; z-index: 5; background: var(--glass); backdrop-filter: blur(10px); padding: .75rem 0 .7rem; margin-bottom: .55rem; display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; border-bottom: 1px solid var(--line-soft); }
@@ -494,6 +496,7 @@
             <span class="badge crowdsourced">crowdsourced</span>
           </p>
         </div>
+        <a class="submit-btn" href="https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml" target="_blank" rel="noopener">Submit a reading →</a>
       </div>
       <div class="table-scroll"><table id="reportsTable">
         <thead><tr><th>Captured</th><th>Plan</th><th>Window</th><th class="num">Observed</th><th class="num">API value</th><th>Note</th></tr></thead>
