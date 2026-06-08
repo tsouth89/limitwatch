@@ -398,7 +398,9 @@
       for (const e of latest.entries) {
         if (isFutureDate(e.as_of)) futureRecords.push(`${e.provider} ${e.plan}${e.surface ? " " + e.surface : ""} as_of ${e.as_of}`);
         if (isFutureDate(e.verified_on)) futureRecords.push(`${e.provider} ${e.plan}${e.surface ? " " + e.surface : ""} verified_on ${e.verified_on}`);
-        if (e.measured && isFutureDate(e.measured.as_of)) futureRecords.push(`${e.provider} ${e.plan} measured as_of ${e.measured.as_of}`);
+        // Measured records are realized full-month receipts; their as_of is the billing-period END
+        // (e.g. cycle ends Jun 28), which can sit just ahead of "today" during an open cycle. That
+        // is expected and not a data problem, so we never hide them — the period is shown verbatim.
         if (isFutureDate(e.effective_on)) upcomingRecords.push(`${e.provider} ${e.plan}${e.surface ? " " + e.surface : ""} effective ${e.effective_on}`);
       }
 
@@ -628,7 +630,7 @@
           if (isFutureDate(e.effective_on)) continue;
           const name = `${e.provider} ${e.plan}` + (e.surface ? ` <span class="meta">· ${e.surface}</span>` : "");
           const base = { prov: e.provider, name, price: e.price_usd };
-          if (e.measured && !isFutureDate(e.measured.as_of)) { measured.push({ ...base, tokPerDay: e.measured.realized_tokens_month / 30 }); continue; }
+          if (e.measured) { measured.push({ ...base, tokPerDay: e.measured.realized_tokens_month / 30 }); continue; }
           for (const l of e.limits) {
             if (l.value == null) continue;
             if ((l.unit === "tokens" || l.unit === "messages") && (l.window in winPerDay)) {
@@ -655,7 +657,7 @@
         crossBody.innerHTML =
           ranked.map((x) => row(x, x.kind)).join("") +
           (mr.length ? `<tr><td colspan="3" class="crosssep">↓ Real measured usage — different basis (what one account actually consumed, not a ceiling)</td></tr>` + mr.map((x) => row(x, "measured")).join("") : "");
-        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Future-effective announcements are excluded until their effective date. Anthropic chat figures are official per-window estimates (<em>est</em>). Current measured receipts appear below the divider when their dates are valid; future-dated measured records are flagged in <a href="#measuredCard">Real receipts</a> but excluded here. Requests-only and multiplier-only plans can't be converted.`;
+        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Future-effective announcements are excluded until their effective date. Anthropic chat figures are official per-window estimates (<em>est</em>). Rows below the divider are real measured receipts (realized full-month consumption from one account) — see <a href="#measuredCard">Real receipts</a> for the breakdown. Requests-only and multiplier-only plans can't be converted.`;
       }
       tpmEl.addEventListener("input", renderCross);
       cpmEl.addEventListener("input", renderCross);
@@ -663,7 +665,7 @@
 
       // ---- Measured usage (real accounts) — turns a $ credit into observed tokens ----
       const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : fmt(n);
-      const measured = latest.entries.filter((e) => e.measured && !isFutureDate(e.measured.as_of));
+      const measured = latest.entries.filter((e) => e.measured);
       if (measured.length) {
         document.getElementById("measuredCard").style.display = "";
         document.getElementById("navMeasured").style.display = "";
