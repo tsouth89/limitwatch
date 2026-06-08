@@ -5,7 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>LimitWatch: AI plan limits, tracked over time</title>
   <meta name="description" content="Official AI subscription limits across providers (Claude, ChatGPT, Gemini, Grok, Perplexity), tracked over time. Every number links to its source." />
+  <link rel="canonical" href="https://limitwatch.southforgeai.com/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:site_name" content="LimitWatch" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": "LimitWatch: AI subscription limits over time",
+    "description": "Source-linked, dated snapshots of AI subscription plans, prices, and usage limits across providers (Claude, ChatGPT, Gemini, Grok, Perplexity, Cursor, Copilot, Replit), tracking how limits drift over time.",
+    "url": "https://limitwatch.southforgeai.com/",
+    "keywords": ["AI subscription limits", "Claude", "ChatGPT", "Gemini", "rate limits", "usage caps", "pricing"],
+    "creator": { "@type": "Organization", "name": "SouthForge AI" },
+    "license": "https://opensource.org/licenses/MIT",
+    "isAccessibleForFree": true
+  }
+  </script>
   <meta property="og:type" content="website" />
   <meta property="og:title" content="LimitWatch: AI plan limits, tracked over time" />
   <meta property="og:description" content="Official AI subscription limits across providers, tracked over time. Every number links to its source." />
@@ -637,7 +653,8 @@
       if (!r.ok) throw new Error(`data.json HTTP ${r.status}`);
       return r.json();
     }).then((db) => {
-      const latest = db.snapshots.at(-1);
+      const latest = db.snapshots?.at(-1);
+      if (!latest || !Array.isArray(latest.entries)) throw new Error("no snapshot data");
       const todayIso = new Date().toISOString().slice(0, 10);
       const isFutureDate = (d) => d && d > todayIso;
       const futureRecords = [];
@@ -651,13 +668,21 @@
         if (isFutureDate(e.effective_on)) upcomingRecords.push(`${e.provider} ${e.plan}${e.surface ? " " + e.surface : ""} effective ${e.effective_on}`);
       }
 
+      // "Last updated" should reflect the freshest of any data we publish, not just the newest
+      // snapshot — usage reports and events land between snapshots and were making the stat read stale.
+      const freshestDate = (db) => {
+        const dates = [db.date_range?.at(-1)];
+        for (const r of db.usage_reports ?? []) if (r.captured_at) dates.push(r.captured_at.slice(0, 10));
+        for (const e of db.events ?? []) { if (e.starts_on) dates.push(e.starts_on); if (e.effective_on) dates.push(e.effective_on); }
+        return dates.filter((d) => d && d <= todayIso).sort().at(-1) ?? db.date_range?.at(-1) ?? "—";
+      };
       const stat = (n, l) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`;
       document.getElementById("stats").innerHTML =
         stat(new Set(latest.entries.map((e) => e.provider)).size, "providers") +
         stat(latest.entries.length, "plans") +
         stat(db.changes.length, "changes logged") +
         stat(db.snapshot_count, "snapshots") +
-        stat(db.date_range.at(-1), "last updated");
+        stat(freshestDate(db), "last updated");
       const buildWarnings = Array.isArray(db.data_warnings) ? db.data_warnings : [];
       if (futureRecords.length || upcomingRecords.length || buildWarnings.length) {
         const dn = document.getElementById("dataNotice");
