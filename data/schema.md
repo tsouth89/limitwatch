@@ -21,8 +21,10 @@ A snapshot never holds a computed number presented as a fact.
         {
           "value": 160,           // numeric, or null if provider gives only a multiplier/range
           "unit": "messages",     // "messages" | "tokens" | "requests" | "usd_credit" | "multiplier"
+                                  //   usd_credit = included $ of metered model usage (e.g. Cursor)
           "window": "3h",         // "3h" | "5h" | "day" | "week" | "month" | null
           "model": "GPT-5.5",     // which model this limit applies to, or null for whole plan
+          "baseline": null,       // multiplier unit only: what the Nx is relative to ("Pro", "Free", "AI Pro"). null ⇒ defaults to "Pro" on the site.
           "kind": "primary"       // "primary" | "secondary" | "weekly_cap"
         }
       ],
@@ -53,7 +55,7 @@ A snapshot never holds a computed number presented as a fact.
 - **Never edit a past snapshot.** Wrong-then is still the record. Drift is the product.
 - Every entry needs `source`, `confidence`, `quote`, `as_of`, `verified_on`.
 - `quote` is the exact sentence the number came from. No paraphrase.
-- If a provider only gives a multiplier ("Max = 20x Pro"), store `unit: "multiplier", value: 20`. Do NOT invent a token count.
+- If a provider only gives a multiplier ("Max = 20x Pro"), store `unit: "multiplier", value: 20`, and set `baseline` to what it is relative to (e.g. `"Pro"`, `"Free"`). Do NOT invent a token count.
 - Split distinct limits into separate `limits[]` rows (5h session vs weekly cap = two rows).
 - `value: null` is allowed and honest when the real number is unpublished. Show "?" on site, not a guess.
 

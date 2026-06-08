@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T01:41:04.955Z",
+  "generated_at": "2026-06-08T01:46:00.760Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
@@ -107,6 +107,7 @@
               "unit": "multiplier",
               "window": "5h",
               "model": null,
+              "baseline": "Pro",
               "kind": "primary"
             }
           ],
@@ -115,7 +116,7 @@
           "source": "https://devtoolpicks.com/blog/anthropic-doubled-claude-code-rate-limits-spacex-2026",
           "as_of": "2026-05-06",
           "verified_on": "2026-06-07",
-          "notes": "Anthropic publishes a token budget, not a message count. Community estimate ~45 msg/5h pre-May-6, doubled after. Pro = 1x baseline for the Max multipliers."
+          "notes": "Anthropic publishes a token budget, not a message count. Community estimate ~45 msg/5h pre-May-6, doubled after. Pro = 1x baseline for the Max multipliers. Official price $20/mo ($17/mo annual) per claude.com/pricing."
         },
         {
           "provider": "Anthropic",
@@ -130,15 +131,16 @@
               "unit": "multiplier",
               "window": "5h",
               "model": null,
+              "baseline": "Pro",
               "kind": "primary"
             }
           ],
           "confidence": "official",
-          "quote": "Anthropic positions Max in two tiers: 5x more usage per session than Pro and 20x more usage per session than Pro.",
-          "source": "https://intuitionlabs.ai/articles/claude-max-plan-pricing-usage-limits",
+          "quote": "Choose 5x or 20x more usage than Pro",
+          "source": "https://claude.com/pricing",
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Multiplier is official; absolute token count is not published as a stable figure."
+          "notes": "Multiplier is official; absolute token count is not published as a stable figure. Max 5x from $100/mo."
         },
         {
           "provider": "Anthropic",
@@ -153,51 +155,70 @@
               "unit": "multiplier",
               "window": "5h",
               "model": null,
-              "kind": "primary"
-            },
-            {
-              "value": 88000,
-              "unit": "tokens",
-              "window": "5h",
-              "model": null,
+              "baseline": "Pro",
               "kind": "primary"
             }
           ],
-          "confidence": "community",
-          "quote": "Claude Max 20x ($200/month) comes in at ~88,000 tokens per 5-hour window.",
-          "source": "https://intuitionlabs.ai/articles/claude-max-plan-pricing-usage-limits",
+          "confidence": "official",
+          "quote": "Choose 5x or 20x more usage than Pro",
+          "source": "https://claude.com/pricing",
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Multiplier (20x) is official; the 88k token/5h figure is a community estimate."
+          "notes": "Multiplier (20x) is official; absolute token count not published. Community estimate ~88,000 tokens per 5h window (intuitionlabs.ai). Max 20x $200/mo."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Plus",
+          "price_usd": 7.99,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 2,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Free",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Get 2x higher usage limits than Free",
+          "source": "https://gemini.google/subscriptions/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Compute-based usage (5h refresh + weekly cap); no absolute numeric cap published. Entry tier between Free and AI Pro."
         },
         {
           "provider": "Google",
           "product": "Gemini",
           "plan": "AI Pro",
-          "price_usd": 20,
+          "price_usd": 19.99,
           "period": "month",
           "includes_code": true,
           "limits": [
             {
-              "value": 1,
+              "value": 4,
               "unit": "multiplier",
               "window": "5h",
               "model": null,
+              "baseline": "Free",
               "kind": "primary"
             }
           ],
-          "confidence": "community",
-          "quote": "The Gemini app now uses compute-based usage limits that refresh every 5 hours until you reach your weekly limit; premium models and features consume the budget faster.",
-          "source": "https://support.google.com/gemini/answer/16275805?hl=en",
-          "as_of": "2026-05-28",
+          "confidence": "official",
+          "quote": "Get 4x higher usage limits than Free",
+          "source": "https://gemini.google/subscriptions/",
+          "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Google moved from daily prompt counts to opaque compute-based limits (5h refresh + weekly cap), then adjusted them after May 2026 backlash. No published numeric cap. Pro = 1x baseline for Ultra multipliers."
+          "notes": "Google moved from daily prompt counts to opaque compute-based limits (5h refresh + weekly cap), then adjusted them after May 2026 backlash. No published numeric cap. Ultra multipliers are stated relative to Pro."
         },
         {
           "provider": "Google",
           "product": "Gemini",
           "plan": "AI Ultra (5x)",
-          "price_usd": 100,
+          "price_usd": 99.99,
           "period": "month",
           "includes_code": true,
           "limits": [
@@ -206,21 +227,22 @@
               "unit": "multiplier",
               "window": "5h",
               "model": null,
+              "baseline": "AI Pro",
               "kind": "primary"
             }
           ],
           "confidence": "official",
-          "quote": "The $100/month AI Ultra plan offers a 5X higher usage limit in the Gemini app and Google Antigravity than the Pro plan.",
-          "source": "https://blog.google/products-and-platforms/products/google-one/google-ai-subscriptions/",
-          "as_of": "2026-05-21",
+          "quote": "$99.99/month: 5x higher usage limits vs. AI Pro",
+          "source": "https://gemini.google/subscriptions/",
+          "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Multiplier is official; absolute compute budget is not published."
+          "notes": "Multiplier is official; absolute compute budget is not published. Lower of the two AI Ultra price points."
         },
         {
           "provider": "Google",
           "product": "Gemini",
           "plan": "AI Ultra (20x)",
-          "price_usd": 200,
+          "price_usd": 199.99,
           "period": "month",
           "includes_code": true,
           "limits": [
@@ -229,15 +251,16 @@
               "unit": "multiplier",
               "window": "5h",
               "model": null,
+              "baseline": "AI Pro",
               "kind": "primary"
             }
           ],
           "confidence": "official",
-          "quote": "Google reduced the top AI Ultra plan from $250 to $200, with up to 20x higher usage limits in Gemini than the Pro plan.",
-          "source": "https://www.business-standard.com/technology/tech-news/google-reshuffles-gemini-ai-plans-with-new-ultra-tier-revises-usage-limits-126052100670_1.html",
-          "as_of": "2026-05-21",
+          "quote": "$199.99/month: 20x higher usage limits vs. AI Pro",
+          "source": "https://gemini.google/subscriptions/",
+          "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Price dropped from $250 to $200 in May 2026. Multiplier official; absolute budget not published."
+          "notes": "Price dropped from $250 to $199.99 in May 2026. Multiplier official; absolute budget not published."
         },
         {
           "provider": "xAI",
@@ -413,6 +436,98 @@
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
           "notes": "Marketed as ~20x Pro. Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Pro",
+          "price_usd": 10,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 300,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "300 per month",
+          "source": "https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "300 = premium requests/month under legacy request-based billing (annual plans predating June 1, 2026). New plans meter via a monthly AI-credit allowance instead. Unlimited code completions. $10/mo per docs.github.com/copilot plans page."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Pro+",
+          "price_usd": 39,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 1500,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "1500 per month",
+          "source": "https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "1500 = premium requests/month under legacy request-based billing (annual plans predating June 1, 2026). New plans meter via a monthly AI-credit allowance instead. Access to premium models. $39/mo."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Business",
+          "price_usd": 19,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$19 USD per granted seat per month",
+          "source": "https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Per seat. Includes a monthly pool of AI credits; the per-seat credit/request amount is not published per-plan on the plans page."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Enterprise",
+          "price_usd": 39,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$39 USD per granted seat per month",
+          "source": "https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Per seat. Larger monthly pool of AI credits plus priority access to new models; per-seat credit amount not published per-plan."
         }
       ]
     }

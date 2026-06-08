@@ -110,7 +110,7 @@
   <script>
     const fmt = (n) => n == null ? "?" : Number(n).toLocaleString();
     const unitLabel = (l) =>
-      l.unit === "multiplier" ? `${fmt(l.value)}× Pro` :
+      l.unit === "multiplier" ? `${fmt(l.value)}× ${l.baseline ?? "Pro"}` :
       l.unit === "usd_credit" ? `$${fmt(l.value)} usage` :
       `${fmt(l.value)} ${l.unit}`;
     const keyParts = (k) => k.split("|"); // provider|product|plan|unit|window|model

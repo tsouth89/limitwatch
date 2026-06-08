@@ -20,8 +20,32 @@
     {
       "id": "anthropic-pricing",
       "provider": "Anthropic",
-      "label": "Anthropic pricing",
-      "url": "https://www.anthropic.com/pricing",
+      "label": "Claude pricing (Pro / Max 5x / 20x)",
+      "url": "https://claude.com/pricing",
+      "tier": "official",
+      "method": "http"
+    },
+    {
+      "id": "google-gemini-subscriptions",
+      "provider": "Google",
+      "label": "Google AI subscriptions (Plus / Pro / Ultra)",
+      "url": "https://gemini.google/subscriptions/",
+      "tier": "official",
+      "method": "http"
+    },
+    {
+      "id": "github-copilot-plans",
+      "provider": "GitHub",
+      "label": "Copilot plans (prices)",
+      "url": "https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot",
+      "tier": "official",
+      "method": "http"
+    },
+    {
+      "id": "github-copilot-premium-requests",
+      "provider": "GitHub",
+      "label": "Copilot premium request allowances",
+      "url": "https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests",
       "tier": "official",
       "method": "http"
     },
