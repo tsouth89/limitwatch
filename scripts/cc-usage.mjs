@@ -8,20 +8,36 @@
 //   node scripts/cc-usage.mjs --days 7 [--by-project]
 //   node scripts/cc-usage.mjs --since <iso> --match personal   # scope to one account (project proxy)
 //   node scripts/cc-usage.mjs --since <iso> --exclude personal  # the other account
-import { aggregate } from "./lib/usage-core.mjs";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import { aggregate, lastWeeklyReset } from "./lib/usage-core.mjs";
 
 const args = process.argv.slice(2);
 const flag = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
 const has = (n) => args.includes(n);
 
 const now = new Date();
+let match = flag("--match");
+let exclude = flag("--exclude");
 let since = flag("--since") ? new Date(flag("--since")) : null;
+
+// --account <label>: read data/accounts.json and auto-derive scope (match/exclude) + the weekly
+// since-anchor from that account's reset. One short command instead of remembering reset ISO + scope.
+const acctLabel = flag("--account");
+if (acctLabel) {
+  const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+  const cfg = JSON.parse(readFileSync(join(root, "data", "accounts.json"), "utf8"));
+  const acc = cfg.accounts.find((a) => a.label === acctLabel);
+  if (!acc) { console.error(`--account "${acctLabel}" not in data/accounts.json (have: ${cfg.accounts.map((a) => a.label).join(", ")})`); process.exit(1); }
+  match = acc.match; exclude = acc.exclude;
+  if (!since && acc.weekly_reset) since = lastWeeklyReset(acc.weekly_reset, now);
+  // no reset configured (e.g. work): fall through to --since/--days handling below.
+}
+
 const until = flag("--until") ? new Date(flag("--until")) : now;
 if (!since && flag("--days")) since = new Date(now.getTime() - Number(flag("--days")) * 864e5);
-if (!since) { console.error("Need --since <date> or --days <n>"); process.exit(1); }
-
-const match = flag("--match");
-const exclude = flag("--exclude");
+if (!since) { console.error("Need --account <label>, --since <date>, or --days <n>"); process.exit(1); }
 const agg = aggregate({ since, until, match, exclude });
 
 if (has("--json")) {

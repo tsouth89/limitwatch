@@ -92,11 +92,19 @@ burned to reach it. `scripts/cc-usage.mjs` reads every Claude Code session trans
 sums exact per-turn tokens priced at API list rates per model.
 
 ```
+npm run usage -- --account personal                    # auto: scope + since-last-reset from accounts.json
 npm run usage -- --since 2026-06-03T21:00:00Z          # anchor to your weekly reset
 npm run usage -- --days 7                              # trailing window
-npm run usage -- --since <reset-iso> --report          # emit a usage-reports.json entry stub
+npm run usage -- --account personal --report           # emit a usage-reports.json entry stub
 npm run usage -- --since <reset-iso> --json            # machine-readable totals
 ```
+
+**No scheduler needed.** Transcripts are durable on disk (Claude Code keeps `cleanupPeriodDays`,
+default 30), so burn for any past window is reconstructable after the fact — you don't have to log
+continuously. The valuable data point is the **(observed %, burn) pair**, and the % is always a manual
+read, so just run the one-command capture when you glance at the in-app indicator. `scripts/burn-log.*`
+(continuous per-account logging) remains available for a dense curve but is optional; for weekly cadence
+the on-demand path loses nothing.
 
 Workflow: when you read the in-app weekly `%`, run with `--since <reset moment>`, then append a
 `data/usage-reports.json` entry pairing `observed: <pct>` with the measured token/$ floor (see the
