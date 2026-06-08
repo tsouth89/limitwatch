@@ -123,7 +123,7 @@
       l.unit === "multiplier" ? `${fmt(l.value)}× ${l.baseline ?? "Pro"}` :
       l.unit === "usd_credit" ? `$${fmt(l.value)} usage` :
       `${fmt(l.value)} ${l.unit}`;
-    const keyParts = (k) => k.split("|"); // provider|product|plan|unit|window|model
+    const keyParts = (k) => k.split("|"); // provider|product|plan|surface|unit|window|model
     // Meta suffix that distinguishes rows from the same plan: model and/or window.
     const descriptor = (x) => {
       const parts = [x.model, x.window].filter(Boolean);
@@ -139,9 +139,10 @@
       for (const e of latest.entries) {
         e.limits.forEach((l, idx) => {
           const tr = document.createElement("tr");
+          const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
           const name = idx === 0
-            ? `<strong>${e.provider}</strong> ${e.plan} <span class="badge ${e.confidence}">${e.confidence}</span>`
-            : `<span class="meta">↳ ${e.product} ${e.plan}</span>`;
+            ? `<strong>${e.provider}</strong> ${e.plan}${surf} <span class="badge ${e.confidence}">${e.confidence}</span>`
+            : `<span class="meta">↳ ${e.product} ${e.plan}${surf}</span>`;
           tr.innerHTML =
             `<td>${name}</td>` +
             `<td class="num">$${e.price_usd}</td>` +
@@ -241,7 +242,7 @@
         cl.innerHTML = `<li class="meta">No changes yet, need 2+ snapshots. Drift shows up here as you add weekly snapshots.</li>`;
       } else {
         for (const c of db.changes) {
-          const [prov,, plan, unit, window] = keyParts(c.key);
+          const [prov,, plan,, unit, window] = keyParts(c.key);
           let txt;
           if (c.kind === "limit_changed") txt = `<strong>${prov} ${plan}</strong> ${unit}/${window}: ${fmt(c.from)} → ${fmt(c.to)}`;
           else if (c.kind === "price_changed") txt = `<strong>${prov} ${plan}</strong> price: $${c.from} → $${c.to}`;

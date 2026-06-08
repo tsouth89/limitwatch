@@ -17,6 +17,10 @@ A snapshot never holds a computed number presented as a fact.
       "plan": "Plus",
       "price_usd": 20,
       "period": "month",          // "month" | "year"
+      "surface": null,            // optional (v3): which product surface this entry's limits apply to
+                                  //   e.g. "Agent SDK", "Claude Code". null/absent = the default interactive
+                                  //   subscription. Limits on the same plan but different surface are tracked
+                                  //   as distinct rows (part of the limit identity key).
       "includes_code": true,      // bundles a coding agent (Codex / Claude Code)?
 
       // A plan can have MULTIPLE limits (session + weekly + model-specific).

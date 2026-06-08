@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T01:56:28.567Z",
+  "generated_at": "2026-06-08T02:07:48.120Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
@@ -103,20 +103,20 @@
           "includes_code": true,
           "limits": [
             {
-              "value": 1,
+              "value": 5,
               "unit": "multiplier",
               "window": "5h",
               "model": null,
-              "baseline": "Pro",
+              "baseline": "Free",
               "kind": "primary"
             }
           ],
-          "confidence": "community",
-          "quote": "The Pro plan gives roughly 45 messages per 5-hour window; on May 6, 2026 Anthropic doubled the 5-hour limits for every paid plan.",
-          "source": "https://devtoolpicks.com/blog/anthropic-doubled-claude-code-rate-limits-spacex-2026",
-          "as_of": "2026-05-06",
+          "confidence": "official",
+          "quote": "At least five times the usage per session compared to our free service.",
+          "source": "https://support.claude.com/en/articles/8325606-what-is-the-pro-plan",
+          "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
-          "notes": "Anthropic publishes a token budget, not a message count. Community estimate ~45 msg/5h pre-May-6, doubled after. Pro = 1x baseline for the Max multipliers. Official price $20/mo ($17/mo annual) per claude.com/pricing."
+          "notes": "Anthropic publishes a token budget, not a message count: the current Pro page no longer states a per-window message figure (the often-cited ~45 msg/5h is stale/community). Pro is the 1x baseline for the Max 5x/20x multipliers. Price $20/mo ($17/mo annual) per claude.com/pricing. Claude Code 5-hour limits were doubled on 2026-05-06 (no token pool published)."
         },
         {
           "provider": "Anthropic",
@@ -165,6 +165,78 @@
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
           "notes": "Multiplier (20x) is official; absolute token count not published. Community estimate ~88,000 tokens per 5h window (intuitionlabs.ai). Max 20x $200/mo."
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Pro",
+          "surface": "Agent SDK",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "announced",
+          "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
+          "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
+          "as_of": "2026-06-15",
+          "verified_on": "2026-06-07",
+          "notes": "Effective 2026-06-15: Agent SDK, `claude -p`, Claude Code GitHub Actions, and third-party apps authing via the Agent SDK stop drawing on the subscription's interactive usage and instead consume this separate monthly credit, billed at standard API rates after it runs out. Per-user, no rollover, one-time opt-in required. Interactive use (claude.ai chat, Claude Code in terminal/IDE, Cowork) is unaffected. Announced/press-reported; not yet on a stable first-party page."
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Max 5x",
+          "surface": "Agent SDK",
+          "price_usd": 100,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 100,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "announced",
+          "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
+          "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
+          "as_of": "2026-06-15",
+          "verified_on": "2026-06-07",
+          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported."
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Max 20x",
+          "surface": "Agent SDK",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 200,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "announced",
+          "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
+          "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
+          "as_of": "2026-06-15",
+          "verified_on": "2026-06-07",
+          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported."
         },
         {
           "provider": "Google",

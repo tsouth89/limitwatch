@@ -28,7 +28,7 @@ const snapshots = files.map((f) => {
 
 // Flatten to comparable rows keyed by identity (the thing whose drift we track).
 const limitKey = (e, l) =>
-  `${e.provider}|${e.product}|${e.plan}|${l.unit}|${l.window ?? ""}|${l.model ?? ""}`;
+  `${e.provider}|${e.product}|${e.plan}|${e.surface ?? ""}|${l.unit}|${l.window ?? ""}|${l.model ?? ""}`;
 const priceKey = (e) => `${e.provider}|${e.product}|${e.plan}`;
 
 function flatten(snap) {
