@@ -32,6 +32,14 @@
       "url": "https://openai.com/chatgpt/pricing/",
       "tier": "official",
       "method": "browser"
+    },
+    {
+      "id": "cursor-pricing-docs",
+      "provider": "Cursor",
+      "label": "Cursor plans & included usage",
+      "url": "https://cursor.com/docs/account/pricing",
+      "tier": "official",
+      "method": "http"
     }
   ]
 }

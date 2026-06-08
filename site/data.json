@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T01:05:34.346Z",
+  "generated_at": "2026-06-08T01:34:51.979Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
@@ -314,6 +314,75 @@
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
           "notes": "Exact daily query cap for Max is not published. $200/mo or $2,000/yr."
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Pro",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$20 of API agent usage",
+          "source": "https://cursor.com/docs/account/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Two separate monthly pools: API agent usage (the $ figure) plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount."
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Pro+",
+          "price_usd": 60,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 70,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$70 of API agent usage",
+          "source": "https://cursor.com/docs/account/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount."
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Ultra",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 400,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$400 of API agent usage",
+          "source": "https://cursor.com/docs/account/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Marketed as ~20x Pro. Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount."
         }
       ]
     }
