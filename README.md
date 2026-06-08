@@ -83,6 +83,30 @@ snapshots — human stays in the loop. Use `--http-only` to skip the browser sou
 - **Full coverage, local:** `scripts/watch-and-report.ps1` (scheduled task) runs all sources
   incl. the headed-browser OpenAI pages.
 
+## Capture measured usage (subscription caps)
+
+The 5-hour and weekly subscription caps (Claude.ai/Claude Code, ChatGPT) are **not exposed by any
+API** — only an in-product `%` indicator. The moat is pairing that reading with how much you actually
+burned to reach it. `scripts/cc-usage.mjs` reads every Claude Code session transcript
+(`~/.claude/projects/**/*.jsonl`) across all projects, dedupes assistant turns by `message.id`, and
+sums exact per-turn tokens priced at API list rates per model.
+
+```
+npm run usage -- --since 2026-06-03T21:00:00Z          # anchor to your weekly reset
+npm run usage -- --days 7                              # trailing window
+npm run usage -- --since <reset-iso> --report          # emit a usage-reports.json entry stub
+npm run usage -- --since <reset-iso> --json            # machine-readable totals
+```
+
+Workflow: when you read the in-app weekly `%`, run with `--since <reset moment>`, then append a
+`data/usage-reports.json` entry pairing `observed: <pct>` with the measured token/$ floor (see the
+weekly row already there). Captures at several `%` across one window show whether the cap is
+token- or dollar-weighted: flat $/% ⇒ token cap, bending ⇒ $-weighted.
+
+**It is a floor, not the whole story.** Transcripts cover Claude Code only — Claude.ai web/desktop
+chat hits the same cap but isn't logged locally. Prices live in the `PRICES` table in the script;
+update them when rates change. This complements `npm run ratelimits` (API-tier headers, not sub caps).
+
 ## Record schema
 
 Each snapshot is `{ "date": "YYYY-MM-DD", "entries": [ ... ] }`. See `data/schema.md`.
