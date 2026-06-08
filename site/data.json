@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T20:45:22.786Z",
+  "generated_at": "2026-06-08T20:48:06.097Z",
   "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
@@ -70,6 +70,28 @@
       "quote": "Starting June 1, premium request units (PRUs) will be replaced by GitHub AI Credits.",
       "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
       "note": "Billing-model change, not a promo. Premium request units (PRUs) are replaced by GitHub AI Credits, consumed by token usage (input, output, cached) at each model's published API rate. Monthly price is unchanged but now bundles a matching credit pool: Pro $10/mo incl $10 in credits, Pro+ $39/mo incl $39 in credits; Business $19/seat, Enterprise $39/seat. Existing annual Pro/Pro+ subscribers stay on PRU-based pricing until their plan expires (with model multipliers rising Jun 1 for annual plans). GitHub shipped a preview-bill experience in early May so users could project costs before the switch."
+    },
+    {
+      "id": "auto-github-github-copilot-context-window-expanded-to-1-mill-2026",
+      "provider": "GitHub",
+      "product": "Copilot",
+      "applies_to": [
+        "Copilot Pro",
+        "Copilot Pro+",
+        "Copilot Max"
+      ],
+      "title": "GitHub Copilot adds larger context windows and reasoning levels",
+      "kind": "limit_boost",
+      "window": null,
+      "factor": null,
+      "starts_on": "2026-06-04",
+      "ends_on": null,
+      "permanent": true,
+      "confidence": "official",
+      "quote": "GitHub Copilot now supports larger context windows and configurable reasoning levels to help you tackle deeper, more complex work.",
+      "source": "https://github.blog/changelog/2026-06-04-larger-context-windows-and-configurable-reasoning-levels-for-github-copilot",
+      "auto": true,
+      "flagged_at": "2026-06-08T20:46:22.439Z"
     }
   ],
   "changes": [

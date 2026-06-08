@@ -11,7 +11,7 @@
         "Copilot Pro+",
         "Copilot Max"
       ],
-      "title": "GitHub Copilot context window expanded to 1 million tokens",
+      "title": "GitHub Copilot adds larger context windows and reasoning levels",
       "kind": "limit_boost",
       "window": null,
       "factor": null,
