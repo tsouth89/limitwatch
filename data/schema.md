@@ -125,6 +125,43 @@ Backfill values must come verbatim from a dated archive capture (cite the
 `http://web.archive.org/web/<timestamp>/<url>` URL as `source`, set `as_of`/`verified_on` to the
 capture date). If a number can't be read from the capture, leave it `null` (unpublished) — never guess.
 
+## Events (`data/events.json`, optional)
+
+Time-bounded changes — promos, temporary boosts, throttles — that are **spans**, not point-in-time
+facts, so they live in their own file instead of a snapshot. The site computes active / upcoming /
+ended from `today` vs `starts_on`/`ends_on`, so an event **auto-expires with no redeploy** and a
+future-dated one reveals itself on its start date.
+
+```jsonc
+{
+  "schema": 1,
+  "events": [
+    {
+      "id": "anthropic-claudecode-weekly-plus50-2026", // stable unique id
+      "provider": "Anthropic",
+      "product": "Claude",
+      "surface": "Claude Code",      // optional, same meaning as snapshot surface
+      "applies_to": ["Pro", "Max 5x", "Max 20x"],
+      "title": "Claude Code weekly limit +50%",
+      "kind": "limit_boost",         // limit_boost | limit_cut | promo | …
+      "factor": 1.5,                 // 1.5 ⇒ +50%, 2 ⇒ 2×
+      "window": "week",
+      "starts_on": "2026-05-13",
+      "ends_on": "2026-07-13",       // null ⇒ standing/permanent (no countdown)
+      "permanent": false,
+      "confidence": "announced",     // same tiers as snapshots
+      "quote": "Claude Code weekly limits are increasing 50%, now through July 13. …",
+      "source": "https://…",
+      "note": ""
+    }
+  ]
+}
+```
+
+Required: `id`, `provider`, `title`, `kind`, `starts_on`, `confidence`, `quote`, `source`. Same rule
+as everything else: **record the published wording verbatim and cite a source**; if you can't verify
+the window/end-date, don't publish the event.
+
 ## Hard rules
 
 - **Never edit a past snapshot.** Wrong-then is still the record. Drift is the product.

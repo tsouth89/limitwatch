@@ -114,14 +114,33 @@ for (let i = 0; i < changes.length; i++) {
 }
 collapsed.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 
+// Time-bounded events (promos / temporary boosts). Validated and passed through; the site computes
+// active/upcoming/ended from `today` so they expire on their own. Optional file.
+const EVENT_REQUIRED = ["id", "provider", "title", "kind", "starts_on", "confidence", "quote", "source"];
+let events = [];
+try {
+  const ev = JSON.parse(readFileSync(join(root, "data", "events.json"), "utf8"));
+  if (!Array.isArray(ev.events)) throw new Error("events.json: events not array");
+  for (const e of ev.events) {
+    for (const k of EVENT_REQUIRED) if (e[k] == null) throw new Error(`events.json: ${e.id ?? "?"} missing ${k}`);
+    if (!TIERS.includes(e.confidence)) throw new Error(`events.json: ${e.id} bad confidence "${e.confidence}"`);
+    if (e.ends_on && e.ends_on < e.starts_on) throw new Error(`events.json: ${e.id} ends_on before starts_on`);
+    if (e.starts_on > today) dataWarnings.push(`events.json: ${e.id} starts_on ${e.starts_on} is after ${today}`);
+  }
+  events = ev.events;
+} catch (err) {
+  if (err.code !== "ENOENT") throw err;
+}
+
 const out = {
   generated_at: new Date().toISOString(),
   snapshot_count: snapshots.length,
   date_range: snapshots.length ? [snapshots[0].date, snapshots.at(-1).date] : [],
   data_warnings: dataWarnings,
+  events,
   changes: collapsed.reverse(), // newest first
   snapshots,
 };
 
 writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
-console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${collapsed.length} change(s), ${dataWarnings.length} warning(s)`);
+console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${dataWarnings.length} warning(s)`);

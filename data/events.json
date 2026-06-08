@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "note": "Time-bounded limit events (promos, temporary boosts, throttles). Separate from snapshots because these are spans, not point-in-time facts. The site computes active/upcoming/ended from today vs starts_on/ends_on, so an event auto-expires with no redeploy. ends_on null = standing/permanent change (no countdown). Every event must cite a source; record the published wording verbatim in quote.",
+  "events": [
+    {
+      "id": "anthropic-claudecode-weekly-plus50-2026",
+      "provider": "Anthropic",
+      "product": "Claude",
+      "surface": "Claude Code",
+      "applies_to": ["Pro", "Max 5x", "Max 20x"],
+      "title": "Claude Code weekly limit +50%",
+      "kind": "limit_boost",
+      "factor": 1.5,
+      "window": "week",
+      "starts_on": "2026-05-13",
+      "ends_on": "2026-07-13",
+      "permanent": false,
+      "confidence": "announced",
+      "quote": "Claude Code weekly limits are increasing 50%, now through July 13. Live now for all Pro, Max, Team, and seat-based Enterprise users.",
+      "source": "https://aicatchup.com/news/claude-code-weekly-limits-50-percent-promo",
+      "note": "Reported verbatim from the official @ClaudeDevs post (May 13, 2026). Temporary lift on the WEEKLY cap only; paid plans (Pro/Max/Team/seat-based Enterprise), not Free or API/usage-based. Expires Jul 13, 6PM PDT unless extended. Stacks on the permanent 5-hour 2x."
+    },
+    {
+      "id": "anthropic-claudecode-5h-2x-2026",
+      "provider": "Anthropic",
+      "product": "Claude",
+      "surface": "Claude Code",
+      "applies_to": ["Pro", "Max 5x", "Max 20x"],
+      "title": "Claude Code 5-hour limit doubled",
+      "kind": "limit_boost",
+      "factor": 2,
+      "window": "5h",
+      "starts_on": "2026-05-06",
+      "ends_on": null,
+      "permanent": true,
+      "confidence": "announced",
+      "quote": "Anthropic announced it was doubling Claude Code five-hour rate limits for Pro, Max, Team, and seat-based Enterprise plans and removing peak-hours limit reduction for Claude Code on Pro and Max.",
+      "source": "https://www.verdent.ai/guides/claude-code-limits-doubled-may-2026",
+      "note": "Permanent (no expiry announced). Doubles the rolling 5-hour cap and removed peak-hour throttling for Pro/Max on Claude Code. The temporary weekly +50% (separate event) stacks on top through Jul 13."
+    }
+  ]
+}

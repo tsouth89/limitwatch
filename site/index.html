@@ -83,6 +83,39 @@
     .dlt.flat { color: var(--muted); background: #eef2f7; }
     .dlt.new { color: #2157d6; background: var(--blue-soft); }
     @media (max-width: 620px) { .trow { grid-template-columns: 1fr auto; } .trow .spark { grid-column: 1 / -1; width: 100%; } }
+    /* Dev/status bar */
+    .devbar { background: linear-gradient(90deg, var(--blue-soft), #eef4ff); border-bottom: 1px solid var(--line-soft); font-size: 13px; }
+    .devbar .inner { max-width: 1080px; margin: 0 auto; padding: .4rem 1.1rem; display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; }
+    .devbar .pulse { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: pulse 2.2s infinite; flex: none; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.5); } 70% { box-shadow: 0 0 0 7px rgba(22,163,74,0); } 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); } }
+    .devbar .dtext { color: #1e3a5f; font-weight: 600; }
+    .devbar .dtext b { font-weight: 800; }
+    .devbar .roadmap-toggle { margin-left: auto; background: #fff; border: 1px solid var(--line); color: var(--blue); font: inherit; font-weight: 700; font-size: 12.5px; padding: .2rem .6rem; border-radius: 999px; cursor: pointer; }
+    .devbar .roadmap-toggle:hover { background: var(--blue-soft); }
+    .roadmap-panel { max-width: 1080px; margin: 0 auto; padding: 0 1.1rem; overflow: hidden; max-height: 0; transition: max-height .2s ease; }
+    .roadmap-panel.open { max-height: 320px; padding-bottom: .7rem; }
+    .roadmap-panel ul { margin: .3rem 0 0; padding-left: 1.1rem; columns: 2; column-gap: 1.6rem; }
+    .roadmap-panel li { font-size: 12.5px; color: var(--muted); margin-bottom: .25rem; break-inside: avoid; }
+    .roadmap-panel li b { color: var(--ink); font-weight: 700; }
+    @media (max-width: 620px) { .roadmap-panel ul { columns: 1; } }
+    /* Events + highlights */
+    .event { display: flex; gap: .7rem; align-items: flex-start; padding: .65rem 0; border-bottom: 1px solid var(--line-soft); }
+    .event:last-child { border-bottom: 0; }
+    .event .estatus { flex: none; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .18rem .5rem; border-radius: 999px; margin-top: .1rem; }
+    .estatus.live { color: #0f7a4d; background: #e3f6ec; }
+    .estatus.live .ldot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #16a34a; margin-right: .3rem; vertical-align: middle; animation: pulse 2.2s infinite; }
+    .estatus.soon { color: #8a5a00; background: #fdf3d8; }
+    .estatus.ended { color: var(--muted); background: #eef2f7; }
+    .event .ebody { flex: 1; }
+    .event .etitle { font-weight: 700; }
+    .event .emeta { font-size: 12.5px; color: var(--muted); margin-top: .15rem; }
+    .event .ecount { font-weight: 750; color: var(--ink); }
+    .hlrow { display: flex; gap: .6rem; align-items: baseline; padding: .32rem 0; font-size: 13.5px; }
+    .hlrow .hk { flex: none; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: .12rem .45rem; border-radius: 5px; }
+    .hk.model { color: #2157d6; background: var(--blue-soft); }
+    .hk.price { color: #0f7a4d; background: #e3f6ec; }
+    .hk.priceup { color: #b42318; background: #fde9e6; }
+    .hk.added { color: #6b3fb5; background: #efe6fb; }
     code { background: #eef2f7; border: 1px solid #dde5ef; color: #223044; padding: .05rem .35rem; border-radius: 4px; font-size: 13px; }
     .controls { position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,.94); backdrop-filter: blur(10px); padding: .75rem 0 .7rem; margin-bottom: .55rem; display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; border-bottom: 1px solid var(--line-soft); }
     #search { flex: 1 1 250px; background: var(--paper); border: 1px solid var(--line); border-radius: 7px; color: var(--ink); padding: .48rem .65rem; font: inherit; }
@@ -198,10 +231,28 @@
   </style>
 </head>
 <body>
+  <div class="devbar" id="devbar">
+    <div class="inner">
+      <span class="pulse"></span>
+      <span class="dtext" id="devbarText">Live · actively updated</span>
+      <button class="roadmap-toggle" id="roadmapToggle" aria-expanded="false" aria-controls="roadmapPanel">Roadmap ▾</button>
+    </div>
+    <div class="roadmap-panel" id="roadmapPanel">
+      <ul>
+        <li><b>Live event tracking</b> — temporary boosts/throttles with countdowns (now live)</li>
+        <li><b>Deeper history</b> — more backfilled dates to turn jumps into trends</li>
+        <li><b>Crowdsourced receipts</b> — submit your own measured usage</li>
+        <li><b>Change alerts</b> — email/RSS when a limit or price moves</li>
+        <li><b>More providers</b> — broader coverage as pages are verified</li>
+        <li><b>Per-limit drift charts</b> — sparklines on limits, not just price</li>
+      </ul>
+    </div>
+  </div>
   <nav class="topnav">
     <div class="inner">
       <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
       <div class="navlinks" id="navlinks">
+        <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">What's new</a>
         <a href="#limits" data-section="limits">Limits</a>
         <a href="#value" data-section="value">Value</a>
         <a href="#crossProvider" data-section="crossProvider">Estimate</a>
@@ -226,6 +277,18 @@
     </div>
   </header>
   <main>
+    <div class="card" id="whatsnew" style="display:none">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">What's new</p>
+          <h2>Live events &amp; highlights</h2>
+          <p class="meta">Temporary promos/throttles with countdowns, plus the big stuff: model upgrades, price moves, new plans. The exhaustive per-limit log lives in <a href="#changelog">Changelog</a>.</p>
+        </div>
+      </div>
+      <div id="eventsBody"></div>
+      <div id="highlightsBody"></div>
+    </div>
+
     <div class="card" id="limits">
       <div class="controls">
         <input id="search" type="search" placeholder="Search provider, plan, or model…" aria-label="Search plans" />
@@ -816,10 +879,79 @@
         document.getElementById("navTrends").style.display = "";
       })();
 
+      // ---- Dev/status bar ----
+      (() => {
+        const last = db.snapshots.at(-1)?.date;
+        const live = (db.events ?? []).filter((e) => e.starts_on <= todayIso && (!e.ends_on || e.ends_on >= todayIso)).length;
+        const bits = ["<b>Live</b> · actively updated"];
+        if (last) bits.push(`last snapshot ${last}`);
+        bits.push(`${db.changes.length} changes tracked`);
+        if (live) bits.push(`<b>${live} live event${live > 1 ? "s" : ""}</b>`);
+        document.getElementById("devbarText").innerHTML = bits.join(" · ");
+        const rt = document.getElementById("roadmapToggle");
+        rt.addEventListener("click", () => {
+          const open = document.getElementById("roadmapPanel").classList.toggle("open");
+          rt.setAttribute("aria-expanded", open);
+          rt.textContent = open ? "Roadmap ▴" : "Roadmap ▾";
+        });
+      })();
+
+      // ---- What's new: live events + highlights ----
+      (() => {
+        const events = db.events ?? [];
+        const evState = (e) => (e.starts_on > todayIso ? "soon" : e.ends_on && e.ends_on < todayIso ? "ended" : "active");
+        const daysFrom = (d) => Math.round((new Date(d) - new Date(todayIso)) / 86400000);
+        const fmtD = (d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+        const factorLabel = (f) => (f === 2 ? "2×" : f === 1.5 ? "+50%" : f > 1 ? `${f}×` : `${f}×`);
+        const esc = (s) => (s ?? "").replace(/"/g, "&quot;");
+
+        const rank = { active: 0, soon: 1, ended: 2 };
+        const evs = events.map((e) => ({ ...e, st: evState(e) })).sort((a, b) => rank[a.st] - rank[b.st] || (a.ends_on ?? a.starts_on) < (b.ends_on ?? b.starts_on) ? 1 : -1);
+
+        document.getElementById("eventsBody").innerHTML = evs.map((e) => {
+          const plans = (e.applies_to ?? []).join(", ");
+          const scope = `${e.provider}${e.surface ? " " + e.surface : ""}${plans ? " · " + plans : ""}`;
+          let status, count;
+          if (e.st === "active") {
+            status = `<span class="estatus live"><span class="ldot"></span>Live</span>`;
+            count = e.ends_on ? `<span class="ecount">${daysFrom(e.ends_on)} days left</span> · ends ${fmtD(e.ends_on)}` : `<span class="ecount">ongoing</span> · no end date`;
+          } else if (e.st === "soon") {
+            status = `<span class="estatus soon">Soon</span>`;
+            count = `starts ${fmtD(e.starts_on)} · in ${daysFrom(e.starts_on)} days`;
+          } else {
+            status = `<span class="estatus ended">Ended</span>`;
+            count = `ran ${fmtD(e.starts_on)}–${fmtD(e.ends_on)}`;
+          }
+          return `<div class="event">${status}<div class="ebody">
+            <div class="etitle">${e.title} <span class="q" data-tip="${esc(e.quote)}">ⓘ</span></div>
+            <div class="emeta">${scope} · ${count} ${e.source ? `· <a href="${e.source}" target="_blank" rel="noopener">src</a>` : ""}</div>
+          </div></div>`;
+        }).join("");
+
+        // Highlights = headline changes only (model upgrades, price moves, new plans).
+        const items = [];
+        for (const c of db.changes) {
+          const [prov, , plan, , unit, window] = c.key.split("|");
+          if (c.kind === "model_changed") items.push({ date: c.date, cls: "model", k: "model", html: `<strong>${prov} ${plan}</strong> upgraded ${c.from} → ${c.to}`, source: c.source });
+          else if (c.kind === "price_changed") { const drop = c.to < c.from; items.push({ date: c.date, cls: drop ? "price" : "priceup", k: drop ? "price ↓" : "price ↑", html: `<strong>${prov} ${plan}</strong> $${c.from} → $${c.to}`, source: c.source }); }
+          else if (c.kind === "limit_added" && c.to != null) items.push({ date: c.date, cls: "added", k: "new", html: `<strong>${prov} ${plan}</strong> added · ${fmt(c.to)} ${unit}${window ? "/" + window : ""}`, source: c.source });
+        }
+        items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+        document.getElementById("highlightsBody").innerHTML = items.length
+          ? `<p class="meta" style="margin:.85rem 0 .35rem;font-weight:700;color:var(--ink)">Recent highlights</p>` +
+            items.map((i) => `<div class="hlrow"><span class="num">${i.date}</span> <span class="hk ${i.cls}">${i.k}</span> <span>${i.html}</span> ${i.source ? `<a href="${i.source}" target="_blank" rel="noopener">src</a>` : ""}</div>`).join("")
+          : "";
+
+        if (evs.length || items.length) {
+          document.getElementById("whatsnew").style.display = "";
+          document.getElementById("navWhatsnew").style.display = "";
+        }
+      })();
+
       // Highlight the nav link for whichever section is centered in the viewport.
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const sections = ["limits", "value", "crossProvider", "measuredCard", "trends", "changelog", "trust"]
+      const sections = ["whatsnew", "limits", "value", "crossProvider", "measuredCard", "trends", "changelog", "trust"]
         .map((id) => document.getElementById(id))
         .filter((el) => el && el.style.display !== "none");
       const io = new IntersectionObserver((entries) => {

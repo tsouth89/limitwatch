@@ -17,10 +17,12 @@ The history is the moat. Snapshots are copyable; a 6-month time series is not.
    (e.g. a Cursor-only Feb snapshot between two Google snapshots) and still attribute changes to
    the right dates. A same-date remove+add of one limit slot that only swapped models (e.g. a
    plan's 160 msgs/3h budget moving GPT-5.3 → GPT-5.5) is collapsed into a single `model_changed`.
-3. `site/index.html` — static page. Renders the latest limits, value-per-dollar bars, a
-   cross-provider token estimate, real measured receipts, a **price-history sparkline per plan**
-   (every plan that appears in 2+ snapshots), and the derived changelog from `site/data.json`.
-   All numbers link back to their source.
+3. `data/events.json` (optional) — time-bounded promos/boosts/throttles (spans, not point-in-time
+   facts). Passed through to `site/data.json`; the page computes active/upcoming/ended from today.
+4. `site/index.html` — static page. Renders a slim "Live" status bar with a roadmap, a **What's new**
+   card (live events with countdowns + headline changes), the latest limits, value-per-dollar bars,
+   a cross-provider token estimate, real measured receipts, a **price-history sparkline per plan**
+   (every plan in 2+ snapshots), and the derived changelog. All numbers link back to their source.
 
 No backend. Hosted as a static site on Cloudflare Pages.
 
@@ -35,6 +37,14 @@ Copy the newest file in `data/snapshots/`, rename to today's date, update number
 ```
 npm run build
 ```
+
+## Track a special event
+
+Temporary limit changes (e.g. "Claude Code weekly limit +50% through Jul 13") go in
+`data/events.json`, not a snapshot — they're spans. Add an entry with `starts_on`/`ends_on`
+(null end = permanent), a verbatim `quote`, and a `source`, then `npm run build`. The page shows
+active events with a live countdown, surfaces upcoming ones on their start date, and folds ended
+ones into history automatically — no redeploy needed to expire them. See `data/schema.md`.
 
 ## Backfill history (Wayback)
 
