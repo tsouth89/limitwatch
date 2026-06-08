@@ -38,6 +38,7 @@
     .community { background: #d2992226; color: #d29922; }
     .crowdsourced { background: #8957e526; color: #a371f7; }
     .q { border-bottom: 1px dotted #6e7681; cursor: help; }
+    #tip { position: fixed; max-width: 360px; background: #1b2230; border: 1px solid #3a4250; color: #e6edf3; padding: .5rem .65rem; border-radius: 6px; font-size: 13px; line-height: 1.45; z-index: 50; display: none; box-shadow: 0 6px 20px #0009; pointer-events: none; }
     .legend span { margin-right: .8rem; }
     .num { font-variant-numeric: tabular-nums; }
     .changelog li { margin-bottom: .4rem; }
@@ -140,6 +141,40 @@
       return parts.length ? ` <span class="meta">(${parts.join(" · ")})</span>` : "";
     };
 
+    // Custom tooltip: native title doesn't respond to click and is flaky. Hover follows the
+    // cursor; click pins it open (touch-friendly). data-tip holds the text.
+    (() => {
+      const tip = document.createElement("div");
+      tip.id = "tip";
+      document.body.appendChild(tip);
+      let pinned = false;
+      const place = (ev) => {
+        const pad = 12, w = tip.offsetWidth, h = tip.offsetHeight;
+        let x = ev.clientX + pad, y = ev.clientY + pad;
+        if (x + w > innerWidth - 8) x = ev.clientX - w - pad;
+        if (y + h > innerHeight - 8) y = ev.clientY - h - pad;
+        tip.style.left = Math.max(8, x) + "px";
+        tip.style.top = Math.max(8, y) + "px";
+      };
+      const show = (el, ev) => { tip.textContent = el.dataset.tip; tip.style.display = "block"; place(ev); };
+      const hide = () => { tip.style.display = "none"; pinned = false; };
+      document.addEventListener("mouseover", (ev) => {
+        if (pinned) return;
+        const t = ev.target.closest("[data-tip]");
+        if (t) show(t, ev);
+      });
+      document.addEventListener("mousemove", (ev) => {
+        if (pinned || tip.style.display !== "block") return;
+        if (ev.target.closest("[data-tip]")) place(ev); else hide();
+      });
+      document.addEventListener("click", (ev) => {
+        const t = ev.target.closest("[data-tip]");
+        if (t) { show(t, ev); pinned = true; ev.stopPropagation(); }
+        else hide();
+      });
+      addEventListener("scroll", () => { if (!pinned) hide(); }, true);
+    })();
+
     fetch("data.json").then((r) => r.json()).then((db) => {
       document.getElementById("meta").textContent =
         `${db.snapshot_count} snapshot(s) · ${db.date_range.join(" → ")} · ${db.changes.length} recorded change(s) · built ${db.generated_at.slice(0,10)}`;
@@ -182,7 +217,7 @@
               `<tr>` +
               `<td><strong>${e.plan}</strong>${surf}</td>` +
               `<td class="num">$${e.price_usd}</td>` +
-              `<td><span class="q" title="${e.quote.replace(/"/g, "&quot;")}">${limitCell(e)}</span></td>` +
+              `<td><span class="q" data-tip="${e.quote.replace(/"/g, "&quot;")}">${limitCell(e)}</span></td>` +
               `<td><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
               `<td><a href="${e.source}" target="_blank" rel="noopener">src</a> <span class="meta">${e.verified_on}</span></td>` +
               `</tr>`;
@@ -289,7 +324,7 @@
             <p class="meta" style="margin:.2rem 0">${brk}</p>
             ${poolGap}
             ${modelTbl}
-            <p class="meta" style="margin:.4rem 0 0"><span class="q" title="${(m.notes ?? "").replace(/"/g, '&quot;')}">how this was derived ⓘ</span> · source: ${m.source}</p>
+            <p class="meta" style="margin:.4rem 0 0"><span class="q" data-tip="${(m.notes ?? "").replace(/"/g, '&quot;')}">how this was derived ⓘ</span> · source: ${m.source}</p>
           </div>`;
         }).join("");
       }
