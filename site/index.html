@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LimitWatch — AI plan limits, tracked over time</title>
+  <title>LimitWatch: AI plan limits, tracked over time</title>
   <meta name="description" content="Official AI subscription limits across providers (Claude, ChatGPT, Gemini, Grok, Perplexity), tracked over time. Every number links to its source." />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="LimitWatch — AI plan limits, tracked over time" />
+  <meta property="og:title" content="LimitWatch: AI plan limits, tracked over time" />
   <meta property="og:description" content="Official AI subscription limits across providers, tracked over time. Every number links to its source." />
   <meta property="og:url" content="https://limitwatch.southforgeai.com" />
   <meta property="og:image" content="https://limitwatch.southforgeai.com/og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="LimitWatch — AI plan limits, tracked over time" />
+  <meta name="twitter:title" content="LimitWatch: AI plan limits, tracked over time" />
   <meta name="twitter:description" content="Official AI subscription limits across providers, tracked over time. Every number links to its source." />
   <meta name="twitter:image" content="https://limitwatch.southforgeai.com/og.png" />
   <style>
@@ -59,7 +59,7 @@
   <main>
     <div class="card">
       <h2>Latest published limits</h2>
-      <p class="meta">Native units, as published. We do not invent message counts where providers only give token budgets or multipliers — <code>?</code> means honestly unpublished.</p>
+      <p class="meta">Native units, as published. We do not invent message counts where providers only give token budgets or multipliers. <code>?</code> means honestly unpublished.</p>
       <table id="latest">
         <thead><tr>
           <th>Provider / Plan</th><th>$/mo</th><th>Limit</th><th>Window</th><th>Model</th><th>Source</th>
@@ -72,13 +72,13 @@
       <h2>Value per dollar <span class="meta" style="font-weight:400">(theoretical ceiling)</span></h2>
       <p class="meta">
         Throughput per $ if you used the whole limit every window. A <strong>ceiling, not typical</strong> use.
-        Compared only within the same unit — we never silently equate a message to a token.
+        Compared only within the same unit. We never silently equate a message to a token.
         Multiplier-only plans (no published absolute) show as relative and can't be valued.
       </p>
       <div id="valueGroups"></div>
       <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #21262d;">
         <h3 style="font-size:1rem; margin:0 0 .4rem;">Cross-provider estimate</h3>
-        <p class="meta">The only honest way to line up messages vs tokens: pick how many tokens a message is worth. This knob is the assumption — drag it.</p>
+        <p class="meta">The only honest way to line up messages vs tokens: pick how many tokens a message is worth. This knob is the assumption, so drag it.</p>
         <label class="meta">tokens per message:
           <input id="tpm" type="range" min="100" max="2000" step="50" value="700" style="vertical-align:middle;width:240px;">
           <span id="tpmVal" class="num">700</span>
@@ -100,7 +100,7 @@
     <div class="card">
       <h2>Why you can trust this</h2>
       <ul class="meta">
-        <li>Every number carries a confidence tier and a link to its source — hover any dotted limit to read the exact source sentence.</li>
+        <li>Every number carries a confidence tier and a link to its source. Hover any dotted limit to read the exact source sentence.</li>
         <li>We store only as-published facts. Per-day / $-value / cross-provider math is derived in your browser, never baked into the data.</li>
         <li>Raw dated snapshots are public and version-controlled. The git history is the audit trail.</li>
       </ul>
@@ -128,7 +128,7 @@
             `<td>${name}</td>` +
             `<td class="num">$${e.price_usd}</td>` +
             `<td class="num"><span class="q" title="${e.quote.replace(/"/g,'&quot;')}">${unitLabel(l)}</span></td>` +
-            `<td>${l.window ?? "—"}</td>` +
+            `<td>${l.window ?? "-"}</td>` +
             `<td class="meta">${l.model ?? "all"}</td>` +
             `<td><a href="${e.source}" target="_blank" rel="noopener">src</a> · <span class="meta">${e.verified_on}</span></td>`;
           tb.appendChild(tr);
@@ -179,14 +179,14 @@
         crossBody.innerHTML = conv.map((x) =>
           `<tr><td>${x.name} <span class="meta">(${x.unit})</span></td><td class="num">$${x.price}</td>` +
           `<td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
-        crossNote.textContent = `Estimate only. Token plans use published tokens; message plans converted at ${tpm} tokens/message. Requests-based plans (e.g. Perplexity) and multiplier-only plans are excluded — not honestly comparable.`;
+        crossNote.textContent = `Estimate only. Token plans use published tokens; message plans converted at ${tpm} tokens/message. Requests-based plans (e.g. Perplexity) and multiplier-only plans are excluded, not honestly comparable.`;
       }
       tpmEl.addEventListener("input", renderCross);
       renderCross();
 
       const cl = document.getElementById("changelog");
       if (!db.changes.length) {
-        cl.innerHTML = `<li class="meta">No changes yet — need 2+ snapshots. Drift shows up here as you add weekly snapshots.</li>`;
+        cl.innerHTML = `<li class="meta">No changes yet, need 2+ snapshots. Drift shows up here as you add weekly snapshots.</li>`;
       } else {
         for (const c of db.changes) {
           const [prov,, plan, unit, window] = keyParts(c.key);
@@ -196,7 +196,7 @@
           else if (c.kind === "limit_added") txt = `<strong>${prov} ${plan}</strong> new limit: ${fmt(c.to)} ${unit}/${window}`;
           else txt = `<strong>${prov} ${plan}</strong> limit removed (${unit}/${window})`;
           const li = document.createElement("li");
-          li.innerHTML = `<span class="num">${c.date}</span> — ${txt} ${c.source ? `<a href="${c.source}" target="_blank" rel="noopener">src</a>` : ""}`;
+          li.innerHTML = `<span class="num">${c.date}</span> · ${txt} ${c.source ? `<a href="${c.source}" target="_blank" rel="noopener">src</a>` : ""}`;
           cl.appendChild(li);
         }
       }
