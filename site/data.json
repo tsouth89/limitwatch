@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T12:28:02.000Z",
+  "generated_at": "2026-06-08T12:33:42.257Z",
   "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
@@ -207,17 +207,33 @@
       "observed": 78,
       "limit_hit": false,
       "model": "mixed (Opus 4.8 primary, Sonnet 4.6, Haiku 4.5)",
-      "note": "Weekly cap at 78% (in-app indicator). MEASURED FLOOR aggregated from local Claude Code transcripts (~/.claude/projects/**/*.jsonl) across all projects, deduped by message.id, for the active weekly window (reset Wed 2026-06-03 17:00 EDT). Excludes claude.ai web/desktop chat, which also counts against this same cap, so the burn is a lower bound on what consumed the window. 4,328 assistant turns: Opus 4.8 2,269 turns ($447), Sonnet 4.6 1,905 ($89), Haiku 4.5 123 ($0.72). Priced at Anthropic API list rates, that is ~$537 of API-equivalent value at 78%, implying a full weekly Claude Code budget of >=~$688 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "note": "Personal Pro account, weekly cap at 78% (in-app indicator). MEASURED FLOOR from local Claude Code transcripts (~/.claude/projects/**/*.jsonl), deduped by message.id, for the active weekly window (reset Wed 2026-06-03 17:00 EDT). SCOPED to personal projects only (path match 'personal'), because this machine also ran a SEPARATE work Pro login this week whose Claude Code burn hits a different account's cap. Attribution is a weak proxy: Claude Code's login is global per instance, not per project, so a personal-project session could have run on the work login (or vice-versa); transcripts record no account identity. Also excludes claude.ai web/desktop chat, which counts against this same cap. So the figure is a soft lower bound. 1,627 assistant turns: Opus 4.8 ($117), Sonnet 4.6 ($35), Haiku 4.5 ($0.41). At Anthropic API list rates that is ~$153 of API-equivalent value at 78%, implying a full weekly Claude Code budget of >=~$197 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
       "usage_tokens": {
-        "input": 325712,
-        "output": 3331313,
-        "cache_write": 17511731,
-        "cache_read": 681018089
+        "input": 101563,
+        "output": 901547,
+        "cache_write": 5179238,
+        "cache_read": 208218570
       },
-      "api_equiv_usd": 537.17,
+      "api_equiv_usd": 153.3,
       "api_equiv_basis": "Anthropic API list price per model (Opus 4.8 in $5 / out $25 / cw-5m $6.25 / cw-1h $10 / cr $0.50; Sonnet 4.6 $3/$15/$3.75/$6/$0.30; Haiku 4.5 $1/$5/$1.25/$2/$0.10 per 1M). See scripts/cc-usage.mjs. Value comparison, not the cap mechanic.",
       "reporter": "self",
-      "evidence": "Aggregated ~/.claude/projects/**/*.jsonl assistant-turn usage via scripts/cc-usage.mjs --since 2026-06-03T21:00:00Z, deduped by message.id. Paired with in-app weekly % indicator."
+      "evidence": "Aggregated ~/.claude/projects/**/*.jsonl assistant-turn usage via scripts/cc-usage.mjs --since 2026-06-03T21:00:00Z --match personal, deduped by message.id. Paired with in-app weekly % indicator. Scoped to personal projects as a weak account proxy (see note)."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "week",
+      "captured_at": "2026-06-08T12:30:00Z",
+      "metric": "percent",
+      "observed": 79,
+      "limit_hit": false,
+      "model": "all models",
+      "note": "SEPARATE work Pro account (also $20/mo), read off the in-app Plan-usage panel: weekly 'all models' 79%, resets in ~1 day (exact reset time not shown). Same panel showed the 5-hour limit at 7% (resets ~4h) and a usage-credits pool at $0.00 of $40.00. Recorded as an OBSERVED-ONLY receipt: no measured-burn pairing, because (1) this machine ran two Claude logins this week and transcripts carry no account identity, and (2) the work weekly window's reset time is unknown, so per-account burn can't be scoped to the right window. The observed % is a real reading; any $ figure would be a guess on a guess.",
+      "usage_tokens": null,
+      "api_equiv_usd": null,
+      "reporter": "self",
+      "evidence": "In-app Claude Code Plan-usage panel screenshot (work account): 5-hour 7% resets 4h; Weekly all models 79% resets 1d; usage credits $0.00 of $40.00; context 82.5k/1.0M."
     }
   ],
   "snapshots": [

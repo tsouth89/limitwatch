@@ -51,12 +51,23 @@ const walk = (dir) => {
   return out;
 };
 
+// ACCOUNT ATTRIBUTION CAVEAT: transcripts record NO account/login identity. A weekly/5h cap is
+// per-account, so if this machine ran more than one Claude login in the window, summing every
+// project over-counts. The only proxy is the project (cwd): work repos run on the work login,
+// personal repos on the personal login. Use --match <substr> to scope to one account's projects
+// (e.g. --match personal), and --by-project to inspect the split. Imperfect but the best signal.
+const match = flag("--match");     // only count sessions whose project path includes this substring
+const exclude = flag("--exclude"); // drop sessions whose project path includes this substring
 const seen = new Set();            // dedupe by message.id (resumed sessions replay lines)
 const byModel = {};                // model -> token sums + cost
+const byProject = {};              // project dir -> { turns, usd }
 let firstTs = null, lastTs = null, turns = 0;
 
 for (const file of walk(projRoot)) {
   if (statSync(file).mtimeMs < since.getTime()) continue; // cheap skip
+  const project = file.slice(projRoot.length + 1).split(/[\\/]/)[0]; // top dir under projects/
+  if (match && !project.includes(match)) continue;
+  if (exclude && project.includes(exclude)) continue;
   let lines;
   try { lines = readFileSync(file, "utf8").split("\n"); } catch { continue; }
   for (const line of lines) {
@@ -80,7 +91,10 @@ for (const file of walk(projRoot)) {
     b.cr += u.cache_read_input_tokens || 0;
     b.turns += 1;
     const pr = priceFor(m);
-    if (pr) b.usd += ((u.input_tokens||0)*pr.in + (u.output_tokens||0)*pr.out + cw5*pr.cw5 + cw1h*pr.cw1h + (u.cache_read_input_tokens||0)*pr.cr) / 1e6;
+    const usd = pr ? ((u.input_tokens||0)*pr.in + (u.output_tokens||0)*pr.out + cw5*pr.cw5 + cw1h*pr.cw1h + (u.cache_read_input_tokens||0)*pr.cr) / 1e6 : 0;
+    b.usd += usd;
+    const pj = (byProject[project] ||= { turns: 0, usd: 0 });
+    pj.turns += 1; pj.usd += usd;
     turns++;
     if (!firstTs || ts < firstTs) firstTs = ts;
     if (!lastTs || ts > lastTs) lastTs = ts;
@@ -107,6 +121,12 @@ console.log(`  cache-write 5m ${fmt(totals.tokens.cache_write_5m)}  1h ${fmt(tot
 console.log(`  API-equivalent value: $${totals.api_equiv_usd}`);
 for (const [m, b] of Object.entries(byModel))
   console.log(`    ${m}: ${b.turns} turns, $${b.usd.toFixed(2)}`);
+if (match) console.log(`  [scoped to projects matching "${match}"]`);
+if (has("--by-project")) {
+  console.log("  by project (account proxy — cwd):");
+  for (const [p, b] of Object.entries(byProject).sort((a, b) => b[1].usd - a[1].usd))
+    console.log(`    ${p}: ${b.turns} turns, $${b.usd.toFixed(2)}`);
+}
 
 if (has("--report")) {
   const t = totals.tokens;

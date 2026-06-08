@@ -107,6 +107,14 @@ token- or dollar-weighted: flat $/% ⇒ token cap, bending ⇒ $-weighted.
 chat hits the same cap but isn't logged locally. Prices live in the `PRICES` table in the script;
 update them when rates change. This complements `npm run ratelimits` (API-tier headers, not sub caps).
 
+**Account attribution is the sharp edge.** A weekly/5h cap is per-account, but transcripts record no
+account identity, and Claude Code's login is **global per instance** — not per project. If you ran more
+than one Claude login on this machine during the window, summing every project over-counts one account
+and invents burn for another. The only proxy is the project (cwd): scope with `--match personal` /
+`--exclude work-thing` and inspect with `--by-project`. Treat the result as a soft bound, and when you
+can't attribute cleanly (two logins, unknown per-account reset window), record the in-app `%` as an
+**observed-only** receipt with `api_equiv_usd: null` rather than publishing a guessed dollar figure.
+
 ## Record schema
 
 Each snapshot is `{ "date": "YYYY-MM-DD", "entries": [ ... ] }`. See `data/schema.md`.
