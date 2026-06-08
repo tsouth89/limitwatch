@@ -115,6 +115,17 @@ and invents burn for another. The only proxy is the project (cwd): scope with `-
 can't attribute cleanly (two logins, unknown per-account reset window), record the in-app `%` as an
 **observed-only** receipt with `api_equiv_usd: null` rather than publishing a guessed dollar figure.
 
+### Automate the burn curve
+
+`npm run burn-log` (`scripts/burn-log.mjs`) appends one timestamped point **per account** to
+`data/burn-log.json`: trailing-24h burn, plus week-to-date since each account's configured weekly
+reset. Map your logins → project proxy + reset in `data/accounts.json`. Run it on a schedule
+(`scripts/burn-log.ps1` for Windows Task Scheduler, daily or hourly) and the matching measured floor
+already exists whenever you read an in-app `%` — pair the reading to the nearest row's
+`week_to_date.usd` instead of reconstructing the window by hand. Still a floor, still Claude Code only.
+Pricing and aggregation live once in `scripts/lib/usage-core.mjs` (shared with `npm run usage`); bump
+`PRICES` / `PRICES_AS_OF` there when rates change.
+
 ## Record schema
 
 Each snapshot is `{ "date": "YYYY-MM-DD", "entries": [ ... ] }`. See `data/schema.md`.

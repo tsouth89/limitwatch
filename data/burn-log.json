@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "note": "Per-account measured Claude Code burn points appended by scripts/burn-log.mjs. Floor only (CC transcripts, weak account proxy). Pair an in-app % with the nearest row's week_to_date.usd.",
+  "rows": [
+    {
+      "at": "2026-06-08T12:45:14.828Z",
+      "prices_as_of": "2026-06-08",
+      "accounts": [
+        {
+          "label": "personal",
+          "plan": "Pro",
+          "scope": {
+            "match": "personal"
+          },
+          "last24h": {
+            "usd": 141.13,
+            "turns": 1224,
+            "tokens": {
+              "input": 89647,
+              "output": 774271,
+              "cache_write_5m": 0,
+              "cache_write_1h": 4658552,
+              "cache_read": 175692052
+            }
+          },
+          "week_to_date": {
+            "since": "2026-06-03T21:00:00.000Z",
+            "usd": 157.13,
+            "turns": 1651,
+            "tokens": {
+              "input": 102146,
+              "output": 920923,
+              "cache_write_5m": 134863,
+              "cache_write_1h": 5259127,
+              "cache_read": 210612361
+            }
+          }
+        },
+        {
+          "label": "work",
+          "plan": "Pro",
+          "scope": {
+            "exclude": "personal"
+          },
+          "last24h": {
+            "usd": 35.83,
+            "turns": 314,
+            "tokens": {
+              "input": 26602,
+              "output": 219459,
+              "cache_write_5m": 0,
+              "cache_write_1h": 923986,
+              "cache_read": 41940369
+            }
+          },
+          "week_to_date": null
+        }
+      ]
+    }
+  ]
+}
