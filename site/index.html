@@ -232,6 +232,10 @@
     /* Sticky top nav */
     .topnav { position: sticky; top: 0; z-index: 20; background: var(--glass); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
     main > .card { scroll-margin-top: 76px; }
+    .ltable thead th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted-2); font-weight: 700; padding: .3rem .5rem; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--paper); }
+    .ltable thead th.num { text-align: right; }
+    .ltable thead th.sortable { cursor: pointer; user-select: none; }
+    .ltable thead th.sortable:hover { color: var(--ink); }
     .topnav .inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; padding: .55rem 1.5rem; }
     .brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; font-size: 1.02rem; letter-spacing: 0; color: var(--ink); text-decoration: none; }
     .brand img { width: 22px; height: 22px; display: block; }
@@ -456,7 +460,8 @@
       <div class="controls">
         <input id="search" type="search" placeholder="Search provider, plan, or model…" aria-label="Search plans" />
         <div class="chips" id="groupBy">
-          <span class="chip active" data-group="provider">By provider</span>
+          <span class="chip active" data-group="flat">Sortable list</span>
+          <span class="chip" data-group="provider">By provider</span>
           <span class="chip" data-group="price">By price</span>
         </div>
         <div class="chips" id="provChips"></div>
@@ -769,7 +774,8 @@
       const providers = [...new Set(latest.entries.map((e) => e.provider))];
       const active = new Set();           // empty = all
       let query = "";
-      let groupMode = "provider";
+      let groupMode = "flat";
+      let sortKey = "price", sortDir = 1;   // flat-view sort state
 
       // Per-day throughput is only used to find the binding cap and for cross-provider estimates.
       const winPerDay = { "3h": 8, "4h": 6, "5h": 4.8, day: 1, week: 1 / 7, month: 1 / 30 };
@@ -806,12 +812,30 @@
         { label: "Premium · $150 and up", lo: 149.01, hi: Infinity },
       ];
 
+      // Flat view: one sortable table, all plans, provider as a column — scans far better than
+      // expand/collapse groups when you just want to compare across everything.
+      const nameOf = (e) => `${provName(e.provider)} ${e.plan}`;
+      const sortCmp = (a, b) => {
+        const r = (sortKey === "price" ? a.price_usd - b.price_usd : nameOf(a).localeCompare(nameOf(b))) * sortDir;
+        return r || nameOf(a).localeCompare(nameOf(b));
+      };
+      const arrow = (k) => sortKey === k ? (sortDir > 0 ? " ↑" : " ↓") : "";
+      const flatTable = (entries) =>
+        `<div class="table-scroll"><table class="ltable">${COLS}` +
+        `<thead><tr>` +
+        `<th class="sortable" data-sort="name">Plan${arrow("name")}</th>` +
+        `<th class="sortable num" data-sort="price">Price${arrow("price")}</th>` +
+        `<th>Limits</th><th>Confidence</th><th>Source</th></tr></thead>` +
+        `<tbody>${entries.map((e) => rowHtml(e, true)).join("")}</tbody></table></div>`;
+
       const latestEl = document.getElementById("latest");
       function renderLatest() {
         const shown = latest.entries.filter(matches);
         if (!shown.length) { latestEl.innerHTML = `<p class="empty">No plans match.</p>`; return; }
         let html = "";
-        if (groupMode === "provider") {
+        if (groupMode === "flat") {
+          html = flatTable([...shown].sort(sortCmp));
+        } else if (groupMode === "provider") {
           for (const prov of providers) {
             const rows = shown.filter((e) => e.provider === prov).sort((a, b) => a.price_usd - b.price_usd);
             if (rows.length) html += groupBlock(provMark(prov) + provName(prov), rows, false);
@@ -847,6 +871,13 @@
       });
       document.getElementById("search").addEventListener("input", (ev) => {
         query = ev.target.value.trim().toLowerCase(); renderLatest();
+      });
+      // Click a sortable column header in the flat view to sort (toggle direction on repeat).
+      latestEl.addEventListener("click", (ev) => {
+        const th = ev.target.closest("th.sortable"); if (!th) return;
+        const k = th.dataset.sort;
+        if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = 1; }
+        renderLatest();
       });
       renderChips();
       renderLatest();
