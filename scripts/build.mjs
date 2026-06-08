@@ -27,6 +27,7 @@ const snapshots = files.map((f) => {
     if (e.as_of > today) dataWarnings.push(`${f}: ${e.provider} ${e.plan} as_of ${e.as_of} is after ${today}`);
     if (e.verified_on > today) dataWarnings.push(`${f}: ${e.provider} ${e.plan} verified_on ${e.verified_on} is after ${today}`);
     if (e.measured?.as_of > today) dataWarnings.push(`${f}: ${e.provider} ${e.plan} measured as_of ${e.measured.as_of} is after ${today}`);
+    if (e.effective_on && e.effective_on < e.as_of) dataWarnings.push(`${f}: ${e.provider} ${e.plan} effective_on ${e.effective_on} is before as_of ${e.as_of}`);
   }
   return snap;
 });

@@ -132,9 +132,8 @@
     .vexcluded { font-size: 12.5px; color: var(--muted); margin: .2rem 0 0; line-height: 1.5; }
 
     /* Sub-tabs */
-    .subtabs { display: flex; gap: .35rem; margin: .2rem 0 1rem; }
-    .subtab { cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: .22rem .75rem; font-size: 12.5px; color: var(--muted); background: var(--paper); user-select: none; }
-    .subtab.active { background: var(--blue-soft); color: var(--blue); border-color: #b8caff; font-weight: 750; }
+    .assumption-panel { background: #f8fbff; border: 1px solid #cbdcff; border-radius: 8px; padding: .8rem .9rem; margin: .85rem 0; }
+    .assumption-panel .meta { margin: 0; }
 
     /* Footer */
     footer { max-width: 1120px; margin: 0 auto; padding: 1.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; align-items: center; }
@@ -189,6 +188,7 @@
       <div class="navlinks" id="navlinks">
         <a href="#limits" data-section="limits">Limits</a>
         <a href="#value" data-section="value">Value</a>
+        <a href="#crossProvider" data-section="crossProvider">Estimate</a>
         <a href="#measuredCard" data-section="measuredCard" id="navMeasured" style="display:none">Measured</a>
         <a href="#changelog" data-section="changelog">Changelog</a>
         <a href="#trust" data-section="trust">Trust</a>
@@ -254,14 +254,21 @@
           </p>
         </div>
       </div>
-      <div class="subtabs" id="valueTabs">
-        <span class="subtab active" data-tab="native">By native unit</span>
-        <span class="subtab" data-tab="cross">Cross-provider (estimate)</span>
-      </div>
       <div id="valueGroups"></div>
-      <div id="crossPanel" style="display:none">
-        <h3 style="font-size:1rem; margin:0 0 .4rem;">Cross-provider estimate</h3>
-        <p class="meta">The only honest way to line up messages, tokens, and dollar credits: state the conversions out loud. These knobs are the assumptions, so drag them.</p>
+    </div>
+
+    <div class="card" id="crossProvider">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Best cross-provider view</p>
+          <h2>Cross-provider estimate <span class="meta" style="font-weight:400">(tokens / day / $)</span></h2>
+          <p class="meta">This is the most useful comparison, but it has assumptions. Message caps are converted to tokens, dollar credits are converted using a token price, and requests-only plans stay out because a request is not a token.</p>
+        </div>
+      </div>
+      <div id="crossPanel">
+        <div class="assumption-panel">
+          <p class="meta">Tune the assumptions below. The ranking updates live, and the table labels estimated rows instead of pretending they are hard facts.</p>
+        </div>
         <div class="knobs">
           <label class="meta">tokens per message:
             <input id="tpm" type="range" min="100" max="2000" step="50" value="700" style="vertical-align:middle;width:200px;">
@@ -387,10 +394,12 @@
       const todayIso = new Date().toISOString().slice(0, 10);
       const isFutureDate = (d) => d && d > todayIso;
       const futureRecords = [];
+      const upcomingRecords = [];
       for (const e of latest.entries) {
         if (isFutureDate(e.as_of)) futureRecords.push(`${e.provider} ${e.plan}${e.surface ? " " + e.surface : ""} as_of ${e.as_of}`);
         if (isFutureDate(e.verified_on)) futureRecords.push(`${e.provider} ${e.plan}${e.surface ? " " + e.surface : ""} verified_on ${e.verified_on}`);
         if (e.measured && isFutureDate(e.measured.as_of)) futureRecords.push(`${e.provider} ${e.plan} measured as_of ${e.measured.as_of}`);
+        if (isFutureDate(e.effective_on)) upcomingRecords.push(`${e.provider} ${e.plan}${e.surface ? " " + e.surface : ""} effective ${e.effective_on}`);
       }
 
       const stat = (n, l) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`;
@@ -400,10 +409,13 @@
         stat(db.changes.length, "changes logged") +
         stat(db.snapshot_count, "snapshots") +
         stat(db.date_range.at(-1), "last updated");
-      if (futureRecords.length) {
+      if (futureRecords.length || upcomingRecords.length) {
         const dn = document.getElementById("dataNotice");
         dn.style.display = "block";
-        dn.innerHTML = `<strong>Data check:</strong> ${futureRecords.length} records are dated after today (${todayIso}). They are flagged here and excluded from measured cross-rankings until verified.`;
+        const parts = [];
+        if (upcomingRecords.length) parts.push(`<strong>Upcoming:</strong> ${upcomingRecords.length} announced plan changes have future effective dates and are labeled upcoming.`);
+        if (futureRecords.length) parts.push(`<strong>Data check:</strong> ${futureRecords.length} evidence records are dated after today (${todayIso}) and are hidden from rankings until current.`);
+        dn.innerHTML = parts.join(" ");
       }
       document.getElementById("buildInfo").textContent = `built ${db.generated_at.slice(0, 10)}`;
 
@@ -429,7 +441,7 @@
       let query = "";
       let groupMode = "provider";
 
-      // Per-day throughput per window — drives the value-per-dollar math further down.
+      // Per-day throughput is only used to find the binding cap and for cross-provider estimates.
       const winPerDay = { "3h": 8, "4h": 6, "5h": 4.8, day: 1, week: 1 / 7, month: 1 / 30 };
 
       const matches = (e) => {
@@ -444,8 +456,9 @@
         const surf = e.surface ? ` <span class="meta">· ${e.surface}</span>` : "";
         const name = showProvider ? `${provMark(e.provider)}<span class="pname">${e.provider}</span> <strong>${e.plan}</strong>` : `<strong>${e.plan}</strong>`;
         const future = isFutureDate(e.as_of) || isFutureDate(e.verified_on) ? ` <span class="badge warning">date check</span>` : "";
+        const upcoming = isFutureDate(e.effective_on) ? ` <span class="badge announced">upcoming ${e.effective_on}</span>` : "";
         return `<tr>` +
-          `<td class="cardtitle">${name}${surf}${future}</td>` +
+          `<td class="cardtitle">${name}${surf}${upcoming}${future}</td>` +
           `<td class="num" data-label="Price / mo">$${e.price_usd}</td>` +
           `<td data-label="Limits">${limitCell(e)}</td>` +
           `<td data-label="Confidence"><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
@@ -508,7 +521,7 @@
       renderChips();
       renderLatest();
 
-      // ---- Value per dollar (derived, never stored) ---- (winPerDay defined above)
+      // ---- Native value per dollar (derived, never stored) ---- (winPerDay defined above)
       const UNIT_LABEL = { messages: "messages", tokens: "tokens", requests: "requests" };
 
       // A plan often caps the SAME usage across several windows (e.g. xAI: 1,000/day AND 125/4h).
@@ -516,6 +529,7 @@
       // plan+model+unit to that single binding rate so we don't double-count or overstate.
       const byKey = new Map();
       for (const e of latest.entries) {
+        if (isFutureDate(e.effective_on)) continue;
         for (const l of e.limits) {
           // Exclude soft/estimate/credit limits from the ceiling tables — they are not throughput caps.
           if (l.value == null || l.unit === "multiplier" || l.unit === "usd_credit" || l.basis === "estimate" || !(l.window in winPerDay)) continue;
@@ -526,30 +540,41 @@
             byKey.set(key, { prov: e.provider, name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, model: l.model, cap: l.value, window: l.window });
         }
       }
-      const rows = [...byKey.values()].map((x) => ({ ...x, perDollar: x.perDay / x.price }));
+      const rows = [...byKey.values()].map((x) => ({ ...x, perWindowDollar: x.cap / x.price }));
 
       const vg = document.getElementById("valueGroups");
       const summary = [];
-      for (const unit of ["messages", "tokens", "requests"]) {
-        const r = rows.filter((x) => x.unit === unit).sort((a, b) => b.perDollar - a.perDollar);
+      const valueGroups = [...new Set(rows.map((x) => `${x.unit}|${x.window}`))]
+        .map((k) => {
+          const [unit, window] = k.split("|");
+          return { unit, window };
+        })
+        .sort((a, b) => a.unit.localeCompare(b.unit) || (winPerDay[b.window] ?? 0) - (winPerDay[a.window] ?? 0));
+      const shownSummary = new Set();
+      for (const { unit, window } of valueGroups) {
+        const r = rows.filter((x) => x.unit === unit && x.window === window).sort((a, b) => b.perWindowDollar - a.perWindowDollar);
         if (!r.length) continue;
-        const max = r[0].perDollar || 1;
-        summary.push({ unit, lead: r[0] });
+        const max = r[0].perWindowDollar || 1;
+        if (!shownSummary.has(unit)) {
+          summary.push({ unit, lead: r[0] });
+          shownSummary.add(unit);
+        }
         const capLabel = (x) => ` <span class="meta">(${x.model ? x.model + " · " : ""}${fmt(x.cap)}/${shortWin(x.window)})</span>`;
         const barsHtml = r.map((x, i) => {
-          const pct = Math.max(2, Math.round((x.perDollar / max) * 100));
-          const tip = `Published cap ${fmt(x.cap)} ${unit}/${shortWin(x.window)} → up to ${fmt(Math.round(x.perDay))}/day at full use · $${x.price}/mo`;
+          const pct = Math.max(2, Math.round((x.perWindowDollar / max) * 100));
+          const value = x.perWindowDollar >= 10 ? fmt(Math.round(x.perWindowDollar)) : x.perWindowDollar.toFixed(1);
+          const tip = `Published cap ${fmt(x.cap)} ${unit}/${shortWin(x.window)} -> ${value} ${unit}/${shortWin(x.window)}/$ · about ${fmt(Math.round(x.perDay))}/day at full sustained use · $${x.price}/mo`;
           const best = i === 0 ? ` <span class="bestpill">Best value</span>` : "";
           return `<div class="vrow">` +
             `<div class="vname">${provMark(x.prov)}${x.name}${capLabel(x)} <span class="price">$${x.price}</span>${best}</div>` +
             `<div class="vtrack q" data-tip="${tip}"><div class="vfill" style="width:${pct}%"></div>` +
-            `<span class="vval">${fmt(Math.round(x.perDollar))}</span></div>` +
+            `<span class="vval">${value}</span></div>` +
             `</div>`;
         }).join("");
         const h = document.createElement("div");
         h.className = "vbars";
-        h.innerHTML = `<h3>${UNIT_LABEL[unit]}</h3>` +
-          `<p class="vcap">Most ${unit} per $ you're <em>allowed</em> each day — a hard ceiling at full use, not typical. Where a plan caps several windows, we use the tightest (binding) one. Bars are relative to the leader.</p>` +
+        h.innerHTML = `<h3>${UNIT_LABEL[unit]} / ${shortWin(window)} / $</h3>` +
+          `<p class="vcap">Most ${unit} per $ in the plan's published ${shortWin(window)} cap window. Where a plan caps several windows, we show the tightest binding cap. Bars are relative only inside this exact unit/window group.</p>` +
           barsHtml;
         vg.appendChild(h);
       }
@@ -557,11 +582,11 @@
       // Concrete "best value" line — the metric is shown, so the claim isn't a mystery star.
       if (summary.length) {
         const s = summary.map((x) =>
-          `<strong>${x.unit}</strong>: <span class="lead">${x.lead.name}</span> <span class="num">(${fmt(Math.round(x.lead.perDollar))}/day per $)</span>`
+          `<strong>${x.unit}</strong>: <span class="lead">${x.lead.name}</span> <span class="num">(${(x.lead.perWindowDollar >= 10 ? fmt(Math.round(x.lead.perWindowDollar)) : x.lead.perWindowDollar.toFixed(1))}/${shortWin(x.lead.window)}/$)</span>`
         ).join(" &nbsp;·&nbsp; ");
         const el = document.createElement("div");
         el.className = "vsummary";
-        el.innerHTML = `Best value per $ — ${s}. Ranked within each native unit only; we don't pit a message against a token.`;
+        el.innerHTML = `Best native value per $ — ${s}. Ranked only within matching unit/window groups; we don't pit a message against a token or a monthly request against a daily request.`;
         vg.insertBefore(el, vg.firstChild);
       }
 
@@ -600,6 +625,7 @@
         const out = [], measured = [];
         const bind = {};  // collapse multi-window message/token caps to the tightest per plan+model
         for (const e of latest.entries) {
+          if (isFutureDate(e.effective_on)) continue;
           const name = `${e.provider} ${e.plan}` + (e.surface ? ` <span class="meta">· ${e.surface}</span>` : "");
           const base = { prov: e.provider, name, price: e.price_usd };
           if (e.measured && !isFutureDate(e.measured.as_of)) { measured.push({ ...base, tokPerDay: e.measured.realized_tokens_month / 30 }); continue; }
@@ -629,23 +655,15 @@
         crossBody.innerHTML =
           ranked.map((x) => row(x, x.kind)).join("") +
           (mr.length ? `<tr><td colspan="3" class="crosssep">↓ Real measured usage — different basis (what one account actually consumed, not a ceiling)</td></tr>` + mr.map((x) => row(x, "measured")).join("") : "");
-        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans (Replit, Anthropic SDK) at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Anthropic chat figures are official per-window estimates (<em>est</em>). Current measured receipts appear below the divider when their dates are valid; future-dated measured records are flagged in <a href="#measuredCard">Real receipts</a> but excluded here. Requests-only and multiplier-only plans can't be converted.`;
+        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans -> tokens at <strong>${tpm}</strong>/message; API-billed credit plans at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Future-effective announcements are excluded until their effective date. Anthropic chat figures are official per-window estimates (<em>est</em>). Current measured receipts appear below the divider when their dates are valid; future-dated measured records are flagged in <a href="#measuredCard">Real receipts</a> but excluded here. Requests-only and multiplier-only plans can't be converted.`;
       }
       tpmEl.addEventListener("input", renderCross);
       cpmEl.addEventListener("input", renderCross);
       renderCross();
 
-      document.getElementById("valueTabs").addEventListener("click", (ev) => {
-        const t = ev.target.closest(".subtab"); if (!t) return;
-        [...ev.currentTarget.children].forEach((c) => c.classList.toggle("active", c === t));
-        const cross = t.dataset.tab === "cross";
-        document.getElementById("valueGroups").style.display = cross ? "none" : "";
-        document.getElementById("crossPanel").style.display = cross ? "" : "none";
-      });
-
       // ---- Measured usage (real accounts) — turns a $ credit into observed tokens ----
       const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : fmt(n);
-      const measured = latest.entries.filter((e) => e.measured);
+      const measured = latest.entries.filter((e) => e.measured && !isFutureDate(e.measured.as_of));
       if (measured.length) {
         document.getElementById("measuredCard").style.display = "";
         document.getElementById("navMeasured").style.display = "";
@@ -655,7 +673,7 @@
           const perDollar = m.realized_tokens_month / e.price_usd;
           const range = m.realized_tokens_month_range
             ? ` <span class="meta">(observed ${mtok(m.realized_tokens_month_range[0])}–${mtok(m.realized_tokens_month_range[1])}/mo)</span>` : "";
-          const dateWarning = isFutureDate(m.as_of) ? ` <span class="badge warning">date check</span>` : "";
+          const dateWarning = "";
           const poolGap = (m.api_pool_usd_observed != null && m.api_pool_usd_observed !== m.api_pool_usd_stated)
             ? `<p class="meta" style="margin:.35rem 0 0"><strong>Pool note:</strong> stated $${m.api_pool_usd_stated}, observed about $${m.api_pool_usd_observed}. Treat the stated amount as a floor.</p>` : "";
           const models = (m.derived_usd_per_mtok ?? []).map((d) =>
@@ -705,7 +723,7 @@
       // Highlight the nav link for whichever section is centered in the viewport.
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const sections = ["limits", "value", "measuredCard", "changelog", "trust"]
+      const sections = ["limits", "value", "crossProvider", "measuredCard", "changelog", "trust"]
         .map((id) => document.getElementById(id))
         .filter((el) => el && el.style.display !== "none");
       const io = new IntersectionObserver((entries) => {

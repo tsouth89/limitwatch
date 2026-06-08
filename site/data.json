@@ -1,14 +1,11 @@
 {
-  "generated_at": "2026-06-08T03:49:45.990Z",
+  "generated_at": "2026-06-08T04:07:00.895Z",
   "snapshot_count": 1,
   "date_range": [
     "2026-06-07",
     "2026-06-07"
   ],
   "data_warnings": [
-    "2026-06-07.json: Anthropic Pro as_of 2026-06-15 is after 2026-06-08",
-    "2026-06-07.json: Anthropic Max 5x as_of 2026-06-15 is after 2026-06-08",
-    "2026-06-07.json: Anthropic Max 20x as_of 2026-06-15 is after 2026-06-08",
     "2026-06-07.json: Cursor Pro measured as_of 2026-06-28 is after 2026-06-08",
     "2026-06-07.json: Cursor Pro+ measured as_of 2026-06-30 is after 2026-06-08"
   ],
@@ -229,7 +226,8 @@
           "confidence": "announced",
           "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
           "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
-          "as_of": "2026-06-15",
+          "as_of": "2026-06-07",
+          "effective_on": "2026-06-15",
           "verified_on": "2026-06-07",
           "notes": "Effective 2026-06-15: Agent SDK, `claude -p`, Claude Code GitHub Actions, and third-party apps authing via the Agent SDK stop drawing on the subscription's interactive usage and instead consume this separate monthly credit, billed at standard API rates after it runs out. Per-user, no rollover, one-time opt-in required. Interactive use (claude.ai chat, Claude Code in terminal/IDE, Cowork) is unaffected. Announced/press-reported; not yet on a stable first-party page.",
           "credit_bills_at_api": true
@@ -254,7 +252,8 @@
           "confidence": "announced",
           "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
           "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
-          "as_of": "2026-06-15",
+          "as_of": "2026-06-07",
+          "effective_on": "2026-06-15",
           "verified_on": "2026-06-07",
           "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported.",
           "credit_bills_at_api": true
@@ -279,7 +278,8 @@
           "confidence": "announced",
           "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
           "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
-          "as_of": "2026-06-15",
+          "as_of": "2026-06-07",
+          "effective_on": "2026-06-15",
           "verified_on": "2026-06-07",
           "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported.",
           "credit_bills_at_api": true

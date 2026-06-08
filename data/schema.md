@@ -41,6 +41,7 @@ A snapshot never holds a computed number presented as a fact.
       "quote": "ChatGPT Plus users can send up to 160 messages with GPT-5.5 every 3 hours.",
       "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
       "as_of": "2026-06-07",      // date the SOURCE states/was published
+      "effective_on": null,        // optional: when an announced future change takes effect
       "verified_on": "2026-06-07",// date WE last confirmed the source still says this
       "notes": ""
     }
@@ -114,6 +115,8 @@ for that one limit (used when a single plan mixes a hard multiplier with a soft 
 
 - **Never edit a past snapshot.** Wrong-then is still the record. Drift is the product.
 - Every entry needs `source`, `confidence`, `quote`, `as_of`, `verified_on`.
+- Use `effective_on` for announced future changes. Do not put the future effective date in
+  `as_of`; `as_of` is the date the source was observed/published.
 - `quote` is the exact sentence the number came from. No paraphrase.
 - If a provider only gives a multiplier ("Max = 20x Pro"), store `unit: "multiplier", value: 20`, and set `baseline` to what it is relative to (e.g. `"Pro"`, `"Free"`). Do NOT invent a token count.
 - Split distinct limits into separate `limits[]` rows (5h session vs weekly cap = two rows).
