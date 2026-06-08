@@ -52,6 +52,21 @@
       "quote": "Starting June 1, premium request units (PRUs) will be replaced by GitHub AI Credits.",
       "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
       "note": "Billing-model change, not a promo. Premium request units (PRUs) are replaced by GitHub AI Credits, consumed by token usage (input, output, cached) at each model's published API rate. Monthly price is unchanged but now bundles a matching credit pool: Pro $10/mo incl $10 in credits, Pro+ $39/mo incl $39 in credits; Business $19/seat, Enterprise $39/seat. Existing annual Pro/Pro+ subscribers stay on PRU-based pricing until their plan expires (with model multipliers rising Jun 1 for annual plans). GitHub shipped a preview-bill experience in early May so users could project costs before the switch."
+    },
+    {
+      "id": "google-aiplus-pricedrop-credits-2026",
+      "provider": "Google",
+      "product": "Gemini",
+      "applies_to": ["AI Plus"],
+      "title": "AI Plus cut to $4.99, storage doubled, base AI credits dropped",
+      "kind": "pricing_change",
+      "starts_on": "2026-06-08",
+      "ends_on": null,
+      "permanent": true,
+      "confidence": "announced",
+      "quote": "Decrease in price: The standard monthly price of your AI Plus plan will be lowered from $7.99/month to $4.99/month, and annual plans will be lowered from $79.99/year to $49.99/year. Increase in storage: We're doubling the amount of cloud storage included with your AI Plus plan from 200 GB to 400 GB. While 200 AI credits will no longer be included as a benefit in your base plan each month, the new usage limit model we are introducing should allow you to maintain the same experience you are used to.",
+      "source": "https://support.google.com/googleone/answer/16882689",
+      "note": "Source: official Google email to AI Plus subscribers, June 8, 2026 (corroborated by 9to5Google, Engadget, Android Police). Three concurrent changes: (1) price down $7.99->$4.99/mo and $79.99->$49.99/yr, applied next 1-2 billing cycles or at offer-period end; (2) cloud storage 200GB->400GB, rolling out over a few days; (3) the bundled 200 AI credits/month are removed from the base plan as Google shifts to product-based, compute-weighted usage limits (factoring prompt complexity, features used, chat length; 5h refresh + weekly cap; AI Plus still 2x non-subscriber). The AI-credit usage model is rolling out to other products starting with Flow and Antigravity. Per Google One support, AI credits remain purchasable only on AI Pro/Ultra, not AI Plus. Public pricing pages (one.google.com, gemini.google) still showed old $7.99/200GB at time of capture; snapshot row stays as-is (never edit a past snapshot) until the next snapshot confirms the new figures."
     }
   ]
 }

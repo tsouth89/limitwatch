@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T20:57:03.929Z",
+  "generated_at": "2026-06-08T23:15:28.723Z",
   "snapshot_count": 5,
   "date_range": [
     "2026-01-15",
@@ -70,6 +70,23 @@
       "quote": "Starting June 1, premium request units (PRUs) will be replaced by GitHub AI Credits.",
       "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
       "note": "Billing-model change, not a promo. Premium request units (PRUs) are replaced by GitHub AI Credits, consumed by token usage (input, output, cached) at each model's published API rate. Monthly price is unchanged but now bundles a matching credit pool: Pro $10/mo incl $10 in credits, Pro+ $39/mo incl $39 in credits; Business $19/seat, Enterprise $39/seat. Existing annual Pro/Pro+ subscribers stay on PRU-based pricing until their plan expires (with model multipliers rising Jun 1 for annual plans). GitHub shipped a preview-bill experience in early May so users could project costs before the switch."
+    },
+    {
+      "id": "google-aiplus-pricedrop-credits-2026",
+      "provider": "Google",
+      "product": "Gemini",
+      "applies_to": [
+        "AI Plus"
+      ],
+      "title": "AI Plus cut to $4.99, storage doubled, base AI credits dropped",
+      "kind": "pricing_change",
+      "starts_on": "2026-06-08",
+      "ends_on": null,
+      "permanent": true,
+      "confidence": "announced",
+      "quote": "Decrease in price: The standard monthly price of your AI Plus plan will be lowered from $7.99/month to $4.99/month, and annual plans will be lowered from $79.99/year to $49.99/year. Increase in storage: We're doubling the amount of cloud storage included with your AI Plus plan from 200 GB to 400 GB. While 200 AI credits will no longer be included as a benefit in your base plan each month, the new usage limit model we are introducing should allow you to maintain the same experience you are used to.",
+      "source": "https://support.google.com/googleone/answer/16882689",
+      "note": "Source: official Google email to AI Plus subscribers, June 8, 2026 (corroborated by 9to5Google, Engadget, Android Police). Three concurrent changes: (1) price down $7.99->$4.99/mo and $79.99->$49.99/yr, applied next 1-2 billing cycles or at offer-period end; (2) cloud storage 200GB->400GB, rolling out over a few days; (3) the bundled 200 AI credits/month are removed from the base plan as Google shifts to product-based, compute-weighted usage limits (factoring prompt complexity, features used, chat length; 5h refresh + weekly cap; AI Plus still 2x non-subscriber). The AI-credit usage model is rolling out to other products starting with Flow and Antigravity. Per Google One support, AI credits remain purchasable only on AI Pro/Ultra, not AI Plus. Public pricing pages (one.google.com, gemini.google) still showed old $7.99/200GB at time of capture; snapshot row stays as-is (never edit a past snapshot) until the next snapshot confirms the new figures."
     },
     {
       "id": "auto-github-github-copilot-context-window-expanded-to-1-mill-2026",
@@ -352,6 +369,31 @@
       "api_equiv_basis": "Anthropic API list price, Opus 4.8 (in $5 / out $25 / cw-1h $10 / cr $0.50 per 1M). Value comparison, not the cap mechanic.",
       "reporter": "self",
       "evidence": "scripts/cc-usage.mjs aggregation of the personal ai-limit-tracker transcript for the maxed window (span 2026-06-08T10:49:17Z..14:19:19Z, 450 turns, deduped by message.id). In-app 5-hour indicator hit 100% (throttled)."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "week",
+      "captured_at": "2026-06-08T22:52:02Z",
+      "reset_at": "2026-06-10T21:00:00Z",
+      "metric": "percent",
+      "observed": 99,
+      "account": "personal",
+      "limit_hit": false,
+      "model": "mixed (Claude Opus 4.8 dominant)",
+      "value_basis": "floor",
+      "note": "Personal Pro account, WEEKLY limit at 99% (user-reported, near cap not yet throttled). MEASURED FLOOR from local Claude Code transcripts scoped to projects matching personal (excludes claude.ai chat; account attribution is a weak project proxy). Window 2026-06-03T21:00Z..2026-06-08T22:52Z, 2250 assistant turns across a heavy build week (folloback MVP + ai-limit-tracker). API-equivalent burn $256.56 at list rates, dominated by Opus 4.8 (1363 turns, $220.91) with Sonnet 4.6 (786 turns, $35.24) and Haiku (86 turns, $0.41). Because 99% is near the ceiling without a throttle, ~$257 API-equiv is a hard LOWER BOUND on the weekly cap for a $20/mo Pro plan: it counts Claude Code transcript burn only, so any claude.ai chat sits on top. So the weekly cap is >=~$257 API-equivalent. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "usage_tokens": {
+        "input": 137887,
+        "output": 1306690,
+        "cache_write": 7216130,
+        "cache_read": 353381929
+      },
+      "api_equiv_usd": 256.56,
+      "api_equiv_basis": "Anthropic API list price per model (see scripts/lib/usage-core.mjs PRICES). Value comparison, not the cap mechanic.",
+      "reporter": "self",
+      "evidence": "scripts/cc-usage.mjs --account personal --report; aggregated ~/.claude/projects/**/*.jsonl, deduped by message.id, --match personal."
     }
   ],
   "radar": [
