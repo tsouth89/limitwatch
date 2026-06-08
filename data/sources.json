@@ -1,0 +1,33 @@
+{
+  "comment": "Official/primary pages to monitor for limit changes. fetch.mjs hashes each page's text and flags the ones that changed since last check, so you only re-verify what moved. It never auto-edits snapshots.",
+  "sources": [
+    {
+      "id": "openai-gpt55-help",
+      "provider": "OpenAI",
+      "label": "GPT-5.5 in ChatGPT (usage limits)",
+      "url": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+      "tier": "official"
+    },
+    {
+      "id": "anthropic-api-rate-limits",
+      "provider": "Anthropic",
+      "label": "Claude API rate limits",
+      "url": "https://docs.anthropic.com/en/api/rate-limits",
+      "tier": "official"
+    },
+    {
+      "id": "anthropic-pricing",
+      "provider": "Anthropic",
+      "label": "Anthropic pricing",
+      "url": "https://www.anthropic.com/pricing",
+      "tier": "official"
+    },
+    {
+      "id": "openai-pricing",
+      "provider": "OpenAI",
+      "label": "OpenAI / ChatGPT pricing",
+      "url": "https://openai.com/chatgpt/pricing/",
+      "tier": "official"
+    }
+  ]
+}

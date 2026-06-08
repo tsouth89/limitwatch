@@ -4,7 +4,8 @@
   "description": "Tracks AI subscription plans, prices, and usage limits over time, with source-linked provenance.",
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/fetch.mjs"
   },
   "license": "MIT"
 }

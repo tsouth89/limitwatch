@@ -1,0 +1,12 @@
+{
+  "anthropic-api-rate-limits": {
+    "hash": "207cf11cca4acf78",
+    "checked": "2026-06-08",
+    "len": 17027
+  },
+  "anthropic-pricing": {
+    "hash": "2a4cde637f929560",
+    "checked": "2026-06-08",
+    "len": 24117
+  }
+}
