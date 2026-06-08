@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-08T23:15:28.723Z",
-  "snapshot_count": 5,
+  "generated_at": "2026-06-08T23:18:50.863Z",
+  "snapshot_count": 6,
   "date_range": [
     "2026-01-15",
-    "2026-06-07"
+    "2026-06-08"
   ],
   "data_warnings": [],
   "events": [
@@ -112,6 +112,14 @@
     }
   ],
   "changes": [
+    {
+      "date": "2026-06-08",
+      "kind": "price_changed",
+      "key": "Google|Gemini|AI Plus",
+      "from": 7.99,
+      "to": 4.99,
+      "source": "https://support.google.com/googleone/answer/16882689"
+    },
     {
       "date": "2026-05-19",
       "kind": "price_changed",
@@ -1117,6 +1125,768 @@
           "as_of": "2026-06-07",
           "verified_on": "2026-06-07",
           "notes": "Compute-based usage (5h refresh + weekly cap); no absolute numeric cap published. Entry tier between Free and AI Pro."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Pro",
+          "price_usd": 19.99,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 4,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Free",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Get 4x higher usage limits than Free",
+          "source": "https://gemini.google/subscriptions/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Google moved from daily prompt counts to opaque compute-based limits (5h refresh + weekly cap), then adjusted them after May 2026 backlash. No published numeric cap. Ultra multipliers are stated relative to Pro."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Ultra (5x)",
+          "price_usd": 99.99,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 5,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "AI Pro",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$99.99/month: 5x higher usage limits vs. AI Pro",
+          "source": "https://gemini.google/subscriptions/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Multiplier is official; absolute compute budget is not published. Lower of the two AI Ultra price points."
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Ultra (20x)",
+          "price_usd": 199.99,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "AI Pro",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$199.99/month: 20x higher usage limits vs. AI Pro",
+          "source": "https://gemini.google/subscriptions/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Price dropped from $250 to $199.99 in May 2026. Multiplier official; absolute budget not published."
+        },
+        {
+          "provider": "xAI",
+          "product": "Grok",
+          "plan": "SuperGrok",
+          "price_usd": 30,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 1000,
+              "unit": "messages",
+              "window": "day",
+              "model": null,
+              "kind": "primary"
+            },
+            {
+              "value": 125,
+              "unit": "messages",
+              "window": "4h",
+              "model": null,
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "SuperGrok offers 1,000 messages and 50 images per day; on the standard plan you can send approximately 100 to 150 messages per four-hour window before being throttled.",
+          "source": "https://jingrey.com/tools/current-supergrok-usage-limits/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "4h figure is a community midpoint of the 100-150 range. $30/mo or $300/yr."
+        },
+        {
+          "provider": "xAI",
+          "product": "Grok",
+          "plan": "SuperGrok Heavy",
+          "price_usd": 300,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 5000,
+              "unit": "messages",
+              "window": "day",
+              "model": null,
+              "kind": "primary"
+            },
+            {
+              "value": 250,
+              "unit": "messages",
+              "window": "4h",
+              "model": null,
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "SuperGrok Heavy lifts the caps to 5,000 messages and 200 images daily; Heavy subscribers see roughly 250 messages per four-hour window.",
+          "source": "https://jingrey.com/tools/current-supergrok-usage-limits/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Only consumer plan with full Grok 4.3 access. $300/mo."
+        },
+        {
+          "provider": "Perplexity",
+          "product": "Perplexity",
+          "plan": "Pro",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 500,
+              "unit": "requests",
+              "window": "day",
+              "model": "Deep Research",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "community",
+          "quote": "Perplexity Pro includes approximately 500 Deep Research queries per day at average usage.",
+          "source": "https://www.finout.io/blog/perplexity-pricing-in-2026",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Pro Pro users reported quiet limit cuts to advanced models in May 2026. Chat 'unlimited' applies to the UI, not API."
+        },
+        {
+          "provider": "Perplexity",
+          "product": "Perplexity",
+          "plan": "Max",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": null,
+              "unit": "requests",
+              "window": "day",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Perplexity Max includes the highest available limits across all features, plus 10,000 Perplexity Computer credits per month.",
+          "source": "https://suprmind.ai/hub/perplexity/pricing/",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Exact daily query cap for Max is not published. $200/mo or $2,000/yr."
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Pro",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$20 of API agent usage",
+          "source": "https://cursor.com/docs/account/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Two separate monthly pools: API agent usage (the $ figure) plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount.",
+          "measured": {
+            "confidence": "crowdsourced",
+            "source": "Cursor dashboard, account-owner screenshot",
+            "period": "Apr 28 - May 28, 2026",
+            "as_of": "2026-05-28",
+            "realized_tokens_month": 294100000,
+            "api_pool_usd_stated": 20,
+            "api_pool_usd_observed": 33,
+            "breakdown": [
+              {
+                "item": "API",
+                "tokens": 48500000,
+                "pct": 73.9
+              },
+              {
+                "item": "Auto + Composer",
+                "tokens": 245600000,
+                "pct": 100
+              }
+            ],
+            "derived_usd_per_mtok": [
+              {
+                "model": "gpt-5.5-medium",
+                "usd_per_mtok": 0.47
+              }
+            ],
+            "notes": "Realized consumption for one billing month, not a cap. The API pool ran ~$33 against a stated 'at least $20' floor: gpt-5.5-medium used 42.8% of the pool for 30M tokens; at the Pro+-validated rate of ~$0.47/M that is ~$13.9, implying a ~$33 pool. Other API-pool models aren't individually itemized on the Pro screenshot, so only the observed gpt-5.5-medium rate is listed; see Pro+ for the full per-model rate card (rates are model-intrinsic API prices, shared across plans). Auto+Composer hit 100% and overflowed 16.9M tokens into the API pool. ~95% of all tokens are subsidized Auto."
+          }
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Pro+",
+          "price_usd": 60,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 70,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$70 of API agent usage",
+          "source": "https://cursor.com/docs/account/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount.",
+          "measured": {
+            "confidence": "crowdsourced",
+            "source": "Cursor dashboard, account-owner screenshots (2 billing months)",
+            "period": "Apr 30 - May 30, 2026 (also Apr 26 - May 26)",
+            "as_of": "2026-05-30",
+            "realized_tokens_month": 840800000,
+            "realized_tokens_month_range": [
+              275800000,
+              840800000
+            ],
+            "api_pool_usd_stated": 70,
+            "api_pool_usd_observed": 70,
+            "breakdown": [
+              {
+                "item": "API",
+                "tokens": 64000000,
+                "pct": 43.2
+              },
+              {
+                "item": "Auto + Composer",
+                "tokens": 776800000,
+                "pct": 99.8
+              }
+            ],
+            "derived_usd_per_mtok": [
+              {
+                "model": "claude-4.5-sonnet",
+                "usd_per_mtok": 0.3
+              },
+              {
+                "model": "claude-opus-thinking",
+                "usd_per_mtok": 0.44
+              },
+              {
+                "model": "gpt-5.5-medium",
+                "usd_per_mtok": 0.47
+              },
+              {
+                "model": "gpt-5.5-high",
+                "usd_per_mtok": 0.96
+              },
+              {
+                "model": "claude-opus-4-8-thinking-high",
+                "usd_per_mtok": 1.25
+              }
+            ],
+            "notes": "Derived $/M token = (pct/100 x $70 pool) / tokens. gpt-5.5-medium cross-validates at $0.46-0.49/M across two months (~5% agreement), confirming the method. Realized total varies 276M-841M tokens/mo by activity (not a cap). Anomaly excluded: claude-4.6-opus-high-thinking showed 8.3M tokens at 0.0% (likely promo/unbilled)."
+          }
+        },
+        {
+          "provider": "Cursor",
+          "product": "Cursor",
+          "plan": "Ultra",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 400,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$400 of API agent usage",
+          "source": "https://cursor.com/docs/account/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Marketed as ~20x Pro. Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Pro",
+          "price_usd": 10,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 300,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "300 per month",
+          "source": "https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "300 = premium requests/month under legacy request-based billing (annual plans predating June 1, 2026). New plans meter via a monthly AI-credit allowance instead. Unlimited code completions. $10/mo per docs.github.com/copilot plans page."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Pro+",
+          "price_usd": 39,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 1500,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "1500 per month",
+          "source": "https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "1500 = premium requests/month under legacy request-based billing (annual plans predating June 1, 2026). New plans meter via a monthly AI-credit allowance instead. Access to premium models. $39/mo."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Business",
+          "price_usd": 19,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$19 USD per granted seat per month",
+          "source": "https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Per seat. Includes a monthly pool of AI credits; the per-seat credit/request amount is not published per-plan on the plans page."
+        },
+        {
+          "provider": "GitHub",
+          "product": "Copilot",
+          "plan": "Enterprise",
+          "price_usd": 39,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "requests",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$39 USD per granted seat per month",
+          "source": "https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Per seat. Larger monthly pool of AI credits plus priority access to new models; per-seat credit amount not published per-plan."
+        },
+        {
+          "provider": "Replit",
+          "product": "Replit",
+          "plan": "Core",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 25,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$25 of monthly credits",
+          "source": "https://replit.com/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "$20/mo billed monthly ($25/mo equivalent when billed annually with the discount). Credits meter Agent/AI usage; overages billed on-demand.",
+          "credit_bills_at_api": true
+        },
+        {
+          "provider": "Replit",
+          "product": "Replit",
+          "plan": "Pro",
+          "price_usd": 95,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 100,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "$100.00 monthly credits",
+          "source": "https://replit.com/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "$95/mo billed monthly ($100/mo equivalent billed annually). Credits meter Agent/AI usage; overages billed on-demand.",
+          "credit_bills_at_api": true
+        }
+      ]
+    },
+    {
+      "schema": 3,
+      "date": "2026-06-08",
+      "entries": [
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Plus",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 160,
+              "unit": "messages",
+              "window": "3h",
+              "model": "GPT-5.5",
+              "kind": "primary"
+            },
+            {
+              "value": 3000,
+              "unit": "messages",
+              "window": "week",
+              "model": "GPT-5.5 Thinking",
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "ChatGPT Plus and ChatGPT Go users can send up to 160 messages with GPT-5.5 every 3 hours. GPT-5.5 Thinking has a limit of 3,000 messages per week.",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "3h is a rolling window from first message. Falls back to mini model after cap."
+        },
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Pro",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": null,
+              "unit": "messages",
+              "window": null,
+              "model": "GPT-5.5",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "The ChatGPT Business and Pro plans offer unlimited access to our GPT-5 models, subject to abuse guardrails.",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "\"Unlimited\" subject to abuse guardrails; no published hard cap. GPT-5.5 Pro (research-grade) included."
+        },
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Go",
+          "price_usd": 8,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 160,
+              "unit": "messages",
+              "window": "3h",
+              "model": "GPT-5.5",
+              "kind": "primary"
+            },
+            {
+              "value": 10,
+              "unit": "messages",
+              "window": "5h",
+              "model": "GPT-5.5 Thinking",
+              "kind": "secondary"
+            }
+          ],
+          "confidence": "official",
+          "quote": "ChatGPT Plus and ChatGPT Go users can send up to 160 messages with GPT-5.5 every 3 hours.",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Thinking quote: \"Go users can send up to 10 messages every 5 hours after enabling Thinking.\" Price $8/mo (US) per chatgpt.com/pricing; US Go shows ads. Falls back to mini model after the 3h cap."
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Pro",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 5,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Free",
+              "kind": "primary"
+            },
+            {
+              "value": 45,
+              "unit": "messages",
+              "window": "5h",
+              "model": null,
+              "kind": "secondary",
+              "basis": "estimate",
+              "confidence": "official",
+              "quote": "If your conversations are relatively short (approximately 200 English sentences, assuming your sentences are around 15-20 words), you can expect to send around 45 messages every 5 hours, often more depending on Claude's current capacity.",
+              "source": "http://web.archive.org/web/20250728132422/https://support.anthropic.com/en/articles/8324991-about-claude-pro-usage",
+              "as_of": "2025-07-28"
+            }
+          ],
+          "confidence": "official",
+          "quote": "At least five times the usage per session compared to our free service.",
+          "source": "https://support.claude.com/en/articles/8325606-what-is-the-pro-plan",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Anthropic publishes a token budget, not a message count. The ~45 msg/5h figure is an official estimate from the now-retired 'About Claude's Pro Plan Usage' article (id 8324991, live URL now 404); cited here via the 2025-07-28 Wayback snapshot and tagged basis=estimate. It predates the 2026-05-06 Claude Code 5-hour doubling and may be stale for current chat. Pro is the 1x baseline for the Max 5x/20x multipliers. Price $20/mo ($17/mo annual) per claude.com/pricing."
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Max 5x",
+          "price_usd": 100,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 5,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Pro",
+              "kind": "primary"
+            },
+            {
+              "value": 225,
+              "unit": "messages",
+              "window": "5h",
+              "model": null,
+              "kind": "secondary",
+              "basis": "estimate",
+              "confidence": "official",
+              "quote": "If your conversations are relatively short and use a less compute-intensive model, with the Max plan at 5x more usage, you can expect to send at least 225 messages every five hours, and with the Max plan at 20x more usage, at least 900 messages every five hours, often more depending on message length, conversation length, and Claude's current capacity.",
+              "source": "http://web.archive.org/web/20250910111758/https://support.anthropic.com/en/articles/11014257-about-claude-s-max-plan-usage",
+              "as_of": "2025-09-10"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Choose 5x or 20x more usage than Pro",
+          "source": "https://claude.com/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Multiplier is official; absolute token count is not published as a stable figure. Max 5x from $100/mo. The 'at least 225 msg/5h' figure is an official estimate from the now-retired 'About Claude's Max Plan Usage' article (id 11014257, live URL now 404), cited via the 2025-09-10 Wayback snapshot; predates the 2026-05-06 Claude Code doubling."
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Max 20x",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Pro",
+              "kind": "primary"
+            },
+            {
+              "value": 900,
+              "unit": "messages",
+              "window": "5h",
+              "model": null,
+              "kind": "secondary",
+              "basis": "estimate",
+              "confidence": "official",
+              "quote": "If your conversations are relatively short and use a less compute-intensive model, with the Max plan at 5x more usage, you can expect to send at least 225 messages every five hours, and with the Max plan at 20x more usage, at least 900 messages every five hours, often more depending on message length, conversation length, and Claude's current capacity.",
+              "source": "http://web.archive.org/web/20250910111758/https://support.anthropic.com/en/articles/11014257-about-claude-s-max-plan-usage",
+              "as_of": "2025-09-10"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Choose 5x or 20x more usage than Pro",
+          "source": "https://claude.com/pricing",
+          "as_of": "2026-06-07",
+          "verified_on": "2026-06-07",
+          "notes": "Multiplier (20x) is official; absolute token count not published. Community estimate ~88,000 tokens per 5h window (intuitionlabs.ai). Max 20x $200/mo. The 'at least 900 msg/5h' figure is an official estimate from the now-retired 'About Claude's Max Plan Usage' article (id 11014257, live URL now 404), cited via the 2025-09-10 Wayback snapshot; predates the 2026-05-06 Claude Code doubling."
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Pro",
+          "surface": "Agent SDK",
+          "price_usd": 20,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 20,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "announced",
+          "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
+          "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
+          "as_of": "2026-06-07",
+          "effective_on": "2026-06-15",
+          "verified_on": "2026-06-07",
+          "notes": "Effective 2026-06-15: Agent SDK, `claude -p`, Claude Code GitHub Actions, and third-party apps authing via the Agent SDK stop drawing on the subscription's interactive usage and instead consume this separate monthly credit, billed at standard API rates after it runs out. Per-user, no rollover, one-time opt-in required. Interactive use (claude.ai chat, Claude Code in terminal/IDE, Cowork) is unaffected. Announced/press-reported; not yet on a stable first-party page.",
+          "credit_bills_at_api": true
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Max 5x",
+          "surface": "Agent SDK",
+          "price_usd": 100,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 100,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "announced",
+          "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
+          "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
+          "as_of": "2026-06-07",
+          "effective_on": "2026-06-15",
+          "verified_on": "2026-06-07",
+          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported.",
+          "credit_bills_at_api": true
+        },
+        {
+          "provider": "Anthropic",
+          "product": "Claude",
+          "plan": "Max 20x",
+          "surface": "Agent SDK",
+          "price_usd": 200,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 200,
+              "unit": "usd_credit",
+              "window": "month",
+              "model": null,
+              "kind": "primary"
+            }
+          ],
+          "confidence": "announced",
+          "quote": "a separate monthly credit — $20 for Pro, $100 for Max 5x, $200 for Max 20x",
+          "source": "https://thenewstack.io/anthropic-agent-sdk-credits/",
+          "as_of": "2026-06-07",
+          "effective_on": "2026-06-15",
+          "verified_on": "2026-06-07",
+          "notes": "Effective 2026-06-15: separate Agent SDK / `claude -p` / Code GitHub Actions credit, billed at API rates after it runs out. Per-user, no rollover, opt-in. Interactive use unaffected. Announced/press-reported.",
+          "credit_bills_at_api": true
+        },
+        {
+          "provider": "Google",
+          "product": "Gemini",
+          "plan": "AI Plus",
+          "price_usd": 4.99,
+          "period": "month",
+          "includes_code": false,
+          "limits": [
+            {
+              "value": 2,
+              "unit": "multiplier",
+              "window": "5h",
+              "model": null,
+              "baseline": "Free",
+              "kind": "primary"
+            }
+          ],
+          "confidence": "announced",
+          "quote": "The standard monthly price of your AI Plus plan will be lowered from $7.99/month to $4.99/month, and annual plans will be lowered from $79.99/year to $49.99/year.",
+          "source": "https://support.google.com/googleone/answer/16882689",
+          "as_of": "2026-06-08",
+          "verified_on": "2026-06-08",
+          "notes": "Repriced $7.99->$4.99/mo ($79.99->$49.99/yr) per official Google email to subscribers Jun 8 2026 (corroborated by 9to5Google/Engadget/Android Police); applies next 1-2 billing cycles or at offer-period end. Public pricing pages (gemini.google, one.google.com) still showed $7.99 at capture, hence announced not official. Base 200 AI credits/mo removed; compute-based 5h+weekly usage model, AI Plus still 2x non-subscriber. See event google-aiplus-pricedrop-credits-2026."
         },
         {
           "provider": "Google",
