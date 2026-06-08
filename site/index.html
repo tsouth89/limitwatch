@@ -116,6 +116,7 @@
 
     .knobs { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; align-items: center; margin: .2rem 0 .5rem; }
     .table-scroll { overflow-x: auto; }
+    td.crosssep { color: #6e7681; font-size: 12px; padding-top: 1rem; border-bottom: 1px solid #21262d; }
 
     /* How to read this (disclosure) */
     details.howto { border: 1px solid #30363d; border-radius: 8px; background: #0d1117; margin: .2rem 0 1rem; }
@@ -430,16 +431,22 @@
       // ---- Value per dollar (derived, never stored) ---- (winPerDay defined above)
       const UNIT_LABEL = { messages: "messages", tokens: "tokens", requests: "requests" };
 
-      // Flatten to valuable rows: numeric value + known window + a per-day throughput.
-      const rows = [];
+      // A plan often caps the SAME usage across several windows (e.g. xAI: 1,000/day AND 125/4h).
+      // Those aren't additive — the real daily ceiling is the tightest (binding) one. Collapse each
+      // plan+model+unit to that single binding rate so we don't double-count or overstate.
+      const byKey = new Map();
       for (const e of latest.entries) {
         for (const l of e.limits) {
           // Exclude soft/estimate/credit limits from the ceiling tables — they are not throughput caps.
           if (l.value == null || l.unit === "multiplier" || l.unit === "usd_credit" || l.basis === "estimate" || !(l.window in winPerDay)) continue;
           const perDay = l.value * winPerDay[l.window];
-          rows.push({ prov: e.provider, name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, perDollar: perDay / e.price_usd, model: l.model, window: l.window });
+          const key = `${e.provider}|${e.plan}|${l.unit}|${l.model ?? ""}`;
+          const prev = byKey.get(key);
+          if (!prev || perDay < prev.perDay)
+            byKey.set(key, { prov: e.provider, name: `${e.provider} ${e.plan}`, price: e.price_usd, unit: l.unit, perDay, model: l.model, cap: l.value, window: l.window });
         }
       }
+      const rows = [...byKey.values()].map((x) => ({ ...x, perDollar: x.perDay / x.price }));
 
       const vg = document.getElementById("valueGroups");
       const summary = [];
@@ -448,12 +455,13 @@
         if (!r.length) continue;
         const max = r[0].perDollar || 1;
         summary.push({ unit, lead: r[0] });
+        const capLabel = (x) => ` <span class="meta">(${x.model ? x.model + " · " : ""}${fmt(x.cap)}/${shortWin(x.window)})</span>`;
         const barsHtml = r.map((x, i) => {
           const pct = Math.max(2, Math.round((x.perDollar / max) * 100));
-          const tip = `${fmt(Math.round(x.perDay))} ${unit}/day ceiling · $${x.price}/mo`;
+          const tip = `Published cap ${fmt(x.cap)} ${unit}/${shortWin(x.window)} → up to ${fmt(Math.round(x.perDay))}/day at full use · $${x.price}/mo`;
           const best = i === 0 ? ` <span class="bestpill">Best value</span>` : "";
           return `<div class="vrow">` +
-            `<div class="vname">${provMark(x.prov)}${x.name}${descriptor(x)} <span class="price">$${x.price}</span>${best}</div>` +
+            `<div class="vname">${provMark(x.prov)}${x.name}${capLabel(x)} <span class="price">$${x.price}</span>${best}</div>` +
             `<div class="vtrack q" data-tip="${tip}"><div class="vfill" style="width:${pct}%"></div>` +
             `<span class="vval">${fmt(Math.round(x.perDollar))}</span></div>` +
             `</div>`;
@@ -461,7 +469,7 @@
         const h = document.createElement("div");
         h.className = "vbars";
         h.innerHTML = `<h3>${UNIT_LABEL[unit]}</h3>` +
-          `<p class="vcap">${unit} per $ per day — higher is better. Bars are relative to the category leader; hover for the daily ceiling.</p>` +
+          `<p class="vcap">Most ${unit} per $ you're <em>allowed</em> each day — a hard ceiling at full use, not typical. Where a plan caps several windows, we use the tightest (binding) one. Bars are relative to the leader.</p>` +
           barsHtml;
         vg.appendChild(h);
       }
@@ -507,32 +515,41 @@
       function renderCross() {
         const tpm = Number(tpmEl.value); tpmVal.textContent = tpm;
         const cpm = Number(cpmEl.value); cpmVal.textContent = cpm;
-        const out = [];
+        // Ceiling/estimate rows (the like-for-like "max allowed" comparison) and measured rows
+        // (realized usage, a different basis) are kept apart so they aren't ranked as equals.
+        const out = [], measured = [];
+        const bind = {};  // collapse multi-window message/token caps to the tightest per plan+model
         for (const e of latest.entries) {
           const name = `${e.provider} ${e.plan}` + (e.surface ? ` <span class="meta">· ${e.surface}</span>` : "");
           const base = { prov: e.provider, name, price: e.price_usd };
-          // Real measured usage wins over any conversion (Cursor's credits are subsidized).
-          if (e.measured) { out.push({ ...base, kind: "measured", tokPerDay: e.measured.realized_tokens_month / 30 }); continue; }
+          if (e.measured) { measured.push({ ...base, tokPerDay: e.measured.realized_tokens_month / 30 }); continue; }
           for (const l of e.limits) {
             if (l.value == null) continue;
-            if (l.unit === "tokens" && (l.window in winPerDay))
-              out.push({ ...base, model: l.model, window: l.window, kind: "tokens", tokPerDay: l.value * winPerDay[l.window] });
-            else if (l.unit === "messages" && (l.window in winPerDay))
-              out.push({ ...base, model: l.model, window: l.window, kind: l.basis === "estimate" ? "msg-est" : "messages", tokPerDay: l.value * winPerDay[l.window] * tpm });
-            else if (l.unit === "usd_credit" && e.credit_bills_at_api)
+            if ((l.unit === "tokens" || l.unit === "messages") && (l.window in winPerDay)) {
+              const tokPerDay = l.unit === "tokens" ? l.value * winPerDay[l.window] : l.value * winPerDay[l.window] * tpm;
+              const kind = l.unit === "tokens" ? "tokens" : (l.basis === "estimate" ? "msg-est" : "messages");
+              const key = `${e.provider}|${e.plan}|${e.surface ?? ""}|${l.model ?? ""}|${kind}`;
+              if (!bind[key] || tokPerDay < bind[key].tokPerDay) bind[key] = { ...base, model: l.model, window: l.window, kind, tokPerDay };
+            } else if (l.unit === "usd_credit" && e.credit_bills_at_api) {
               out.push({ ...base, kind: "credit-est", tokPerDay: (l.value / cpm) * 1e6 / 30 });
+            }
           }
         }
-        const ranked = out.map((x) => ({ ...x, perDollar: x.tokPerDay / x.price })).sort((a, b) => b.perDollar - a.perDollar);
+        out.push(...Object.values(bind));
+        const withPD = (a) => a.map((x) => ({ ...x, perDollar: x.tokPerDay / x.price })).sort((a, b) => b.perDollar - a.perDollar);
+        const ranked = withPD(out), mr = withPD(measured);
         const tagHtml = (k) =>
           k === "measured" ? ' <span class="badge crowdsourced">measured</span>' :
           k === "credit-est" ? ' <span class="badge announced">credit · est</span>' :
           k === "msg-est" ? ' <span class="badge announced">est</span>' :
           ` <span class="meta">(${k})</span>`;
-        crossBody.innerHTML = ranked.map((x) =>
-          `<tr><td>${provMark(x.prov)}${x.name}${descriptor(x)}${tagHtml(x.kind)}</td>` +
-          `<td class="num">$${x.price}</td><td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`).join("");
-        crossNote.innerHTML = `Estimate only. Message plans → tokens at <strong>${tpm}</strong>/message; API-billed dollar-credit plans (Replit, Anthropic SDK) at <strong>$${cpm}/M tokens</strong>. Cursor uses real <a href="#measuredCard">measured</a> usage — its credits are subsidized, so a rate conversion would mislead. Anthropic chat figures are official per-window estimates (tagged <em>est</em>). Requests-only and multiplier-only plans can't be converted.`;
+        const row = (x, k) =>
+          `<tr><td>${provMark(x.prov)}${x.name}${descriptor(x)}${tagHtml(k)}</td>` +
+          `<td class="num">$${x.price}</td><td class="num">${fmt(Math.round(x.perDollar))}</td></tr>`;
+        crossBody.innerHTML =
+          ranked.map((x) => row(x, x.kind)).join("") +
+          (mr.length ? `<tr><td colspan="3" class="crosssep">↓ Real measured usage — different basis (what one account actually consumed, not a ceiling)</td></tr>` + mr.map((x) => row(x, "measured")).join("") : "");
+        crossNote.innerHTML = `Estimate only, and only rows <em>above</em> the divider are a like-for-like "most allowed" comparison. Message plans → tokens at <strong>${tpm}</strong>/message; API-billed credit plans (Replit, Anthropic SDK) at <strong>$${cpm}/M tokens</strong>; multi-window caps collapsed to the tightest. Anthropic chat figures are official per-window estimates (<em>est</em>). Below the divider: Cursor's real <a href="#measuredCard">measured</a> usage — a different basis (actual consumption; its credits are subsidized, so a rate conversion would mislead). Requests-only and multiplier-only plans can't be converted.`;
       }
       tpmEl.addEventListener("input", renderCross);
       cpmEl.addEventListener("input", renderCross);
