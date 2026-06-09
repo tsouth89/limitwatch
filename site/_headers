@@ -9,6 +9,12 @@
   Cache-Control: no-cache
 /data.json
   Cache-Control: no-cache
+/robots.txt
+  Cache-Control: no-cache
+/sitemap.xml
+  Cache-Control: no-cache
+/changes.xml
+  Cache-Control: no-cache
 
 # Rarely-changing assets can sit in cache for a day.
 /favicon.svg

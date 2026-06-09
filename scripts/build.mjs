@@ -7,6 +7,7 @@ import { dirname, join } from "node:path";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const snapDir = join(root, "data", "snapshots");
+const siteUrl = "https://limitwatch.southforgeai.com";
 
 const REQUIRED = ["provider", "product", "plan", "confidence", "quote", "source", "as_of", "verified_on"];
 const TIERS = ["official", "announced", "community", "crowdsourced"];
@@ -233,4 +234,102 @@ const out = {
 };
 
 writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
-console.log(`built site/data.json — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${radar.length} radar item(s), ${dataWarnings.length} warning(s)`);
+
+const escHtml = (s) => String(s ?? "")
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;");
+const fmt = (n) => n == null ? "?" : Number(n).toLocaleString();
+const winShort = (w) => w == null || w === "" ? "" : ({ week: "wk", month: "mo" }[w] ?? w);
+const unitLabel = (l) =>
+  l.unit === "multiplier" ? `${fmt(l.value)}x ${l.baseline ?? "Pro"}` :
+  l.unit === "usd_credit" ? `$${fmt(l.value)} usage` :
+  `${fmt(l.value)} ${l.unit}`;
+const niceLimit = (value, unit, window) => {
+  if (unit === "multiplier") return `${fmt(value)}x usage`;
+  if (unit === "usd_credit") return `$${fmt(value)} credit${window ? ` / ${winShort(window)}` : ""}`;
+  const w = window ? ` / ${winShort(window)}` : "";
+  return value == null ? `${unit}${w}` : `${fmt(value)} ${unit}${w}`;
+};
+const provName = (p) => ({ GitHub: "GitHub Copilot" }[p] ?? p);
+const freshestDate = () => {
+  const dates = [out.date_range.at(-1)];
+  for (const r of usageReports) if (r.captured_at) dates.push(r.captured_at.slice(0, 10));
+  for (const e of events) if (e.starts_on) dates.push(e.starts_on);
+  return dates.filter(Boolean).sort().at(-1) ?? "—";
+};
+const renderStats = (latest) => {
+  const stat = (n, l) => `<div class="stat"><div class="n">${escHtml(n)}</div><div class="l">${escHtml(l)}</div></div>`;
+  return [
+    stat(new Set(latest.entries.map((e) => e.provider)).size, "providers"),
+    stat(latest.entries.length, "plans"),
+    stat(out.changes.length, "changes logged"),
+    stat(out.snapshot_count, "snapshots"),
+    stat(freshestDate(), "last updated"),
+  ].join("");
+};
+const renderLimitCell = (e) => e.limits.map((l) => {
+  const win = (l.window && l.unit !== "multiplier" && l.unit !== "usd_credit") ? `/${winShort(l.window)}` : "";
+  const credWin = l.unit === "usd_credit" && l.window ? ` <span class="meta">/ ${escHtml(winShort(l.window))}</span>` : "";
+  const model = l.model ? ` <span class="meta">(${escHtml(l.model)})</span>` : "";
+  const basis = l.basis && l.basis !== "published" ? ` <span class="meta">· ${escHtml(l.basis)}</span>` : "";
+  return `<span>${escHtml(unitLabel(l))}${escHtml(win)}${credWin}${model}</span>${basis}`;
+}).join("<br>");
+const renderLatest = (latest) => {
+  const rows = [...latest.entries].sort((a, b) =>
+    a.price_usd - b.price_usd || provName(a.provider).localeCompare(provName(b.provider)) || a.plan.localeCompare(b.plan)
+  ).map((e) => {
+    const surf = e.surface ? ` <span class="meta">· ${escHtml(e.surface)}</span>` : "";
+    return `<tr>` +
+      `<td class="cardtitle"><span class="pname">${escHtml(provName(e.provider))}</span> <strong>${escHtml(e.plan)}</strong>${surf}</td>` +
+      `<td class="num" data-label="Price / mo">$${escHtml(e.price_usd)}</td>` +
+      `<td data-label="Limits">${renderLimitCell(e)}</td>` +
+      `<td data-label="Confidence"><span class="badge ${escHtml(e.confidence)}">${escHtml(e.confidence)}</span></td>` +
+      `<td data-label="Source"><a href="${escHtml(e.source)}">src</a> <span class="meta">${escHtml(e.verified_on)}</span></td>` +
+      `</tr>`;
+  }).join("");
+  return `<div class="table-scroll"><table class="ltable"><colgroup><col style="width:30%"><col style="width:9%"><col style="width:37%"><col style="width:12%"><col style="width:12%"></colgroup><thead><tr><th>Plan</th><th class="num">Price</th><th>Limits</th><th>Confidence</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+};
+const changeText = (c) => {
+  const [prov, , plan, , unit, window] = c.key.split("|");
+  if (c.kind === "limit_changed") return `${prov} ${plan} ${niceLimit(c.from, unit, window)} -> ${niceLimit(c.to, unit, window)}`;
+  if (c.kind === "model_changed") return `${prov} ${plan} ${c.from} -> ${c.to}${c.value != null ? ` (${niceLimit(c.value, unit, window)})` : ""}`;
+  if (c.kind === "price_changed") return `${prov} ${plan} $${c.from} -> $${c.to} / mo`;
+  if (c.kind === "limit_added") return c.to == null ? `${prov} ${plan} plan added (usage unpublished)` : `${prov} ${plan} ${niceLimit(c.to, unit, window)}`;
+  return `${prov} ${plan} ${niceLimit(null, unit, window)} removed`;
+};
+const renderChangelog = () => {
+  if (!out.changes.length) return `<p class="empty">No changes yet, need 2+ snapshots.</p>`;
+  const kindClass = { model_changed: "model", price_changed: "price", limit_changed: "limit", limit_added: "added", limit_removed: "removed" };
+  const kindText = { model_changed: "model", price_changed: "price", limit_changed: "limit", limit_added: "new", limit_removed: "removed" };
+  return out.changes.slice(0, 12).map((c) =>
+    `<div class="clrow"><span class="num">${escHtml(c.date)}</span> <span class="hk ${kindClass[c.kind] ?? "limit"}">${escHtml(kindText[c.kind] ?? c.kind)}</span> <span class="cltxt">${escHtml(changeText(c))}</span> ${c.source ? `<a href="${escHtml(c.source)}">src</a>` : ""}</div>`
+  ).join("");
+};
+const replaceBlock = (html, name, body) => {
+  const start = `<!-- BUILD:${name}:start -->`;
+  const end = `<!-- BUILD:${name}:end -->`;
+  const pattern = new RegExp(`${start.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${end.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`);
+  if (!pattern.test(html)) throw new Error(`site/index.html missing ${name} build markers`);
+  return html.replace(pattern, `${start}${body}${end}`);
+};
+const latest = snapshots.at(-1);
+let html = readFileSync(join(root, "site", "index.html"), "utf8");
+html = replaceBlock(html, "stats", renderStats(latest));
+html = replaceBlock(html, "latest", renderLatest(latest));
+html = replaceBlock(html, "changelog", renderChangelog());
+writeFileSync(join(root, "site", "index.html"), html);
+
+const latestMod = out.generated_at.slice(0, 10);
+writeFileSync(join(root, "site", "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
+writeFileSync(join(root, "site", "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${siteUrl}/</loc>\n    <lastmod>${latestMod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>\n`);
+const rssItems = out.changes.slice(0, 25).map((c) => {
+  const title = changeText(c);
+  const pubDate = new Date(`${c.date}T12:00:00Z`).toUTCString();
+  const guid = `${c.date}-${c.kind}-${c.key}-${c.from ?? ""}-${c.to ?? ""}`;
+  return `  <item>\n    <title>${escHtml(title)}</title>\n    <link>${siteUrl}/#changelog</link>\n    <guid isPermaLink="false">${escHtml(guid)}</guid>\n    <pubDate>${pubDate}</pubDate>\n    <description>${escHtml(title)}</description>\n  </item>`;
+}).join("\n");
+writeFileSync(join(root, "site", "changes.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>LimitWatch changes</title>\n  <link>${siteUrl}/</link>\n  <description>Recent AI plan limit and price changes tracked by LimitWatch.</description>\n  <lastBuildDate>${new Date(out.generated_at).toUTCString()}</lastBuildDate>\n${rssItems}\n</channel>\n</rss>\n`);
+
+console.log(`built site/data.json + prerendered HTML/RSS/sitemap — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${radar.length} radar item(s), ${dataWarnings.length} warning(s)`);
