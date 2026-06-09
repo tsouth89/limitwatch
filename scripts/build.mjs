@@ -5,7 +5,9 @@ import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+// LIMITWATCH_ROOT lets tests point the build at a fixture tree (data/ + site/) in a temp
+// dir; unset in normal use, so production behavior is unchanged.
+const root = process.env.LIMITWATCH_ROOT || join(dirname(fileURLToPath(import.meta.url)), "..");
 const snapDir = join(root, "data", "snapshots");
 const siteUrl = "https://limitwatch.southforgeai.com";
 
