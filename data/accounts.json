@@ -12,7 +12,7 @@
       "label": "work",
       "plan": "Pro",
       "exclude": "personal",
-      "weekly_reset": null
+      "weekly_reset": { "weekday": 1, "hour": 23, "tz_offset_min": -240 }
     }
   ]
 }

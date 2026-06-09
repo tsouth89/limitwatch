@@ -181,6 +181,31 @@
       "api_equiv_basis": "Anthropic API list price per model (see scripts/lib/usage-core.mjs PRICES). Value comparison, not the cap mechanic.",
       "reporter": "self",
       "evidence": "scripts/cc-usage.mjs --account personal --report; aggregated ~/.claude/projects/**/*.jsonl, deduped by message.id, --match personal."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "week",
+      "captured_at": "2026-06-09T01:05:00Z",
+      "reset_at": "2026-06-09T03:00:00Z",
+      "metric": "percent",
+      "observed": 99,
+      "account": "work",
+      "limit_hit": false,
+      "model": "mixed (Claude Opus 4.8 dominant)",
+      "value_basis": "floor",
+      "note": "Work Pro account (separate $20 login on same machine, $40 usage-credit pool), WEEKLY limit at 99% (user-reported, ~2h before reset, near cap not yet throttled). MEASURED FLOOR from local Claude Code transcripts scoped by EXCLUDING projects matching personal (excludes claude.ai chat; account attribution is a weak project-path proxy). Window 2026-06-02T03:00Z..2026-06-09T01:05Z (work reset Mon 23:00 EDT), 2744 assistant turns across cssi/qtc-ai/grip/tollguard work projects. API-equivalent burn $386.86 at list rates, dominated by Opus 4.8 (1570 turns, $332.60) with Sonnet 4.6 (1119 turns, $53.96) and Haiku (37 turns, $0.30). Because 99% is near the ceiling without a throttle, ~$387 API-equiv is a hard LOWER BOUND on the weekly cap for a $20/mo Pro plan: Claude Code transcript burn only, so any claude.ai chat sits on top. This work read is fully independent of the personal 99% earlier today (disjoint project paths). (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "usage_tokens": {
+        "input": 240478,
+        "output": 2456256,
+        "cache_write": 12410359,
+        "cache_read": 475725313
+      },
+      "api_equiv_usd": 386.86,
+      "api_equiv_basis": "Anthropic API list price per model (see scripts/lib/usage-core.mjs PRICES). Value comparison, not the cap mechanic.",
+      "reporter": "self",
+      "evidence": "scripts/cc-usage.mjs --account work --report; aggregated ~/.claude/projects/**/*.jsonl, deduped by message.id, --exclude personal."
     }
   ]
 }
