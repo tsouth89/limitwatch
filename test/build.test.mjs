@@ -221,6 +221,74 @@ test("changelog block shows the empty-state message with a single snapshot", () 
   }
 });
 
+test("passes through measured spend fields and validates token breakdowns", () => {
+  const s1 = snap("2026-01-01", [
+    entry({
+      provider: "Cursor",
+      product: "Cursor",
+      plan: "Pro+",
+      price_usd: 60,
+      limits: [lim({ value: 70, unit: "usd_credit", window: "month" })],
+      measured: {
+        confidence: "crowdsourced",
+        source: "Cursor dashboard + CSV",
+        period: "May 10 - Jun 08, 2026",
+        as_of: "2026-06-08",
+        realized_tokens_month: 300,
+        api_pool_usd_stated: 70,
+        api_pool_usd_observed: 70,
+        included_spend_usd_observed: 512.83,
+        on_demand_spend_usd_observed: 0,
+        breakdown: [
+          { item: "API", tokens: 100, pct: 100 },
+          { item: "Auto + Composer", tokens: 200, pct: 100 },
+        ],
+        notes: "receipt",
+      },
+    }),
+  ]);
+  const root = setupRoot({ snapshots: [s1] });
+  try {
+    runBuild(root);
+    const data = readData(root);
+    const measured = data.snapshots[0].entries[0].measured;
+    assert.equal(measured.included_spend_usd_observed, 512.83);
+    assert.equal(measured.on_demand_spend_usd_observed, 0);
+    assert.equal(measured.breakdown.reduce((sum, b) => sum + b.tokens, 0), measured.realized_tokens_month);
+  } finally {
+    cleanup(root);
+  }
+});
+
+test("build fails when a measured breakdown does not sum to realized tokens", () => {
+  const bad = snap("2026-01-01", [
+    entry({
+      plan: "Measured",
+      measured: {
+        confidence: "crowdsourced",
+        source: "s",
+        period: "p",
+        as_of: "2026-01-01",
+        realized_tokens_month: 300,
+        breakdown: [{ item: "API", tokens: 299, pct: 100 }],
+      },
+    }),
+  ]);
+  const root = setupRoot({ snapshots: [bad] });
+  try {
+    assert.throws(
+      () => execFileSync(process.execPath, [BUILD], { env: { ...process.env, LIMITWATCH_ROOT: root }, stdio: "pipe" }),
+      (err) => {
+        const out = `${err.stderr ?? ""}${err.stdout ?? ""}${err.message ?? ""}`;
+        assert.match(out, /breakdown tokens 299 must sum to realized_tokens_month 300/);
+        return true;
+      },
+    );
+  } finally {
+    cleanup(root);
+  }
+});
+
 // ---- validation fails loudly ------------------------------------------------
 test("build fails (non-zero exit) when a required field is missing", () => {
   const bad = snap("2026-01-01", [{ ...entry({ plan: "Basic" }), quote: undefined }]);

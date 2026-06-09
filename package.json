@@ -8,6 +8,7 @@
     "watch": "node scripts/fetch.mjs",
     "discover": "node scripts/discover.mjs",
     "ratelimits": "node scripts/fetch-ratelimits.mjs",
+    "cursor-usage": "node scripts/cursor-usage.mjs",
     "usage": "node scripts/cc-usage.mjs",
     "burn-log": "node scripts/burn-log.mjs",
     "test": "node --test \"test/**/*.test.mjs\""

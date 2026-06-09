@@ -31,6 +31,30 @@ const snapshots = files.map((f) => {
     if (e.verified_on > today) dataWarnings.push(`${f}: ${e.provider} ${e.plan} verified_on ${e.verified_on} is after ${today}`);
     // measured.as_of is a billing-period END label; an open cycle can legitimately end after today, so it is not flagged.
     if (e.effective_on && e.effective_on < e.as_of) dataWarnings.push(`${f}: ${e.provider} ${e.plan} effective_on ${e.effective_on} is before as_of ${e.as_of}`);
+    if (e.measured) {
+      const m = e.measured;
+      const who = `${f}: ${e.provider} ${e.plan} measured`;
+      const nonNeg = (key) => {
+        if (m[key] != null && (typeof m[key] !== "number" || m[key] < 0 || Number.isNaN(m[key]))) throw new Error(`${who} ${key} must be a non-negative number`);
+      };
+      nonNeg("realized_tokens_month");
+      nonNeg("api_pool_usd_stated");
+      nonNeg("api_pool_usd_observed");
+      nonNeg("included_spend_usd_observed");
+      nonNeg("on_demand_spend_usd_observed");
+      if (m.realized_tokens_month == null) throw new Error(`${who} missing realized_tokens_month`);
+      if (m.breakdown != null) {
+        if (!Array.isArray(m.breakdown)) throw new Error(`${who} breakdown must be an array`);
+        let sum = 0;
+        for (const b of m.breakdown) {
+          if (!b.item) throw new Error(`${who} breakdown item missing item`);
+          if (typeof b.tokens !== "number" || b.tokens < 0 || Number.isNaN(b.tokens)) throw new Error(`${who} breakdown ${b.item} tokens must be a non-negative number`);
+          if (b.pct != null && (typeof b.pct !== "number" || b.pct < 0 || b.pct > 100 || Number.isNaN(b.pct))) throw new Error(`${who} breakdown ${b.item} pct must be in [0,100]`);
+          sum += b.tokens;
+        }
+        if (m.breakdown.length && sum !== m.realized_tokens_month) throw new Error(`${who} breakdown tokens ${sum} must sum to realized_tokens_month ${m.realized_tokens_month}`);
+      }
+    }
   }
   return snap;
 });

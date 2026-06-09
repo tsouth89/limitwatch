@@ -1055,6 +1055,11 @@
           const range = m.realized_tokens_month_range
             ? ` <span class="meta">(observed ${mtok(m.realized_tokens_month_range[0])}–${mtok(m.realized_tokens_month_range[1])}/mo)</span>` : "";
           const dateWarning = "";
+          const spendBits = [];
+          if (m.included_spend_usd_observed != null) spendBits.push(`included $${fmt(m.included_spend_usd_observed)}`);
+          if (m.on_demand_spend_usd_observed != null) spendBits.push(`on-demand $${fmt(m.on_demand_spend_usd_observed)}`);
+          const spendLine = spendBits.length
+            ? `<p class="meta" style="margin:.35rem 0 0"><strong>Observed spend:</strong> ${spendBits.join(" · ")}</p>` : "";
           const poolGap = (m.api_pool_usd_observed != null && m.api_pool_usd_observed !== m.api_pool_usd_stated)
             ? `<p class="meta" style="margin:.35rem 0 0"><strong>Pool note:</strong> stated $${m.api_pool_usd_stated}, observed about $${m.api_pool_usd_observed}. Treat the stated amount as a floor.</p>` : "";
           const models = (m.derived_usd_per_mtok ?? []).map((d) =>
@@ -1074,6 +1079,7 @@
             <span class="subline">tokens observed in one billing month${range}</span>
             <p style="margin:.55rem 0 .2rem"><strong class="num">${mtok(perDollar)}</strong> tokens per dollar observed</p>
             <div class="meter">${brk}</div>
+            ${spendLine}
             ${poolGap}
             <details>
               <summary>Derivation and model rates</summary>

@@ -66,6 +66,8 @@ its own "Measured usage" section and is **never** mixed into the official ceilin
   "realized_tokens_month_range": [a, b],// optional: spread across multiple observed months
   "api_pool_usd_stated": 20,            // the official "$X of usage" figure
   "api_pool_usd_observed": 33,          // back-calculated real pool (null if it matches stated)
+  "included_spend_usd_observed": 512.83,// optional: dashboard total consumed from included pools
+  "on_demand_spend_usd_observed": 0,    // optional: dashboard post-included overage
   "breakdown": [ { "item": "API", "tokens": 48500000, "pct": 73.9 } ],
   "derived_usd_per_mtok": [ { "model": "gpt-5.5-medium", "usd_per_mtok": 0.47 } ],
   "notes": "How the numbers were derived; anomalies excluded."
@@ -76,6 +78,12 @@ Method: the dashboard's per-row `Usage %` is the share of that pool's **dollar**
 official pool $ known, `$/token = (pct/100 × pool$) ÷ tokens`. Cross-validate one model across
 months; if it agrees, the method holds and any divergence in the stated pool $ is a floor, not the
 real ceiling.
+
+For Cursor usage CSV exports, `realized_tokens_month` is the sum of `Kind=Included` rows only. Free,
+errored/no-charge, and aborted rows are excluded from the measured monthly receipt; record them in
+`notes` when relevant. Dashboard spend totals, when available, go in
+`included_spend_usd_observed` / `on_demand_spend_usd_observed` because they are receipt facts, not
+published caps.
 
 ## Confidence tiers (badged + colored on the site)
 
