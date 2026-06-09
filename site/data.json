@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-09T01:53:56.700Z",
+  "generated_at": "2026-06-09T02:49:24.632Z",
   "snapshot_count": 6,
   "date_range": [
     "2026-01-15",
@@ -2158,51 +2158,27 @@
           "notes": "Plus a non-numeric 'generous Auto and Composer usage' pool. On-demand usage billed in arrears after the included amount.",
           "measured": {
             "confidence": "crowdsourced",
-            "source": "Cursor dashboard, account-owner screenshots (2 billing months)",
-            "period": "Apr 30 - May 30, 2026 (also Apr 26 - May 26)",
-            "as_of": "2026-05-30",
-            "realized_tokens_month": 840800000,
-            "realized_tokens_month_range": [
-              275800000,
-              840800000
-            ],
+            "source": "Cursor dashboard, account-owner screenshot + usage CSV export",
+            "period": "May 10 - Jun 08, 2026",
+            "as_of": "2026-06-08",
+            "realized_tokens_month": 914183283,
             "api_pool_usd_stated": 70,
             "api_pool_usd_observed": 70,
+            "included_spend_usd_observed": 512.83,
+            "on_demand_spend_usd_observed": 0,
             "breakdown": [
               {
                 "item": "API",
-                "tokens": 64000000,
-                "pct": 43.2
+                "tokens": 137398646,
+                "pct": 100
               },
               {
                 "item": "Auto + Composer",
-                "tokens": 776800000,
-                "pct": 99.8
+                "tokens": 776784637,
+                "pct": 100
               }
             ],
-            "derived_usd_per_mtok": [
-              {
-                "model": "claude-4.5-sonnet",
-                "usd_per_mtok": 0.3
-              },
-              {
-                "model": "claude-opus-thinking",
-                "usd_per_mtok": 0.44
-              },
-              {
-                "model": "gpt-5.5-medium",
-                "usd_per_mtok": 0.47
-              },
-              {
-                "model": "gpt-5.5-high",
-                "usd_per_mtok": 0.96
-              },
-              {
-                "model": "claude-opus-4-8-thinking-high",
-                "usd_per_mtok": 1.25
-              }
-            ],
-            "notes": "Derived $/M token = (pct/100 x $70 pool) / tokens. gpt-5.5-medium cross-validates at $0.46-0.49/M across two months (~5% agreement), confirming the method. Realized total varies 276M-841M tokens/mo by activity (not a cap). Anomaly excluded: claude-4.6-opus-high-thinking showed 8.3M tokens at 0.0% (likely promo/unbilled)."
+            "notes": "Updated replacement for the earlier Pro+ receipt, not a separate report. Cursor dashboard showed the Pro+ billing period May 10-Jun 08 fully maxed: Total spend $512.83, Included $512.83, On-demand $0, and the included pools at 100% Auto and 100% API used. The CSV export for the period contains 914.2M included tokens: 137.4M API-model tokens (claude-opus-4-8-thinking-high + gpt-5.5-medium) and 776.8M Auto/Composer tokens. The CSV also contains 21.3M Free tokens and 1.7M errored/no-charge tokens; those are excluded from the included monthly receipt. Per-model $/M rates are not listed here because this CSV labels rows as Included/Free rather than giving precise per-model dollar charges."
           }
         },
         {
