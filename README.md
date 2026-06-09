@@ -143,6 +143,15 @@ and invents burn for another. The only proxy is the project (cwd): scope with `-
 can't attribute cleanly (two logins, unknown per-account reset window), record the in-app `%` as an
 **observed-only** receipt with `api_equiv_usd: null` rather than publishing a guessed dollar figure.
 
+**Account is internal-only — never site-facing.** A row's `account` (e.g. `personal` / `work`) is a
+local bookkeeping tag so *you* can scope captures; site visitors don't know or care which login a
+reading came from — they're all the same $20-plan cap. So: keep `account` + raw scoping in
+`data/usage-reports.json`, but `scripts/build.mjs` **strips `account`** when emitting `site/data.json`,
+the on-page rollup groups by `provider|plan|window` (not account) so multiple logins' readings of the
+same plan merge into one implied-budget range, and `note`/`evidence` text must stay generic ("$20 Pro
+plan", "a second login on the same machine") — no login labels or internal project names. Map your
+logins → project proxy + weekly reset in `data/accounts.json` (e.g. work resets Mon 23:00 EDT).
+
 ### Automate the burn curve
 
 `npm run burn-log` (`scripts/burn-log.mjs`) appends one timestamped point **per account** to
