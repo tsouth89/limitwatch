@@ -253,6 +253,19 @@ const niceLimit = (value, unit, window) => {
   return value == null ? `${unit}${w}` : `${fmt(value)} ${unit}${w}`;
 };
 const provName = (p) => ({ GitHub: "GitHub Copilot" }[p] ?? p);
+const providerLogos = {
+  OpenAI: "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
+  Anthropic: "https://www.google.com/s2/favicons?domain=anthropic.com&sz=64",
+  Google: "https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64",
+  xAI: "https://www.google.com/s2/favicons?domain=x.ai&sz=64",
+  Perplexity: "https://www.google.com/s2/favicons?domain=perplexity.ai&sz=64",
+  Cursor: "https://www.google.com/s2/favicons?domain=cursor.com&sz=64",
+  GitHub: "https://www.google.com/s2/favicons?domain=github.com&sz=64",
+  Replit: "https://www.google.com/s2/favicons?domain=replit.com&sz=64",
+};
+const provMark = (p) => providerLogos[p]
+  ? `<span class="pmark" title="${escHtml(provName(p))}"><img src="${escHtml(providerLogos[p])}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">${escHtml((p ?? "?")[0])}</span></span>`
+  : `<span class="pmark" title="${escHtml(provName(p))}"><span class="fallback" style="display:inline">${escHtml((p ?? "?")[0])}</span></span>`;
 const freshestDate = () => {
   const dates = [out.date_range.at(-1)];
   for (const r of usageReports) if (r.captured_at) dates.push(r.captured_at.slice(0, 10));
@@ -282,7 +295,7 @@ const renderLatest = (latest) => {
   ).map((e) => {
     const surf = e.surface ? ` <span class="meta">· ${escHtml(e.surface)}</span>` : "";
     return `<tr>` +
-      `<td class="cardtitle"><span class="pname">${escHtml(provName(e.provider))}</span> <strong>${escHtml(e.plan)}</strong>${surf}</td>` +
+      `<td class="cardtitle">${provMark(e.provider)}<span class="pname">${escHtml(provName(e.provider))}</span> <strong>${escHtml(e.plan)}</strong>${surf}</td>` +
       `<td class="num" data-label="Price / mo">$${escHtml(e.price_usd)}</td>` +
       `<td data-label="Limits">${renderLimitCell(e)}</td>` +
       `<td data-label="Confidence"><span class="badge ${escHtml(e.confidence)}">${escHtml(e.confidence)}</span></td>` +
