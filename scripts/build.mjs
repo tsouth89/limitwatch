@@ -200,7 +200,9 @@ try {
     if (r.account != null && typeof r.account !== "string") throw new Error(`usage-reports.json: ${who} account must be a string`);
     if (r.captured_at.slice(0, 10) > today) dataWarnings.push(`usage-reports.json: ${who} captured_at ${r.captured_at} is after ${today}`);
   }
-  usageReports = ur.reports;
+  // `account` (work vs personal login) is internal attribution only — never ship it to the public
+  // site; on-site these are all just $20-plan cap readings. Keep it in data/usage-reports.json.
+  usageReports = ur.reports.map(({ account, ...rest }) => rest);
 } catch (err) {
   if (err.code !== "ENOENT") throw err;
 }

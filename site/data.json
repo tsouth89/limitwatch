@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-08T23:18:50.863Z",
+  "generated_at": "2026-06-09T01:07:34.385Z",
   "snapshot_count": 6,
   "date_range": [
     "2026-01-15",
@@ -249,7 +249,6 @@
       "captured_at": "2026-06-08T11:51:00Z",
       "metric": "percent",
       "observed": 75,
-      "account": "personal",
       "limit_hit": false,
       "model": "Claude Opus 4.8 (fast, medium reasoning)",
       "note": "Single continuous session from 0% at window start. 385 Opus turns over ~1h02m reached 75% of the 5h cap (in-app indicator; may lag a few min). Session token usage: 283,476 output + 36,742 fresh input + 3,341,442 cache-write + 50,597,493 cache-read tokens. Priced at the Opus 4.8 API rate (input $5, output $25, 5-min cache-write $6.25, cache-read $0.50 per 1M), that is ~$53 of API-equivalent value for 75% of the window, implying ~$71 of API-equivalent Opus usage per full 5h window on a $20/mo Pro plan. (API-equivalent is a value comparison; the actual cap mechanic is not published.)",
@@ -273,10 +272,9 @@
       "reset_at": "2026-06-03T21:00:00Z",
       "metric": "percent",
       "observed": 78,
-      "account": "personal",
       "limit_hit": false,
       "model": "mixed (Opus 4.8 primary, Sonnet 4.6, Haiku 4.5)",
-      "note": "Personal Pro account, weekly cap at 78% (in-app indicator). MEASURED FLOOR from local Claude Code transcripts (~/.claude/projects/**/*.jsonl), deduped by message.id, for the active weekly window (reset Wed 2026-06-03 17:00 EDT). SCOPED to personal projects only (path match 'personal'), because this machine also ran a SEPARATE work Pro login this week whose Claude Code burn hits a different account's cap. Attribution is a weak proxy: Claude Code's login is global per instance, not per project, so a personal-project session could have run on the work login (or vice-versa); transcripts record no account identity. Also excludes claude.ai web/desktop chat, which counts against this same cap. So the figure is a soft lower bound. 1,627 assistant turns: Opus 4.8 ($117), Sonnet 4.6 ($35), Haiku 4.5 ($0.41). At Anthropic API list rates that is ~$153 of API-equivalent value at 78%, implying a full weekly Claude Code budget of >=~$197 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "note": "$20 Pro plan, weekly cap at 78% (in-app indicator). MEASURED FLOOR from local Claude Code transcripts (~/.claude/projects/**/*.jsonl), deduped by message.id, for the active weekly window. SCOPED to one account's projects, because this machine also ran a SECOND $20 Pro login this week whose Claude Code burn hits a different account's cap. Attribution is a weak proxy: Claude Code's login is global per instance, not per project, so a session could have run on either login; transcripts record no account identity. Also excludes claude.ai web/desktop chat, which counts against this same cap. So the figure is a soft lower bound. 1,627 assistant turns: Opus 4.8 ($117), Sonnet 4.6 ($35), Haiku 4.5 ($0.41). At Anthropic API list rates that is ~$153 of API-equivalent value at 78%, implying a full weekly Claude Code budget of >=~$197 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
       "usage_tokens": {
         "input": 101563,
         "output": 901547,
@@ -287,7 +285,7 @@
       "value_basis": "floor",
       "api_equiv_basis": "Anthropic API list price per model (Opus 4.8 in $5 / out $25 / cw-5m $6.25 / cw-1h $10 / cr $0.50; Sonnet 4.6 $3/$15/$3.75/$6/$0.30; Haiku 4.5 $1/$5/$1.25/$2/$0.10 per 1M). See scripts/cc-usage.mjs. Value comparison, not the cap mechanic.",
       "reporter": "self",
-      "evidence": "Aggregated ~/.claude/projects/**/*.jsonl assistant-turn usage via scripts/cc-usage.mjs --since 2026-06-03T21:00:00Z --match personal, deduped by message.id. Paired with in-app weekly % indicator. Scoped to personal projects as a weak account proxy (see note)."
+      "evidence": "Aggregated ~/.claude/projects/**/*.jsonl assistant-turn usage via scripts/cc-usage.mjs, deduped by message.id. Paired with in-app weekly % indicator. Scoped to one account's projects as a weak account proxy (see note)."
     },
     {
       "provider": "Anthropic",
@@ -297,14 +295,13 @@
       "captured_at": "2026-06-08T12:30:00Z",
       "metric": "percent",
       "observed": 79,
-      "account": "work",
       "limit_hit": false,
       "model": "all models",
-      "note": "SEPARATE work Pro account (also $20/mo), read off the in-app Plan-usage panel: weekly 'all models' 79%, resets in ~1 day (exact reset time not shown). Same panel showed the 5-hour limit at 7% (resets ~4h) and a usage-credits pool at $0.00 of $40.00. Recorded as an OBSERVED-ONLY receipt: no measured-burn pairing, because (1) this machine ran two Claude logins this week and transcripts carry no account identity, and (2) the work weekly window's reset time is unknown, so per-account burn can't be scoped to the right window. The observed % is a real reading; any $ figure would be a guess on a guess.",
+      "note": "A SECOND $20 Pro login on the same machine, read off the in-app Plan-usage panel: weekly 'all models' 79%, resets in ~1 day (exact reset time not shown). Same panel showed the 5-hour limit at 7% (resets ~4h) and a usage-credits pool at $0.00 of $40.00. Recorded as an OBSERVED-ONLY receipt: no measured-burn pairing, because (1) this machine ran two Claude logins this week and transcripts carry no account identity, and (2) this weekly window's reset time was unknown at capture, so per-account burn couldn't be scoped to the right window. The observed % is a real reading; any $ figure would be a guess on a guess.",
       "usage_tokens": null,
       "api_equiv_usd": null,
       "reporter": "self",
-      "evidence": "In-app Claude Code Plan-usage panel screenshot (work account): 5-hour 7% resets 4h; Weekly all models 79% resets 1d; usage credits $0.00 of $40.00; context 82.5k/1.0M."
+      "evidence": "In-app Claude Code Plan-usage panel screenshot: 5-hour 7% resets 4h; Weekly all models 79% resets 1d; usage credits $0.00 of $40.00; context 82.5k/1.0M."
     },
     {
       "provider": "Anthropic",
@@ -314,11 +311,10 @@
       "captured_at": "2026-06-08T13:12:00Z",
       "metric": "percent",
       "observed": 83,
-      "account": "personal",
       "limit_hit": false,
       "model": "mixed (Opus 4.8 primary, Sonnet 4.6, Haiku 4.5)",
       "value_basis": "floor",
-      "note": "Personal Pro account, SECOND weekly point ~1h after the 78% reading above (captured 2026-06-08T12:14Z, ~$153 floor). Personal-scoped Claude Code burn (path match 'personal'), deduped by message.id, since the assumed Wed 2026-06-03 17:00 EDT reset; same weak-account-proxy + claude.ai-excluded caveats as that row. CAP-SHAPE SIGNAL: the two points imply ~$196/week (78% -> $153) and ~$201/week (83% -> $167) API-equivalent — consistent to within ~3%, which suggests a roughly LINEAR / token-based weekly cap rather than a dollar-weighted one that would bend. RESET AMBIGUITY (unresolved): the in-app panel showed 'Weekly all models 83% resets 1d', i.e. ~1 day out, but the reset was believed to be Wednesday 17:00 EDT (~2 days out); the window anchor is therefore in question, so the absolute /week figure is provisional. The cross-point ratio is the stronger evidence because it is less sensitive to the exact anchor.",
+      "note": "$20 Pro plan, SECOND weekly point ~1h after the 78% reading above (~$153 floor). Single-account-scoped Claude Code burn, deduped by message.id, over the active weekly window; same weak-account-proxy + claude.ai-excluded caveats as that row. CAP-SHAPE SIGNAL: the two points imply ~$196/week (78% -> $153) and ~$201/week (83% -> $167) API-equivalent — consistent to within ~3%, which suggests a roughly LINEAR / token-based weekly cap rather than a dollar-weighted one that would bend. RESET AMBIGUITY (unresolved): the in-app panel showed 'Weekly all models 83% resets 1d', i.e. ~1 day out, but the reset was believed to be ~2 days out; the window anchor is therefore in question, so the absolute /week figure is provisional. The cross-point ratio is the stronger evidence because it is less sensitive to the exact anchor.",
       "usage_tokens": {
         "input": 103860,
         "output": 962902,
@@ -328,7 +324,7 @@
       "api_equiv_usd": 166.79,
       "api_equiv_basis": "Anthropic API list price per model (see scripts/lib/usage-core.mjs PRICES, as of 2026-06-08). Value comparison, not the cap mechanic.",
       "reporter": "self",
-      "evidence": "scripts/cc-usage.mjs --account personal (auto scope + Wed-reset anchor), deduped by message.id. In-app panel: 5-hour 47% resets 3h; Weekly all models 83% resets 1d; credits $0.00/$40.00; context 163.7k/1.0M."
+      "evidence": "scripts/cc-usage.mjs (auto scope + weekly-reset anchor), deduped by message.id. In-app panel: 5-hour 47% resets 3h; Weekly all models 83% resets 1d; credits $0.00/$40.00; context 163.7k/1.0M."
     },
     {
       "provider": "Anthropic",
@@ -338,11 +334,10 @@
       "captured_at": "2026-06-08T13:12:00Z",
       "metric": "percent",
       "observed": 47,
-      "account": "personal",
       "limit_hit": false,
       "model": "Claude Opus 4.8",
       "value_basis": "floor",
-      "note": "Personal Pro account, 5-hour limit at 47%. User-confirmed this was the ONLY Claude Code session active in the current 5h window (single continuous session, single project, all Opus 4.8), so there is no cross-session contamination. The weakness here is the ROLLING window start: the panel said 'resets 3h', implying the 5h window opened ~2h ago, over which this session burned ~$25 API-equivalent (-> implied ~$53 per full 5h). But the exact open minute is unknown and the burn roughly doubles between a 2h and 3h lookback (~$25 vs ~$55), so the true implied full-5h value spans ~$53-117. Recorded as a FLOOR at the 2h-lookback figure. Compare the earlier clean 5h receipt (75% -> ~$71 per 5h); both are in the same rough band.",
+      "note": "$20 Pro plan, 5-hour limit at 47%. User-confirmed this was the ONLY Claude Code session active in the current 5h window (single continuous session, single project, all Opus 4.8), so there is no cross-session contamination. The weakness here is the ROLLING window start: the panel said 'resets 3h', implying the 5h window opened ~2h ago, over which this session burned ~$25 API-equivalent (-> implied ~$53 per full 5h). But the exact open minute is unknown and the burn roughly doubles between a 2h and 3h lookback (~$25 vs ~$55), so the true implied full-5h value spans ~$53-117. Recorded as a FLOOR at the 2h-lookback figure. Compare the earlier clean 5h receipt (75% -> ~$71 per 5h); both are in the same rough band.",
       "usage_tokens": {
         "input": 19277,
         "output": 107048,
@@ -362,11 +357,10 @@
       "captured_at": "2026-06-08T14:19:19Z",
       "metric": "percent",
       "observed": 100,
-      "account": "personal",
       "limit_hit": true,
       "model": "Claude Opus 4.8",
       "value_basis": "floor",
-      "note": "Personal Pro account, 5-hour limit MAXED OUT (cap hit, user-reported). Cleanest 5h point yet: one continuous Claude Code session, single project (ai-limit-tracker), all Opus 4.8 — no cross-session or cross-account ambiguity. A contiguous burst of 450 assistant turns over ~3.5h (10:49-14:19 UTC) filled the window. Measured Claude Code burn to the cap-hit was ~$69 API-equivalent at list rates. Because the cap was actually HIT (cumulative = 100%), this $69 is a hard LOWER BOUND on the full 5h ceiling: it counts Claude Code transcript burn only, so any claude.ai chat in the window would sit on top. So the 5h cap is >=~$69 API-equiv. This corroborates the earlier partial reading (75% -> ~$71/5h): the 5h ceiling clusters around ~$69-71 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "note": "$20 Pro plan, 5-hour limit MAXED OUT (cap hit, user-reported). Cleanest 5h point yet: one continuous Claude Code session, single project, all Opus 4.8 — no cross-session or cross-account ambiguity. A contiguous burst of 450 assistant turns over ~3.5h filled the window. Measured Claude Code burn to the cap-hit was ~$69 API-equivalent at list rates. Because the cap was actually HIT (cumulative = 100%), this $69 is a hard LOWER BOUND on the full 5h ceiling: it counts Claude Code transcript burn only, so any claude.ai chat in the window would sit on top. So the 5h cap is >=~$69 API-equiv. This corroborates the earlier partial reading (75% -> ~$71/5h): the 5h ceiling clusters around ~$69-71 API-equivalent on a $20/mo Pro plan. (API-equivalent is a value comparison; the cap mechanic is not published.)",
       "usage_tokens": {
         "input": 36265,
         "output": 293182,
@@ -376,7 +370,7 @@
       "api_equiv_usd": 68.97,
       "api_equiv_basis": "Anthropic API list price, Opus 4.8 (in $5 / out $25 / cw-1h $10 / cr $0.50 per 1M). Value comparison, not the cap mechanic.",
       "reporter": "self",
-      "evidence": "scripts/cc-usage.mjs aggregation of the personal ai-limit-tracker transcript for the maxed window (span 2026-06-08T10:49:17Z..14:19:19Z, 450 turns, deduped by message.id). In-app 5-hour indicator hit 100% (throttled)."
+      "evidence": "scripts/cc-usage.mjs aggregation of one project's transcript for the maxed window (span 2026-06-08T10:49:17Z..14:19:19Z, 450 turns, deduped by message.id). In-app 5-hour indicator hit 100% (throttled)."
     },
     {
       "provider": "Anthropic",
@@ -387,11 +381,10 @@
       "reset_at": "2026-06-10T21:00:00Z",
       "metric": "percent",
       "observed": 99,
-      "account": "personal",
       "limit_hit": false,
       "model": "mixed (Claude Opus 4.8 dominant)",
       "value_basis": "floor",
-      "note": "Personal Pro account, WEEKLY limit at 99% (user-reported, near cap not yet throttled). MEASURED FLOOR from local Claude Code transcripts scoped to projects matching personal (excludes claude.ai chat; account attribution is a weak project proxy). Window 2026-06-03T21:00Z..2026-06-08T22:52Z, 2250 assistant turns across a heavy build week (folloback MVP + ai-limit-tracker). API-equivalent burn $256.56 at list rates, dominated by Opus 4.8 (1363 turns, $220.91) with Sonnet 4.6 (786 turns, $35.24) and Haiku (86 turns, $0.41). Because 99% is near the ceiling without a throttle, ~$257 API-equiv is a hard LOWER BOUND on the weekly cap for a $20/mo Pro plan: it counts Claude Code transcript burn only, so any claude.ai chat sits on top. So the weekly cap is >=~$257 API-equivalent. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "note": "$20 Pro plan, WEEKLY limit at 99% (user-reported, near cap not yet throttled). MEASURED FLOOR from local Claude Code transcripts scoped to one account's projects (excludes claude.ai chat; account attribution is a weak project proxy). 2,250 assistant turns across a heavy build week. API-equivalent burn $256.56 at list rates, dominated by Opus 4.8 (1363 turns, $220.91) with Sonnet 4.6 (786 turns, $35.24) and Haiku (86 turns, $0.41). Because 99% is near the ceiling without a throttle, ~$257 API-equiv is a hard LOWER BOUND on the weekly cap for a $20/mo Pro plan: it counts Claude Code transcript burn only, so any claude.ai chat sits on top. So the weekly cap is >=~$257 API-equivalent. (API-equivalent is a value comparison; the cap mechanic is not published.)",
       "usage_tokens": {
         "input": 137887,
         "output": 1306690,
@@ -401,7 +394,31 @@
       "api_equiv_usd": 256.56,
       "api_equiv_basis": "Anthropic API list price per model (see scripts/lib/usage-core.mjs PRICES). Value comparison, not the cap mechanic.",
       "reporter": "self",
-      "evidence": "scripts/cc-usage.mjs --account personal --report; aggregated ~/.claude/projects/**/*.jsonl, deduped by message.id, --match personal."
+      "evidence": "scripts/cc-usage.mjs --report; aggregated ~/.claude/projects/**/*.jsonl, deduped by message.id, scoped to one account's projects."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "week",
+      "captured_at": "2026-06-09T01:05:00Z",
+      "reset_at": "2026-06-09T03:00:00Z",
+      "metric": "percent",
+      "observed": 99,
+      "limit_hit": false,
+      "model": "mixed (Claude Opus 4.8 dominant)",
+      "value_basis": "floor",
+      "note": "$20 Pro plan (a second login on the same machine), WEEKLY limit at 99% (user-reported, ~2h before reset, near cap not yet throttled). MEASURED FLOOR from local Claude Code transcripts scoped to this account's projects (excludes claude.ai chat; account attribution is a weak project-path proxy). 2,744 assistant turns. API-equivalent burn $386.86 at list rates, dominated by Opus 4.8 (1570 turns, $332.60) with Sonnet 4.6 (1119 turns, $53.96) and Haiku (37 turns, $0.30). Because 99% is near the ceiling without a throttle, ~$387 API-equiv is a hard LOWER BOUND on the weekly cap for a $20/mo Pro plan: Claude Code transcript burn only, so any claude.ai chat sits on top. This reading is from a different login than the other 99% weekly point the same day — disjoint project paths, independent caps. (API-equivalent is a value comparison; the cap mechanic is not published.)",
+      "usage_tokens": {
+        "input": 240478,
+        "output": 2456256,
+        "cache_write": 12410359,
+        "cache_read": 475725313
+      },
+      "api_equiv_usd": 386.86,
+      "api_equiv_basis": "Anthropic API list price per model (see scripts/lib/usage-core.mjs PRICES). Value comparison, not the cap mechanic.",
+      "reporter": "self",
+      "evidence": "scripts/cc-usage.mjs --report; aggregated ~/.claude/projects/**/*.jsonl, deduped by message.id, scoped to one account's projects."
     }
   ],
   "radar": [

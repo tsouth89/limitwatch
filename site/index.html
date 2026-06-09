@@ -1082,17 +1082,18 @@
         // measured $ value contribute (observed-only rows have nothing to extrapolate).
         (() => {
           const fmtUsd = (n) => `$${Math.round(n)}`;
-          const cap = (s) => (s ? s[0].toUpperCase() + s.slice(1) : "—");
           const winOrder = { "5h": 0, day: 1, week: 2, month: 3 };
           const groups = {};
           for (const r of reports) {
             if (r.metric !== "percent" || r.api_equiv_usd == null || !r.observed) continue;
-            (groups[`${r.provider}|${r.account ?? "unknown"}|${r.plan}|${r.window}`] ||= []).push(r);
+            // Group by provider|plan|window only — account (work vs personal login) is internal
+            // attribution noise; on-site these are all the same $20 plan's cap readings.
+            (groups[`${r.provider}|${r.plan}|${r.window}`] ||= []).push(r);
           }
           const keys = Object.keys(groups).sort((a, b) => (winOrder[a.split("|")[3]] ?? 9) - (winOrder[b.split("|")[3]] ?? 9));
           if (!keys.length) return;
           const rows = keys.map((k) => {
-            const [prov, acct, plan, window] = k.split("|");
+            const [prov, plan, window] = k.split("|");
             const rs = groups[k].slice().sort((a, b) => (a.captured_at < b.captured_at ? 1 : -1));
             const implied = rs.map((r) => r.api_equiv_usd / (r.observed / 100));
             const lo = Math.min(...implied), hi = Math.max(...implied);
@@ -1103,7 +1104,7 @@
               ? (spread < 0.1 ? `<span class="num">${rs.length} readings</span>, consistent (looks linear)` : `<span class="num">${rs.length} readings</span>, spread ${Math.round(spread * 100)}%`)
               : `<span class="num">1 reading</span>`;
             return `<div class="rsumrow">
-              <div class="rsumlabel">${provMark(prov)} <strong>${cap(acct)}</strong> <span class="meta">· ${plan} · ${shortWin(window)}</span></div>
+              <div class="rsumlabel">${provMark(prov)} <strong>${plan}</strong> <span class="meta">· ${shortWin(window)}</span></div>
               <div class="rsumval"><span class="lead">~${rangeTxt}</span> <span class="meta">/ ${shortWin(window)} API-equiv${isFloor ? ` <span class="badge community">floor</span>` : ""}</span></div>
               <div class="rsummeta meta">${shape} · latest ${fmt(rs[0].observed)}%</div>
             </div>`;
