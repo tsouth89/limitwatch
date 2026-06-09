@@ -26,6 +26,7 @@ const MARKED_HTML =
   '<div id="stats"><!-- BUILD:stats:start --><!-- BUILD:stats:end --></div>' +
   '<div id="latest"><!-- BUILD:latest:start --><!-- BUILD:latest:end --></div>' +
   '<div id="changelog"><!-- BUILD:changelog:start --><!-- BUILD:changelog:end --></div>' +
+  '<footer><!-- BUILD:providerlinks:start --><!-- BUILD:providerlinks:end --></footer>' +
   "</body></html>";
 
 // Build a temp root with data/snapshots + site/index.html, optionally events/change-dates files.
@@ -164,6 +165,46 @@ test("pre-renders the HTML build blocks and writes robots.txt, sitemap.xml, chan
     assert.match(rss, /<rss version="2\.0">/);
     assert.match(rss, /<title>LimitWatch changes<\/title>/);
     assert.match(rss, /<item>/);
+  } finally {
+    cleanup(root);
+  }
+});
+
+// ---- per-provider SEO landing pages ----------------------------------------
+test("generates per-provider pages, links them from the footer, and lists them in the sitemap", () => {
+  const s1 = snap("2026-01-01", [
+    entry({ provider: "Anthropic", plan: "Pro", price_usd: 20, limits: [lim({ value: 45, window: "5h" })] }),
+    entry({ provider: "OpenAI", plan: "Plus", price_usd: 20, limits: [lim({ value: 160, window: "3h" })] }),
+  ]);
+  const s2 = snap("2026-02-01", [
+    entry({ provider: "Anthropic", plan: "Pro", price_usd: 24, limits: [lim({ value: 45, window: "5h" })] }), // price change
+    entry({ provider: "OpenAI", plan: "Plus", price_usd: 20, limits: [lim({ value: 160, window: "3h" })] }),
+  ]);
+  const root = setupRoot({ snapshots: [s1, s2] });
+  try {
+    runBuild(root);
+
+    // Known providers get product-name slugs.
+    const claude = readFile(root, "claude.html");
+    assert.match(claude, /<link rel="canonical" href="https:\/\/limitwatch\.southforgeai\.com\/claude">/);
+    assert.match(claude, /Anthropic plan limits/);
+    assert.match(claude, /<strong>Pro<\/strong>/);
+    assert.match(claude, /application\/ld\+json/, "should embed JSON-LD");
+    assert.match(claude, /Pro \$20 -&gt; \$24/, "provider changelog should show the price move");
+
+    const chatgpt = readFile(root, "chatgpt.html");
+    assert.match(chatgpt, /OpenAI plan limits/);
+
+    // Homepage footer links to each provider page (crawlable internal links).
+    const html = readFile(root, "index.html");
+    assert.match(html, /<!-- BUILD:providerlinks:start -->[\s\S]*href="\/claude"[\s\S]*<!-- BUILD:providerlinks:end -->/);
+    assert.match(html, /href="\/chatgpt"/);
+
+    // Sitemap includes the homepage and every provider page.
+    const sitemap = readFile(root, "sitemap.xml");
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/claude<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/chatgpt<\/loc>/);
   } finally {
     cleanup(root);
   }

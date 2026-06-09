@@ -330,15 +330,154 @@ const replaceBlock = (html, name, body) => {
   return html.replace(pattern, `${start}${body}${end}`);
 };
 const latest = snapshots.at(-1);
+
+// ---- Per-provider SEO landing pages ----------------------------------------
+// One static, fully pre-rendered page per provider (e.g. /claude, /chatgpt) so the actual numbers
+// are indexable and long-tail searches ("claude pro limits") have a page to land on. Generated from
+// the same data; the homepage footer links to each so crawlers (and the sitemap) reach them.
+const PROVIDER_SLUGS = {
+  OpenAI: "chatgpt", Anthropic: "claude", Google: "gemini", xAI: "grok",
+  Perplexity: "perplexity", Cursor: "cursor", GitHub: "copilot", Replit: "replit",
+};
+const slugOf = (p) => PROVIDER_SLUGS[p] ?? p.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+const providerPages = [...new Set(latest.entries.map((e) => e.provider))]
+  .map((provider) => ({ provider, name: provName(provider), slug: slugOf(provider) }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const year = latest.date.slice(0, 4);
+const renderProviderRow = (e) => {
+  const surf = e.surface ? ` <span class="meta">· ${escHtml(e.surface)}</span>` : "";
+  return `<tr>` +
+    `<td><strong>${escHtml(e.plan)}</strong>${surf}</td>` +
+    `<td class="num">$${escHtml(e.price_usd)}</td>` +
+    `<td>${renderLimitCell(e)}</td>` +
+    `<td><span class="badge">${escHtml(e.confidence)}</span></td>` +
+    `<td><a href="${escHtml(e.source)}" rel="nofollow noopener">src</a> <span class="meta">${escHtml(e.verified_on)}</span></td>` +
+    `</tr>`;
+};
+const renderProviderChanges = (changes) => {
+  if (!changes.length) return `<p class="meta">No changes tracked yet — they appear here as snapshots accumulate.</p>`;
+  return `<div class="cl">` + changes.slice(0, 20).map((c) =>
+    `<div><span class="d">${escHtml(c.date)}</span>${escHtml(changeText(c))} ${c.source ? `<a href="${escHtml(c.source)}" rel="nofollow noopener">src</a>` : ""}</div>`
+  ).join("") + `</div>`;
+};
+const providerPageHtml = ({ provider, name, slug }) => {
+  const entries = latest.entries.filter((e) => e.provider === provider)
+    .sort((a, b) => a.price_usd - b.price_usd || a.plan.localeCompare(b.plan));
+  const changes = out.changes.filter((c) => c.key.split("|")[0] === provider);
+  const planNames = [...new Set(entries.map((e) => e.plan))];
+  const canonical = `${siteUrl}/${slug}`;
+  const title = `${name} plan limits & pricing (${planNames.slice(0, 3).join(", ")}${planNames.length > 3 ? ", …" : ""}) | LimitWatch`;
+  const desc = `Current ${name} plans, prices, and usage limits — ${planNames.join(", ")}. Every number is source-linked and tracked over time. Updated ${latest.date}.`;
+  const logo = providerLogos[provider]
+    ? `<span class="pmark"><img src="${escHtml(providerLogos[provider])}" alt="" referrerpolicy="no-referrer"></span>` : "";
+  const otherLinks = providerPages.map((p) =>
+    p.slug === slug ? `<strong>${escHtml(p.name)}</strong>` : `<a href="/${p.slug}">${escHtml(p.name)}</a>`).join(" · ");
+  const jsonLd = {
+    "@context": "https://schema.org", "@type": "Dataset",
+    name: `${name} subscription limits & pricing`, description: desc, url: canonical,
+    isPartOf: { "@type": "Dataset", name: "LimitWatch", url: `${siteUrl}/` },
+    creator: { "@type": "Organization", name: "SouthForge AI" },
+    license: "https://opensource.org/licenses/MIT", isAccessibleForFree: true,
+    dateModified: latest.date,
+  };
+  const breadcrumb = {
+    "@context": "https://schema.org", "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "LimitWatch", item: `${siteUrl}/` },
+      { "@type": "ListItem", position: 2, name, item: canonical },
+    ],
+  };
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escHtml(title)}</title>
+<meta name="description" content="${escHtml(desc)}">
+<link rel="canonical" href="${escHtml(canonical)}">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="LimitWatch">
+<meta property="og:title" content="${escHtml(title)}">
+<meta property="og:description" content="${escHtml(desc)}">
+<meta property="og:url" content="${escHtml(canonical)}">
+<meta property="og:image" content="${siteUrl}/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escHtml(title)}">
+<meta name="twitter:description" content="${escHtml(desc)}">
+<meta name="twitter:image" content="${siteUrl}/og.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
+<style>
+:root{color-scheme:light dark;--bg:#eef3f3;--paper:#fff;--ink:#11201d;--muted:#4d625d;--line:#d7e2df;--blue:#0d9488;--green:#047857;--pos-soft:#d8f1e6;--pos-line:#bce6d3}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1413;--paper:#111d1b;--ink:#e6efec;--muted:#9bb0ab;--line:#233532;--blue:#2dd4bf;--green:#34d399;--pos-soft:#0f3328;--pos-line:#1c4d3d}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.55 system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:var(--blue)}.wrap{max-width:880px;margin:0 auto;padding:1.4rem 1.5rem 3rem}
+nav{display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--line);padding:.2rem 0 .9rem}
+nav .brand{font-weight:800;color:var(--ink);text-decoration:none}nav .spacer{margin-left:auto}
+nav a.app{font-size:13px;font-weight:700}
+h1{font-size:1.85rem;letter-spacing:-.02em;margin:1.3rem 0 .3rem;display:flex;align-items:center;gap:.2rem}
+.lede{color:var(--muted);margin:.2rem 0 1.3rem;max-width:66ch}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:.4rem 0 1.4rem}
+th,td{text-align:left;padding:.6rem .55rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.meta{color:var(--muted);font-size:12.5px}
+.badge{display:inline-block;border-radius:999px;padding:.05rem .5rem;font-size:11px;font-weight:800;background:var(--pos-soft);color:var(--green);border:1px solid var(--pos-line)}
+.pmark{display:inline-flex;width:26px;height:26px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--paper);vertical-align:-7px;margin-right:.45rem}
+.pmark img{width:100%;height:100%;object-fit:contain;padding:1px}
+h2{font-size:1.2rem;margin:1.7rem 0 .5rem}
+.cl{font-size:13.5px}.cl>div{padding:.45rem 0;border-bottom:1px solid var(--line)}.cl .d{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:.5rem}
+footer{border-top:1px solid var(--line);margin-top:2rem;padding:1.2rem 0;color:var(--muted);font-size:13px}
+footer .provs{margin:.2rem 0 .7rem;line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+<a class="brand" href="/">LimitWatch</a>
+<span class="spacer"></span>
+<a class="app" href="/">Compare all providers →</a>
+</nav>
+<h1>${logo}${escHtml(name)} plan limits &amp; pricing</h1>
+<p class="lede">Current ${escHtml(name)} subscription plans, prices, and usage limits, source-linked and tracked over time. ${year} snapshot, last verified ${escHtml(latest.date)}. For the full cross-provider comparison, value-per-dollar, and measured-usage receipts, see the <a href="/">interactive LimitWatch app</a>.</p>
+<table>
+<thead><tr><th>Plan</th><th class="num">Price / mo</th><th>Limits</th><th>Confidence</th><th>Source</th></tr></thead>
+<tbody>${entries.map(renderProviderRow).join("")}</tbody>
+</table>
+<h2>Recent ${escHtml(name)} changes</h2>
+${renderProviderChanges(changes)}
+<footer>
+<div class="provs">Other providers: ${otherLinks}</div>
+<a href="/">LimitWatch home</a> · <a href="https://github.com/tsouth89/limitwatch" rel="noopener">Source &amp; raw data</a> · open data, AI-built.
+</footer>
+</div>
+</body>
+</html>
+`;
+};
+
 let html = readFileSync(join(root, "site", "index.html"), "utf8");
 html = replaceBlock(html, "stats", renderStats(latest));
 html = replaceBlock(html, "latest", renderLatest(latest));
 html = replaceBlock(html, "changelog", renderChangelog());
+html = replaceBlock(html, "providerlinks", providerPages.map((p) => `<a href="/${p.slug}">${escHtml(p.name)}</a>`).join(" · "));
 writeFileSync(join(root, "site", "index.html"), html);
+
+for (const page of providerPages) writeFileSync(join(root, "site", `${page.slug}.html`), providerPageHtml(page));
 
 const latestMod = out.generated_at.slice(0, 10);
 writeFileSync(join(root, "site", "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
-writeFileSync(join(root, "site", "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${siteUrl}/</loc>\n    <lastmod>${latestMod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n</urlset>\n`);
+const sitemapUrls = [
+  { loc: `${siteUrl}/`, priority: "1.0", changefreq: "daily" },
+  ...providerPages.map((p) => ({ loc: `${siteUrl}/${p.slug}`, priority: "0.8", changefreq: "weekly" })),
+];
+writeFileSync(join(root, "site", "sitemap.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+  sitemapUrls.map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${latestMod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`).join("\n") +
+  `\n</urlset>\n`);
 const rssItems = out.changes.slice(0, 25).map((c) => {
   const title = changeText(c);
   const pubDate = new Date(`${c.date}T12:00:00Z`).toUTCString();
@@ -347,4 +486,4 @@ const rssItems = out.changes.slice(0, 25).map((c) => {
 }).join("\n");
 writeFileSync(join(root, "site", "changes.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>LimitWatch changes</title>\n  <link>${siteUrl}/</link>\n  <description>Recent AI plan limit and price changes tracked by LimitWatch.</description>\n  <lastBuildDate>${new Date(out.generated_at).toUTCString()}</lastBuildDate>\n${rssItems}\n</channel>\n</rss>\n`);
 
-console.log(`built site/data.json + prerendered HTML/RSS/sitemap — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${radar.length} radar item(s), ${dataWarnings.length} warning(s)`);
+console.log(`built site/data.json + prerendered HTML/RSS/sitemap + ${providerPages.length} provider page(s) — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${radar.length} radar item(s), ${dataWarnings.length} warning(s)`);
