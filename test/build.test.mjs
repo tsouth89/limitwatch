@@ -23,6 +23,7 @@ const snap = (date, entries, extra = {}) => ({ schema: 3, date, entries, ...extr
 
 const MARKED_HTML =
   "<!doctype html><html><body>" +
+  '<!-- BUILD:jsonld:start --><!-- BUILD:jsonld:end -->' +
   '<div id="stats"><!-- BUILD:stats:start --><!-- BUILD:stats:end --></div>' +
   '<div id="latest"><!-- BUILD:latest:start --><!-- BUILD:latest:end --></div>' +
   '<div id="changelog"><!-- BUILD:changelog:start --><!-- BUILD:changelog:end --></div>' +
@@ -157,10 +158,10 @@ test("pre-renders the HTML build blocks and writes robots.txt, sitemap.xml, chan
     assert.match(html, /<!-- BUILD:changelog:start -->[\s\S]*price[\s\S]*<!-- BUILD:changelog:end -->/);
 
     const robots = readFile(root, "robots.txt");
-    assert.match(robots, /Sitemap: https:\/\/limitwatch\.southforgeai\.com\/sitemap\.xml/);
+    assert.match(robots, /Sitemap: https:\/\/limitwatch\.dev\/sitemap\.xml/);
 
     const sitemap = readFile(root, "sitemap.xml");
-    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.dev\/<\/loc>/);
 
     const rss = readFile(root, "changes.xml");
     assert.match(rss, /<rss version="2\.0">/);
@@ -187,7 +188,7 @@ test("generates per-provider pages, links them from the footer, and lists them i
 
     // Known providers get product-name slugs.
     const claude = readFile(root, "claude.html");
-    assert.match(claude, /<link rel="canonical" href="https:\/\/limitwatch\.southforgeai\.com\/claude">/);
+    assert.match(claude, /<link rel="canonical" href="https:\/\/limitwatch\.dev\/claude">/);
     assert.match(claude, /Anthropic plan limits/);
     assert.match(claude, /<strong>Pro<\/strong>/);
     assert.match(claude, /application\/ld\+json/, "should embed JSON-LD");
@@ -203,9 +204,9 @@ test("generates per-provider pages, links them from the footer, and lists them i
 
     // Sitemap includes the homepage and every provider page.
     const sitemap = readFile(root, "sitemap.xml");
-    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/<\/loc>/);
-    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/claude<\/loc>/);
-    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/chatgpt<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.dev\/<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.dev\/claude<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.dev\/chatgpt<\/loc>/);
   } finally {
     cleanup(root);
   }
@@ -223,7 +224,7 @@ test("generates X-vs-Y comparison pages with both providers, cross-links, and si
 
     // One page per provider pair, named by slug (providers are name-sorted: Anthropic before OpenAI).
     const vs = readFile(root, "claude-vs-chatgpt.html");
-    assert.match(vs, /<link rel="canonical" href="https:\/\/limitwatch\.southforgeai\.com\/claude-vs-chatgpt">/);
+    assert.match(vs, /<link rel="canonical" href="https:\/\/limitwatch\.dev\/claude-vs-chatgpt">/);
     assert.match(vs, /Anthropic vs OpenAI/, "title/heading names both providers");
     // Combined table carries plans from BOTH providers.
     assert.match(vs, /<strong>Pro<\/strong>/);
@@ -237,7 +238,7 @@ test("generates X-vs-Y comparison pages with both providers, cross-links, and si
     const html = readFile(root, "index.html");
     assert.match(html, /<!-- BUILD:comparelinks:start -->[\s\S]*href="\/claude-vs-chatgpt"[\s\S]*<!-- BUILD:comparelinks:end -->/);
     const sitemap = readFile(root, "sitemap.xml");
-    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/claude-vs-chatgpt<\/loc>/);
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.dev\/claude-vs-chatgpt<\/loc>/);
   } finally {
     cleanup(root);
   }
