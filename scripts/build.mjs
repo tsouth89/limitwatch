@@ -370,6 +370,38 @@ const providerPages = [...new Set(latest.entries.map((e) => e.provider))]
   .sort((a, b) => a.name.localeCompare(b.name));
 
 const year = latest.date.slice(0, 4);
+
+// Shared CSS for every prerendered landing page (per-provider + the vs-comparison pages) so they
+// stay visually identical and the style lives in one place.
+const LANDING_CSS = `
+:root{color-scheme:light dark;--bg:#eef3f3;--paper:#fff;--ink:#11201d;--muted:#4d625d;--line:#d7e2df;--blue:#0d9488;--green:#047857;--pos-soft:#d8f1e6;--pos-line:#bce6d3}
+@media(prefers-color-scheme:dark){:root{--bg:#0a1413;--paper:#111d1b;--ink:#e6efec;--muted:#9bb0ab;--line:#233532;--blue:#2dd4bf;--green:#34d399;--pos-soft:#0f3328;--pos-line:#1c4d3d}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.55 system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:var(--blue)}.wrap{max-width:880px;margin:0 auto;padding:1.4rem 1.5rem 3rem}
+nav{display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--line);padding:.2rem 0 .9rem}
+nav .brand{font-weight:800;color:var(--ink);text-decoration:none}nav .spacer{margin-left:auto}
+nav a.app{font-size:13px;font-weight:700}
+h1{font-size:1.85rem;letter-spacing:-.02em;margin:1.3rem 0 .3rem;display:flex;align-items:center;gap:.2rem;flex-wrap:wrap}
+.lede{color:var(--muted);margin:.2rem 0 1.3rem;max-width:66ch}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:.4rem 0 1.4rem}
+th,td{text-align:left;padding:.6rem .55rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.meta{color:var(--muted);font-size:12.5px}
+.badge{display:inline-block;border-radius:999px;padding:.05rem .5rem;font-size:11px;font-weight:800;background:var(--pos-soft);color:var(--green);border:1px solid var(--pos-line)}
+.pmark{display:inline-flex;width:26px;height:26px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--paper);vertical-align:-7px;margin-right:.45rem;flex:none}
+.pmark img{width:100%;height:100%;object-fit:contain;padding:1px}
+.prov{white-space:nowrap;font-weight:650}
+h2{font-size:1.2rem;margin:1.7rem 0 .5rem}
+.cl{font-size:13.5px}.cl>div{padding:.45rem 0;border-bottom:1px solid var(--line)}.cl .d{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:.5rem}
+.vs{display:inline-block;color:var(--muted);font-weight:700;margin:0 .15rem}
+footer{border-top:1px solid var(--line);margin-top:2rem;padding:1.2rem 0;color:var(--muted);font-size:13px}
+footer .provs{margin:.2rem 0 .7rem;line-height:1.9}`;
+
+// Provider logo chip used in landing-page headings and comparison rows.
+const landingLogo = (provider) => providerLogos[provider]
+  ? `<span class="pmark"><img src="${escHtml(providerLogos[provider])}" alt="" referrerpolicy="no-referrer"></span>` : "";
+
 const renderProviderRow = (e) => {
   const surf = e.surface ? ` <span class="meta">· ${escHtml(e.surface)}</span>` : "";
   return `<tr>` +
@@ -394,8 +426,7 @@ const providerPageHtml = ({ provider, name, slug }) => {
   const canonical = `${siteUrl}/${slug}`;
   const title = `${name} plan limits & pricing (${planNames.slice(0, 3).join(", ")}${planNames.length > 3 ? ", …" : ""}) | LimitWatch`;
   const desc = `Current ${name} plans, prices, and usage limits — ${planNames.join(", ")}. Every number is source-linked and tracked over time. Updated ${latest.date}.`;
-  const logo = providerLogos[provider]
-    ? `<span class="pmark"><img src="${escHtml(providerLogos[provider])}" alt="" referrerpolicy="no-referrer"></span>` : "";
+  const logo = landingLogo(provider);
   const otherLinks = providerPages.map((p) =>
     p.slug === slug ? `<strong>${escHtml(p.name)}</strong>` : `<a href="/${p.slug}">${escHtml(p.name)}</a>`).join(" · ");
   const jsonLd = {
@@ -435,28 +466,7 @@ const providerPageHtml = ({ provider, name, slug }) => {
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 <script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
-<style>
-:root{color-scheme:light dark;--bg:#eef3f3;--paper:#fff;--ink:#11201d;--muted:#4d625d;--line:#d7e2df;--blue:#0d9488;--green:#047857;--pos-soft:#d8f1e6;--pos-line:#bce6d3}
-@media(prefers-color-scheme:dark){:root{--bg:#0a1413;--paper:#111d1b;--ink:#e6efec;--muted:#9bb0ab;--line:#233532;--blue:#2dd4bf;--green:#34d399;--pos-soft:#0f3328;--pos-line:#1c4d3d}}
-*{box-sizing:border-box}body{margin:0;font:15px/1.55 system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-a{color:var(--blue)}.wrap{max-width:880px;margin:0 auto;padding:1.4rem 1.5rem 3rem}
-nav{display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--line);padding:.2rem 0 .9rem}
-nav .brand{font-weight:800;color:var(--ink);text-decoration:none}nav .spacer{margin-left:auto}
-nav a.app{font-size:13px;font-weight:700}
-h1{font-size:1.85rem;letter-spacing:-.02em;margin:1.3rem 0 .3rem;display:flex;align-items:center;gap:.2rem}
-.lede{color:var(--muted);margin:.2rem 0 1.3rem;max-width:66ch}
-table{width:100%;border-collapse:collapse;font-size:14px;margin:.4rem 0 1.4rem}
-th,td{text-align:left;padding:.6rem .55rem;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-.meta{color:var(--muted);font-size:12.5px}
-.badge{display:inline-block;border-radius:999px;padding:.05rem .5rem;font-size:11px;font-weight:800;background:var(--pos-soft);color:var(--green);border:1px solid var(--pos-line)}
-.pmark{display:inline-flex;width:26px;height:26px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--paper);vertical-align:-7px;margin-right:.45rem}
-.pmark img{width:100%;height:100%;object-fit:contain;padding:1px}
-h2{font-size:1.2rem;margin:1.7rem 0 .5rem}
-.cl{font-size:13.5px}.cl>div{padding:.45rem 0;border-bottom:1px solid var(--line)}.cl .d{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:.5rem}
-footer{border-top:1px solid var(--line);margin-top:2rem;padding:1.2rem 0;color:var(--muted);font-size:13px}
-footer .provs{margin:.2rem 0 .7rem;line-height:1.9}
+<style>${LANDING_CSS}
 </style>
 </head>
 <body>
@@ -484,20 +494,135 @@ ${renderProviderChanges(changes)}
 `;
 };
 
+// ---- Pairwise comparison pages ("X vs Y") ----------------------------------
+// The highest-intent searches are versus queries ("claude pro vs chatgpt plus limits"), which the
+// single-provider pages don't target. One static page per provider pair, built from the same data:
+// a combined plan table sorted by price, each side's recent changes, and cross-links. Indexable and
+// in the sitemap; the homepage surfaces a curated popular subset.
+const comparisons = [];
+for (let i = 0; i < providerPages.length; i++)
+  for (let j = i + 1; j < providerPages.length; j++) {
+    const a = providerPages[i], b = providerPages[j];   // providerPages is name-sorted
+    comparisons.push({ a, b, slug: `${a.slug}-vs-${b.slug}` });
+  }
+// Match a pair by slug regardless of which provider is named first (canonical order follows the
+// provider NAME sort, so a hand-written "chatgpt-vs-gemini" should still resolve to "gemini-vs-chatgpt").
+const comparisonOf = (slug) => {
+  const [x, y] = slug.split("-vs-");
+  return comparisons.find((c) => c.slug === slug || c.slug === `${y}-vs-${x}`);
+};
+// Curated, high-traffic pairs surfaced on the homepage (only those that actually exist are shown).
+const POPULAR_VS = ["claude-vs-chatgpt", "claude-vs-gemini", "chatgpt-vs-gemini", "cursor-vs-copilot", "chatgpt-vs-grok", "claude-vs-grok"];
+const popularComparisons = POPULAR_VS.map(comparisonOf).filter(Boolean);
+
+const renderCompareRow = (e) => {
+  const surf = e.surface ? ` <span class="meta">· ${escHtml(e.surface)}</span>` : "";
+  return `<tr>` +
+    `<td class="prov">${landingLogo(e.provider)}${escHtml(provName(e.provider))}</td>` +
+    `<td><strong>${escHtml(e.plan)}</strong>${surf}</td>` +
+    `<td class="num">$${escHtml(e.price_usd)}</td>` +
+    `<td>${renderLimitCell(e)}</td>` +
+    `<td><span class="badge">${escHtml(e.confidence)}</span></td>` +
+    `<td><a href="${escHtml(e.source)}" rel="nofollow noopener">src</a> <span class="meta">${escHtml(e.verified_on)}</span></td>` +
+    `</tr>`;
+};
+const comparePageHtml = ({ a, b, slug }) => {
+  const entries = latest.entries.filter((e) => e.provider === a.provider || e.provider === b.provider)
+    .sort((x, y) => x.price_usd - y.price_usd || provName(x.provider).localeCompare(provName(y.provider)) || x.plan.localeCompare(y.plan));
+  const aChanges = out.changes.filter((c) => c.key.split("|")[0] === a.provider);
+  const bChanges = out.changes.filter((c) => c.key.split("|")[0] === b.provider);
+  const cheapest = entries[0];
+  const canonical = `${siteUrl}/${slug}`;
+  const title = `${a.name} vs ${b.name}: plan limits & pricing compared | LimitWatch`;
+  const desc = `${a.name} vs ${b.name} — subscription plans, prices, and usage limits side by side. Every number is source-linked and tracked over time. Updated ${latest.date}.`;
+  // Other comparisons that involve either provider on this page — internal links for crawl + readers.
+  const related = comparisons.filter((c) => c.slug !== slug && (c.a.provider === a.provider || c.b.provider === a.provider || c.a.provider === b.provider || c.b.provider === b.provider))
+    .map((c) => `<a href="/${c.slug}">${escHtml(c.a.name)} vs ${escHtml(c.b.name)}</a>`).join(" · ");
+  const jsonLd = {
+    "@context": "https://schema.org", "@type": "Dataset",
+    name: `${a.name} vs ${b.name}: subscription limits & pricing`, description: desc, url: canonical,
+    isPartOf: { "@type": "Dataset", name: "LimitWatch", url: `${siteUrl}/` },
+    creator: { "@type": "Organization", name: "SouthForge AI" },
+    license: "https://opensource.org/licenses/MIT", isAccessibleForFree: true,
+    dateModified: latest.date,
+  };
+  const breadcrumb = {
+    "@context": "https://schema.org", "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "LimitWatch", item: `${siteUrl}/` },
+      { "@type": "ListItem", position: 2, name: `${a.name} vs ${b.name}`, item: canonical },
+    ],
+  };
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escHtml(title)}</title>
+<meta name="description" content="${escHtml(desc)}">
+<link rel="canonical" href="${escHtml(canonical)}">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="LimitWatch">
+<meta property="og:title" content="${escHtml(title)}">
+<meta property="og:description" content="${escHtml(desc)}">
+<meta property="og:url" content="${escHtml(canonical)}">
+<meta property="og:image" content="${siteUrl}/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escHtml(title)}">
+<meta name="twitter:description" content="${escHtml(desc)}">
+<meta name="twitter:image" content="${siteUrl}/og.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
+<style>${LANDING_CSS}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+<a class="brand" href="/">LimitWatch</a>
+<span class="spacer"></span>
+<a class="app" href="/">Compare all providers →</a>
+</nav>
+<h1>${landingLogo(a.provider)}${escHtml(a.name)} <span class="vs">vs</span> ${landingLogo(b.provider)}${escHtml(b.name)}</h1>
+<p class="lede">${escHtml(a.name)} and ${escHtml(b.name)} subscription plans, prices, and usage limits side by side, source-linked and tracked over time. ${year} snapshot, last verified ${escHtml(latest.date)}.${cheapest ? ` Cheapest plan across the two: <strong>${escHtml(provName(cheapest.provider))} ${escHtml(cheapest.plan)}</strong> at $${escHtml(cheapest.price_usd)}/mo.` : ""} For value-per-dollar and measured receipts, see the <a href="/">interactive LimitWatch app</a>.</p>
+<table>
+<thead><tr><th>Provider</th><th>Plan</th><th class="num">Price / mo</th><th>Limits</th><th>Confidence</th><th>Source</th></tr></thead>
+<tbody>${entries.map(renderCompareRow).join("")}</tbody>
+</table>
+<h2>Recent ${escHtml(a.name)} changes</h2>
+${renderProviderChanges(aChanges)}
+<h2>Recent ${escHtml(b.name)} changes</h2>
+${renderProviderChanges(bChanges)}
+<footer>
+<div class="provs">Single-provider detail: <a href="/${a.slug}">${escHtml(a.name)}</a> · <a href="/${b.slug}">${escHtml(b.name)}</a></div>
+${related ? `<div class="provs">More comparisons: ${related}</div>` : ""}
+<a href="/">LimitWatch home</a> · <a href="https://github.com/tsouth89/limitwatch" rel="noopener">Source &amp; raw data</a> · open data, AI-built.
+</footer>
+</div>
+</body>
+</html>
+`;
+};
+
 let html = readFileSync(join(root, "site", "index.html"), "utf8");
 html = replaceBlock(html, "stats", renderStats(latest));
 html = replaceBlock(html, "latest", renderLatest(latest));
 html = replaceBlock(html, "changelog", renderChangelog());
 html = replaceBlock(html, "providerlinks", providerPages.map((p) => `<a href="/${p.slug}">${escHtml(p.name)}</a>`).join(" · "));
+html = replaceBlock(html, "comparelinks", popularComparisons.map((c) => `<a href="/${c.slug}">${escHtml(c.a.name)} vs ${escHtml(c.b.name)}</a>`).join(" · "));
 writeFileSync(join(root, "site", "index.html"), html);
 
 for (const page of providerPages) writeFileSync(join(root, "site", `${page.slug}.html`), providerPageHtml(page));
+for (const c of comparisons) writeFileSync(join(root, "site", `${c.slug}.html`), comparePageHtml(c));
 
 const latestMod = out.generated_at.slice(0, 10);
 writeFileSync(join(root, "site", "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
 const sitemapUrls = [
   { loc: `${siteUrl}/`, priority: "1.0", changefreq: "daily" },
   ...providerPages.map((p) => ({ loc: `${siteUrl}/${p.slug}`, priority: "0.8", changefreq: "weekly" })),
+  ...comparisons.map((c) => ({ loc: `${siteUrl}/${c.slug}`, priority: "0.6", changefreq: "weekly" })),
 ];
 writeFileSync(join(root, "site", "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
@@ -511,4 +636,4 @@ const rssItems = out.changes.slice(0, 25).map((c) => {
 }).join("\n");
 writeFileSync(join(root, "site", "changes.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0">\n<channel>\n  <title>LimitWatch changes</title>\n  <link>${siteUrl}/</link>\n  <description>Recent AI plan limit and price changes tracked by LimitWatch.</description>\n  <lastBuildDate>${new Date(out.generated_at).toUTCString()}</lastBuildDate>\n${rssItems}\n</channel>\n</rss>\n`);
 
-console.log(`built site/data.json + prerendered HTML/RSS/sitemap + ${providerPages.length} provider page(s) — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${radar.length} radar item(s), ${dataWarnings.length} warning(s)`);
+console.log(`built site/data.json + prerendered HTML/RSS/sitemap + ${providerPages.length} provider page(s) + ${comparisons.length} comparison page(s) — ${snapshots.length} snapshot(s), ${events.length} event(s), ${collapsed.length} change(s), ${usageReports.length} usage report(s), ${radar.length} radar item(s), ${dataWarnings.length} warning(s)`);

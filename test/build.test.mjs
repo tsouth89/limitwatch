@@ -26,7 +26,8 @@ const MARKED_HTML =
   '<div id="stats"><!-- BUILD:stats:start --><!-- BUILD:stats:end --></div>' +
   '<div id="latest"><!-- BUILD:latest:start --><!-- BUILD:latest:end --></div>' +
   '<div id="changelog"><!-- BUILD:changelog:start --><!-- BUILD:changelog:end --></div>' +
-  '<footer><!-- BUILD:providerlinks:start --><!-- BUILD:providerlinks:end --></footer>' +
+  '<footer><!-- BUILD:providerlinks:start --><!-- BUILD:providerlinks:end -->' +
+  '<!-- BUILD:comparelinks:start --><!-- BUILD:comparelinks:end --></footer>' +
   "</body></html>";
 
 // Build a temp root with data/snapshots + site/index.html, optionally events/change-dates files.
@@ -205,6 +206,38 @@ test("generates per-provider pages, links them from the footer, and lists them i
     assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/<\/loc>/);
     assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/claude<\/loc>/);
     assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/chatgpt<\/loc>/);
+  } finally {
+    cleanup(root);
+  }
+});
+
+// ---- pairwise comparison pages ---------------------------------------------
+test("generates X-vs-Y comparison pages with both providers, cross-links, and sitemap entries", () => {
+  const s1 = snap("2026-01-01", [
+    entry({ provider: "Anthropic", plan: "Pro", price_usd: 20, limits: [lim({ value: 45, window: "5h" })] }),
+    entry({ provider: "OpenAI", plan: "Plus", price_usd: 20, limits: [lim({ value: 160, window: "3h" })] }),
+  ]);
+  const root = setupRoot({ snapshots: [s1] });
+  try {
+    runBuild(root);
+
+    // One page per provider pair, named by slug (providers are name-sorted: Anthropic before OpenAI).
+    const vs = readFile(root, "claude-vs-chatgpt.html");
+    assert.match(vs, /<link rel="canonical" href="https:\/\/limitwatch\.southforgeai\.com\/claude-vs-chatgpt">/);
+    assert.match(vs, /Anthropic vs OpenAI/, "title/heading names both providers");
+    // Combined table carries plans from BOTH providers.
+    assert.match(vs, /<strong>Pro<\/strong>/);
+    assert.match(vs, /<strong>Plus<\/strong>/);
+    // Cross-links back to each single-provider page.
+    assert.match(vs, /href="\/claude"/);
+    assert.match(vs, /href="\/chatgpt"/);
+    assert.match(vs, /application\/ld\+json/, "should embed JSON-LD");
+
+    // Homepage surfaces the popular comparison and the sitemap lists the pair URL.
+    const html = readFile(root, "index.html");
+    assert.match(html, /<!-- BUILD:comparelinks:start -->[\s\S]*href="\/claude-vs-chatgpt"[\s\S]*<!-- BUILD:comparelinks:end -->/);
+    const sitemap = readFile(root, "sitemap.xml");
+    assert.match(sitemap, /<loc>https:\/\/limitwatch\.southforgeai\.com\/claude-vs-chatgpt<\/loc>/);
   } finally {
     cleanup(root);
   }
