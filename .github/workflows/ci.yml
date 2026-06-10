@@ -1,0 +1,34 @@
+name: ci
+
+# Runs the test suite and a full build on every push and PR so a broken snapshot, schema
+# violation, or build regression is caught BEFORE Cloudflare Pages deploys it. Tests and build
+# are pure Node (no runtime deps), so we skip install scripts to avoid the heavy patchright
+# browser download — nothing here drives a browser.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install deps (skip browser download)
+        run: npm ci --ignore-scripts
+
+      - name: Test
+        run: npm test
+
+      - name: Build (verify snapshots + prerender succeed)
+        run: npm run build
