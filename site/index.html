@@ -631,6 +631,14 @@
       const w = window ? ` / ${winShort(window)}` : "";
       return value == null ? `${unit}${w}` : `${fmt(value)} ${unit}${w}`;
     };
+    // Sanitize any URL before it lands in an href="". Radar/event sources can originate from
+    // scraped, unverified upstream feeds (discover.mjs), so a link could carry a quote that breaks
+    // out of the attribute or a javascript:/data: scheme. Allow only http(s); escape the rest.
+    const safeUrl = (u) => {
+      const s = String(u ?? "").trim();
+      if (!/^https?:\/\//i.test(s)) return "#";
+      return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    };
     const keyParts = (k) => k.split("|"); // provider|product|plan|surface|unit|window|model
     // Display name only — the data key stays the raw provider so filtering/grouping/changelog are
     // untouched. Some providers are better known by their product (GitHub's coding plans = Copilot).
@@ -758,7 +766,7 @@
         const model = l.model ? ` <span class="meta">(${l.model})</span>` : "";
         const basis = l.basis && l.basis !== "published" ? ` <span class="meta">· ${l.basis}</span>` : "";
         const altSrc = l.source && l.source !== e.source
-          ? ` <a href="${l.source}" target="_blank" rel="noopener" class="meta">src${l.as_of ? " " + l.as_of : ""}</a>` : "";
+          ? ` <a href="${safeUrl(l.source)}" target="_blank" rel="noopener" class="meta">src${l.as_of ? " " + l.as_of : ""}</a>` : "";
         const tip = esc(l.quote ?? e.quote);
         return `<span class="q" data-tip="${tip}">${unitLabel(l)}${win}${credWin}${model}</span>${basis}${altSrc}`;
       }).join("<br>");
@@ -790,7 +798,7 @@
           `<td class="num" data-label="Price / mo">$${e.price_usd}</td>` +
           `<td data-label="Limits">${limitCell(e)}</td>` +
           `<td data-label="Confidence"><span class="badge ${e.confidence}">${e.confidence}</span></td>` +
-          `<td data-label="Source"><a href="${e.source}" target="_blank" rel="noopener">src</a> <span class="meta">${e.verified_on}</span></td>` +
+          `<td data-label="Source"><a href="${safeUrl(e.source)}" target="_blank" rel="noopener">src</a> <span class="meta">${e.verified_on}</span></td>` +
           `</tr>`;
       };
       const groupBlock = (title, entries, showProvider) =>
@@ -1198,7 +1206,7 @@
             ? `<strong>${prov} ${plan}</strong> plan added <span class="meta">(usage unpublished)</span>`
             : `<strong>${prov} ${plan}</strong> ${niceLimit(c.to, unit, window)}`;
           else txt = `<strong>${prov} ${plan}</strong> ${niceLimit(null, unit, window)} removed`;
-          return `<div class="clrow">${dateChip(c)} <span class="hk ${kind.cls}">${kind.k}</span> <span class="cltxt">${txt}</span> ${c.source ? `<a href="${c.source}" target="_blank" rel="noopener">src</a>` : ""}</div>`;
+          return `<div class="clrow">${dateChip(c)} <span class="hk ${kind.cls}">${kind.k}</span> <span class="cltxt">${txt}</span> ${c.source ? `<a href="${safeUrl(c.source)}" target="_blank" rel="noopener">src</a>` : ""}</div>`;
         };
         const COLLAPSED = 8;
         let expanded = false;
@@ -1323,7 +1331,7 @@
           const autoBadge = e.auto ? ` <span class="badge announced q" data-tip="Auto-published by the discovery bot. The quote was verified to appear verbatim in the cited source before going live; the classification (kind/dates/plans) is machine-made — correct or remove via data/auto-events.json.">auto</span>` : "";
           return `<div class="event">${status}<div class="ebody">
             <div class="etitle">${e.title} <span class="q" data-tip="${esc(e.quote)}">ⓘ</span>${autoBadge}</div>
-            <div class="emeta">${scope} · ${count} ${e.source ? `· <a href="${e.source}" target="_blank" rel="noopener">src</a>` : ""}</div>
+            <div class="emeta">${scope} · ${count} ${e.source ? `· <a href="${safeUrl(e.source)}" target="_blank" rel="noopener">src</a>` : ""}</div>
           </div></div>`;
         }).join("");
 
@@ -1338,7 +1346,7 @@
         items.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
         document.getElementById("highlightsBody").innerHTML = items.length
           ? `<p class="meta" style="margin:.85rem 0 .35rem;font-weight:700;color:var(--ink)">Recent highlights</p>` +
-            items.map((i) => `<div class="hlrow">${dateChip(i)} <span class="hk ${i.cls}">${i.k}</span> <span>${i.html}</span> ${i.source ? `<a href="${i.source}" target="_blank" rel="noopener">src</a>` : ""}</div>`).join("")
+            items.map((i) => `<div class="hlrow">${dateChip(i)} <span class="hk ${i.cls}">${i.k}</span> <span>${i.html}</span> ${i.source ? `<a href="${safeUrl(i.source)}" target="_blank" rel="noopener">src</a>` : ""}</div>`).join("")
           : "";
 
         if (evs.length || items.length) {
@@ -1357,7 +1365,7 @@
         document.getElementById("radarBody").innerHTML = radar.map((n) => `
           <div class="radrow">
             <div class="radmeta">${provMark(n.provider)} <strong>${provName(n.provider)}</strong> <span class="meta">· ${fmtDay(n.at)}</span> <span class="badge announced">${kindBadge[n.kind] ?? "flagged"}</span></div>
-            <div class="radtitle"><a href="${n.link}" target="_blank" rel="noopener">${esc3(n.title)}</a></div>
+            <div class="radtitle"><a href="${safeUrl(n.link)}" target="_blank" rel="noopener">${esc3(n.title)}</a></div>
             ${n.why ? `<div class="radwhy meta">${esc3(n.why)}</div>` : ""}
           </div>`).join("");
         // Radar now lives inside the What's new card as a subsection.
