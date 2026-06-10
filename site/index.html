@@ -294,6 +294,17 @@
     .bl-v { font-size: 14.5px; color: var(--ink); line-height: 1.45; }
     .bl-note { font-size: 13px; color: var(--muted); margin: .9rem 0 0; }
 
+    /* "Find your plan" picker */
+    .picker-controls { display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; margin: .4rem 0 1.1rem; }
+    .pgrp { display: flex; flex-direction: column; gap: .4rem; }
+    .pgrp .plabel { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-2); font-weight: 800; }
+    .pk-row { display: flex; align-items: center; gap: .8rem; padding: .65rem .2rem; border-bottom: 1px solid var(--line-soft); }
+    .pk-row:last-child { border-bottom: 0; }
+    .pk-rank { flex: none; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue-ink); font-weight: 800; font-size: 13px; }
+    .pk-body { flex: 1; }
+    .pk-name { font-weight: 700; }
+    .pk-meta { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: .1rem; }
+
     /* Provider logo */
     .pmark { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; font-size: 13px; font-weight: 800; vertical-align: -6px; margin-right: .45rem; background: var(--paper); border: 1px solid var(--line); overflow: hidden; }
     .pmark img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 1px; }
@@ -428,6 +439,37 @@
     <div class="card bottomline" id="bottomLine" style="display:none">
       <p class="eyebrow">Bottom line</p>
       <div id="bottomLineBody"></div>
+    </div>
+
+    <div class="card" id="picker">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Find your plan</p>
+          <h2>Which plan fits how you use AI</h2>
+          <p class="meta">Pick how you use it and your budget. We rank plans by estimated value for that use — the same normalized tokens/day/$ as the cross-provider estimate, with the assumptions shown. An estimate, never passed off as a hard cap.</p>
+        </div>
+      </div>
+      <div class="picker-controls">
+        <div class="pgrp">
+          <span class="plabel">I mostly do</span>
+          <div class="chips" id="pkUse">
+            <span class="chip active" data-use="chat" data-tpm="400">Casual chat</span>
+            <span class="chip" data-use="coding" data-tpm="1000">Heavy coding</span>
+            <span class="chip" data-use="research" data-tpm="1500">Research / long docs</span>
+          </div>
+        </div>
+        <div class="pgrp">
+          <span class="plabel">Budget / mo</span>
+          <div class="chips" id="pkBudget">
+            <span class="chip" data-max="20">≤ $20</span>
+            <span class="chip" data-max="50">≤ $50</span>
+            <span class="chip" data-max="100">≤ $100</span>
+            <span class="chip active" data-max="0">Any</span>
+          </div>
+        </div>
+      </div>
+      <div id="pkResults"></div>
+      <p class="meta" id="pkNote"></p>
     </div>
 
     <div class="card" id="whatsnew" style="display:none">
@@ -1040,11 +1082,10 @@
       const cpmEl = document.getElementById("cpm"), cpmVal = document.getElementById("cpmVal");
       const crossBody = document.querySelector("#crossTable tbody");
       const crossNote = document.getElementById("crossNote");
-      function renderCross() {
-        const tpm = Number(tpmEl.value); tpmVal.textContent = tpm;
-        const cpm = Number(cpmEl.value); cpmVal.textContent = cpm;
-        // Ceiling/estimate rows (the like-for-like "max allowed" comparison) and measured rows
-        // (realized usage, a different basis) are kept apart so they aren't ranked as equals.
+      // Shared normalization: collapse each plan to estimated tokens/day at the given assumptions and
+      // rank by tokens/day/$. Ceiling/estimate rows and measured rows (a different basis) stay apart so
+      // they aren't ranked as equals. Reused by the cross-provider table AND the "find your plan" picker.
+      function computeCross(tpm, cpm) {
         const out = [], measured = [];
         const bind = {};  // collapse multi-window message/token caps to the tightest per plan+model
         for (const e of latest.entries) {
@@ -1069,7 +1110,12 @@
         }
         out.push(...Object.values(bind));
         const withPD = (a) => a.map((x) => ({ ...x, perDollar: x.tokPerDay / x.price })).sort((a, b) => b.perDollar - a.perDollar);
-        const ranked = withPD(out), mr = withPD(measured);
+        return { ranked: withPD(out), mr: withPD(measured) };
+      }
+      function renderCross() {
+        const tpm = Number(tpmEl.value); tpmVal.textContent = tpm;
+        const cpm = Number(cpmEl.value); cpmVal.textContent = cpm;
+        const { ranked, mr } = computeCross(tpm, cpm);
         const tagHtml = (k) =>
           k === "measured" ? ' <span class="badge crowdsourced">measured</span>' :
           k === "credit-est" ? ' <span class="badge announced">credit · est</span>' :
@@ -1090,6 +1136,48 @@
       tpmEl.addEventListener("input", renderCross);
       cpmEl.addEventListener("input", renderCross);
       renderCross();
+
+      // ---- "Find your plan" picker: turns the normalized estimate into a direct answer ----
+      // Use-case sets the tokens-per-message assumption (light chat vs token-heavy coding/research),
+      // budget caps the price; we surface the top few plans by estimated tokens/day/$. Same math as
+      // the cross-provider table, just framed as a recommendation with the assumptions shown.
+      (() => {
+        const useEl = document.getElementById("pkUse"), budEl = document.getElementById("pkBudget");
+        const resEl = document.getElementById("pkResults"), noteEl = document.getElementById("pkNote");
+        if (!useEl || !resEl) return;
+        const USE_LABEL = { chat: "casual chat", coding: "heavy coding", research: "research / long docs" };
+        let pkTpm = 400, pkUse = "chat", pkMax = Infinity;
+        const render = () => {
+          const cpm = Number(cpmEl.value) || 5;
+          const { ranked } = computeCross(pkTpm, cpm);
+          const elig = ranked.filter((x) => x.price > 0 && x.price <= pkMax);
+          if (!elig.length) {
+            resEl.innerHTML = `<p class="empty">No rankable plan under that budget. Multiplier-only plans (e.g. "5× Pro") can't be scored — raise the budget or see the <a href="#compare">full comparison</a>.</p>`;
+            noteEl.innerHTML = ""; return;
+          }
+          resEl.innerHTML = elig.slice(0, 3).map((x, i) => {
+            const best = i === 0 ? ` <span class="bestpill">Best value</span>` : "";
+            const msgDay = fmt(Math.round(x.tokPerDay / pkTpm));
+            return `<div class="pk-row"><div class="pk-rank">${i + 1}</div>` +
+              `<div class="pk-body"><div class="pk-name">${provMark(x.prov)}${x.name}${best}</div>` +
+              `<div class="pk-meta">$${x.price}/mo · ~${fmt(Math.round(x.tokPerDay))} tokens/day (≈ ${msgDay} msg/day) · <strong>${fmt(Math.round(x.perDollar))}</strong> tokens/day/$</div></div></div>`;
+          }).join("");
+          noteEl.innerHTML = `Ranked by estimated tokens/day per $ for <strong>${USE_LABEL[pkUse]}</strong> (≈ ${pkTpm} tokens/message)${pkMax !== Infinity ? ` under $${pkMax}/mo` : ""}. An estimate with assumptions, not a hard cap; multiplier-only plans can't be scored. Full method in the <a href="#compare">cross-provider estimate</a>.`;
+        };
+        useEl.addEventListener("click", (ev) => {
+          const c = ev.target.closest(".chip"); if (!c) return;
+          pkTpm = Number(c.dataset.tpm); pkUse = c.dataset.use;
+          [...useEl.children].forEach((ch) => ch.classList.toggle("active", ch === c));
+          render();
+        });
+        budEl.addEventListener("click", (ev) => {
+          const c = ev.target.closest(".chip"); if (!c) return;
+          pkMax = Number(c.dataset.max) || Infinity;
+          [...budEl.children].forEach((ch) => ch.classList.toggle("active", ch === c));
+          render();
+        });
+        render();
+      })();
 
       // ---- Measured usage (real accounts) — turns a $ credit into observed tokens ----
       const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : fmt(n);
