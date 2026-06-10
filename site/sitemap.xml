@@ -1,223 +1,223 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://limitwatch.southforgeai.com/</loc>
+    <loc>https://limitwatch.dev/</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude</loc>
+    <loc>https://limitwatch.dev/claude</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/cursor</loc>
+    <loc>https://limitwatch.dev/cursor</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/copilot</loc>
+    <loc>https://limitwatch.dev/copilot</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/gemini</loc>
+    <loc>https://limitwatch.dev/gemini</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/chatgpt</loc>
+    <loc>https://limitwatch.dev/chatgpt</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/perplexity</loc>
+    <loc>https://limitwatch.dev/perplexity</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/replit</loc>
+    <loc>https://limitwatch.dev/replit</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/grok</loc>
+    <loc>https://limitwatch.dev/grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude-vs-cursor</loc>
+    <loc>https://limitwatch.dev/claude-vs-cursor</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude-vs-copilot</loc>
+    <loc>https://limitwatch.dev/claude-vs-copilot</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude-vs-gemini</loc>
+    <loc>https://limitwatch.dev/claude-vs-gemini</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude-vs-chatgpt</loc>
+    <loc>https://limitwatch.dev/claude-vs-chatgpt</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude-vs-perplexity</loc>
+    <loc>https://limitwatch.dev/claude-vs-perplexity</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude-vs-replit</loc>
+    <loc>https://limitwatch.dev/claude-vs-replit</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/claude-vs-grok</loc>
+    <loc>https://limitwatch.dev/claude-vs-grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/cursor-vs-copilot</loc>
+    <loc>https://limitwatch.dev/cursor-vs-copilot</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/cursor-vs-gemini</loc>
+    <loc>https://limitwatch.dev/cursor-vs-gemini</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/cursor-vs-chatgpt</loc>
+    <loc>https://limitwatch.dev/cursor-vs-chatgpt</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/cursor-vs-perplexity</loc>
+    <loc>https://limitwatch.dev/cursor-vs-perplexity</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/cursor-vs-replit</loc>
+    <loc>https://limitwatch.dev/cursor-vs-replit</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/cursor-vs-grok</loc>
+    <loc>https://limitwatch.dev/cursor-vs-grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/copilot-vs-gemini</loc>
+    <loc>https://limitwatch.dev/copilot-vs-gemini</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/copilot-vs-chatgpt</loc>
+    <loc>https://limitwatch.dev/copilot-vs-chatgpt</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/copilot-vs-perplexity</loc>
+    <loc>https://limitwatch.dev/copilot-vs-perplexity</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/copilot-vs-replit</loc>
+    <loc>https://limitwatch.dev/copilot-vs-replit</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/copilot-vs-grok</loc>
+    <loc>https://limitwatch.dev/copilot-vs-grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/gemini-vs-chatgpt</loc>
+    <loc>https://limitwatch.dev/gemini-vs-chatgpt</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/gemini-vs-perplexity</loc>
+    <loc>https://limitwatch.dev/gemini-vs-perplexity</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/gemini-vs-replit</loc>
+    <loc>https://limitwatch.dev/gemini-vs-replit</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/gemini-vs-grok</loc>
+    <loc>https://limitwatch.dev/gemini-vs-grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/chatgpt-vs-perplexity</loc>
+    <loc>https://limitwatch.dev/chatgpt-vs-perplexity</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/chatgpt-vs-replit</loc>
+    <loc>https://limitwatch.dev/chatgpt-vs-replit</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/chatgpt-vs-grok</loc>
+    <loc>https://limitwatch.dev/chatgpt-vs-grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/perplexity-vs-replit</loc>
+    <loc>https://limitwatch.dev/perplexity-vs-replit</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/perplexity-vs-grok</loc>
+    <loc>https://limitwatch.dev/perplexity-vs-grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://limitwatch.southforgeai.com/replit-vs-grok</loc>
+    <loc>https://limitwatch.dev/replit-vs-grok</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>

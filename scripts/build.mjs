@@ -9,7 +9,7 @@ import { dirname, join } from "node:path";
 // dir; unset in normal use, so production behavior is unchanged.
 const root = process.env.LIMITWATCH_ROOT || join(dirname(fileURLToPath(import.meta.url)), "..");
 const snapDir = join(root, "data", "snapshots");
-const siteUrl = "https://limitwatch.southforgeai.com";
+const siteUrl = "https://limitwatch.dev";
 
 const REQUIRED = ["provider", "product", "plan", "confidence", "quote", "source", "as_of", "verified_on"];
 const TIERS = ["official", "announced", "community", "crowdsourced"];

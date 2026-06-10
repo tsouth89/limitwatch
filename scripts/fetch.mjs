@@ -35,7 +35,7 @@ const hash = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
 // Plain HTTP fetch → visible text, or null on non-OK.
 async function httpText(url) {
   const res = await fetch(url, {
-    headers: { "user-agent": "LimitWatch/0.1 (+https://limitwatch.southforgeai.com)" },
+    headers: { "user-agent": "LimitWatch/0.1 (+https://limitwatch.dev)" },
     redirect: "follow",
   });
   if (!res.ok) return { text: null, note: `HTTP ${res.status}` };

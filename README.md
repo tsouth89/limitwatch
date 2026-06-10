@@ -169,13 +169,13 @@ Each snapshot is `{ "date": "YYYY-MM-DD", "entries": [ ... ] }`. See `data/schem
 
 ## Deploy (Cloudflare Pages)
 
-Static site, no server. Hosted on Cloudflare Pages at `limitwatch.southforgeai.com`.
+Static site, no server. Hosted on Cloudflare Pages at `limitwatch.dev`.
 
 Dashboard setup (one time):
 1. Push this repo to GitHub.
 2. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → pick the repo.
 3. Build command: `npm run build` · Build output directory: `site` · root: repo root.
-4. Deploy. Then Custom domains → add `limitwatch.southforgeai.com` (DNS is already on Cloudflare, so it auto-wires).
+4. Deploy. Then Custom domains → add `limitwatch.dev` (DNS is already on Cloudflare, so it auto-wires).
 
 CLI alternative (no GitHub needed):
 ```
