@@ -1544,7 +1544,7 @@
         const id = a.getAttribute("href").slice(1);
         if (tabSet.has(id)) { e.preventDefault(); showTab(id, true); }
       });
-      const initial = tabs.find((t) => t.id === location.hash.slice(1)) || tabs.find((t) => t.id === "limits") || tabs[0];
+      const initial = tabs.find((t) => t.id === location.hash.slice(1)) || tabs.find((t) => t.id === "whatsnew") || tabs.find((t) => t.id === "limits") || tabs[0];
       if (initial) showTab(initial.id, false);
     }).catch((err) => {
       // Static site, single data source: if data.json fails to load or parse, say so instead of
