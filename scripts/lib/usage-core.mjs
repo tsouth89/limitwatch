@@ -24,6 +24,18 @@ export const PRICES = {
 export const priceFor = (m) =>
   PRICES[m] || PRICES[Object.keys(PRICES).find((k) => m?.startsWith(k))] || null;
 
+// API-equivalent dollar cost of one assistant turn's token usage, at PRICES list rates. The single
+// definition of the burn math (was inline in aggregate); an unknown/unpriced model returns 0 so it
+// never silently inflates a total. `usage` is the raw transcript `message.usage` object.
+export function costUsd(usage, model) {
+  const pr = priceFor(model);
+  if (!pr || !usage) return 0;
+  const cw5 = usage.cache_creation?.ephemeral_5m_input_tokens ?? 0;
+  const cw1h = usage.cache_creation?.ephemeral_1h_input_tokens ?? 0;
+  return ((usage.input_tokens || 0) * pr.in + (usage.output_tokens || 0) * pr.out
+    + cw5 * pr.cw5 + cw1h * pr.cw1h + (usage.cache_read_input_tokens || 0) * pr.cr) / 1e6;
+}
+
 export const projRoot = join(homedir(), ".claude", "projects");
 
 export function walk(dir) {
@@ -71,8 +83,7 @@ export function aggregate({ since, until = new Date(), match, exclude }) {
       b.cw5 += cw5; b.cw1h += cw1h;
       b.cr += u.cache_read_input_tokens || 0;
       b.turns += 1;
-      const pr = priceFor(m);
-      const usd = pr ? ((u.input_tokens||0)*pr.in + (u.output_tokens||0)*pr.out + cw5*pr.cw5 + cw1h*pr.cw1h + (u.cache_read_input_tokens||0)*pr.cr) / 1e6 : 0;
+      const usd = costUsd(u, m);
       b.usd += usd;
       const pj = (byProject[project] ||= { turns: 0, usd: 0 });
       pj.turns += 1; pj.usd += usd;
