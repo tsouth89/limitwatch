@@ -1,39 +1,19 @@
 # Cloudflare Pages response headers.
-# The page is a daily-changing dataset, so the HTML + data must always revalidate — otherwise a
-# fresh deploy keeps showing a stale copy on refresh (no-cache = "store but revalidate before use",
-# i.e. a conditional request that returns 304 when nothing changed, so it stays cheap).
+# HTML + data pages always revalidate (no-cache = store but check before use, returns 304 when
+# nothing changed). Static assets get a 1-day TTL; Cloudflare purges on every deploy anyway.
 
-/
+# Everything revalidates by default, plus security headers.
+/*
   Cache-Control: no-cache
-/index.html
-  Cache-Control: no-cache
-/data.json
-  Cache-Control: no-cache
-/robots.txt
-  Cache-Control: no-cache
-/sitemap.xml
-  Cache-Control: no-cache
-/changes.xml
-  Cache-Control: no-cache
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://cloudflareinsights.com; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
 
-# Rarely-changing assets can sit in cache for a day.
+# Rarely-changing assets cached for a day.
 /favicon.svg
   Cache-Control: public, max-age=86400
 /og.png
   Cache-Control: public, max-age=86400
 /icons/*
   Cache-Control: public, max-age=86400
-
-# Security headers for everything.
-# CSP note: the page is a single static file with all CSS/JS inline (plus inline onerror= handlers
-# on the favicon imgs), so 'unsafe-inline' is required for script/style — a per-request nonce isn't
-# possible with static Cloudflare Pages headers. CSP still earns its keep here: it blocks loading
-# ANY external script except the Cloudflare analytics beacon, forbids framing/object/base/form, and
-# constrains where data can be sent — shrinking the injection surface that safeUrl() already guards.
-# Allowed external origin: cloudflareinsights.com (analytics). Provider logos are now self-hosted
-# under /icons, so img-src no longer needs a third-party favicon host.
-/*
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  X-Frame-Options: DENY
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://cloudflareinsights.com; font-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'

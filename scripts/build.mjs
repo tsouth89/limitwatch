@@ -459,10 +459,13 @@ const providerPageHtml = ({ provider, name, slug }) => {
 <meta property="og:description" content="${escHtml(desc)}">
 <meta property="og:url" content="${escHtml(canonical)}">
 <meta property="og:image" content="${siteUrl}/og.png">
+<meta property="og:image:alt" content="LimitWatch - AI subscription limits tracker">
+<meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escHtml(title)}">
 <meta name="twitter:description" content="${escHtml(desc)}">
 <meta name="twitter:image" content="${siteUrl}/og.png">
+<meta name="twitter:image:alt" content="LimitWatch - AI subscription limits tracker">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 <script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
@@ -568,10 +571,13 @@ const comparePageHtml = ({ a, b, slug }) => {
 <meta property="og:description" content="${escHtml(desc)}">
 <meta property="og:url" content="${escHtml(canonical)}">
 <meta property="og:image" content="${siteUrl}/og.png">
+<meta property="og:image:alt" content="LimitWatch - AI subscription limits tracker">
+<meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escHtml(title)}">
 <meta name="twitter:description" content="${escHtml(desc)}">
 <meta name="twitter:image" content="${siteUrl}/og.png">
+<meta name="twitter:image:alt" content="LimitWatch - AI subscription limits tracker">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 <script type="application/ld+json">${JSON.stringify(breadcrumb)}</script>
@@ -612,6 +618,21 @@ html = replaceBlock(html, "latest", renderLatest(latest));
 html = replaceBlock(html, "changelog", renderChangelog());
 html = replaceBlock(html, "providerlinks", providerPages.map((p) => `<a href="/${p.slug}">${escHtml(p.name)}</a>`).join(" · "));
 html = replaceBlock(html, "comparelinks", popularComparisons.map((c) => `<a href="/${c.slug}">${escHtml(c.a.name)} vs ${escHtml(c.b.name)}</a>`).join(" · "));
+const websiteLD = { "@context": "https://schema.org", "@type": "WebSite", "name": "LimitWatch", "url": `${siteUrl}/` };
+const datasetLD = {
+  "@context": "https://schema.org", "@type": "Dataset",
+  "name": "LimitWatch: AI subscription limits over time",
+  "description": "Source-linked, dated snapshots of AI subscription plans, prices, and usage limits across providers (Claude, ChatGPT, Gemini, Grok, Perplexity, Cursor, Copilot, Replit), tracking how limits drift over time.",
+  "url": `${siteUrl}/`,
+  "keywords": ["AI subscription limits", "Claude", "ChatGPT", "Gemini", "rate limits", "usage caps", "pricing"],
+  "creator": { "@type": "Organization", "name": "SouthForge AI" },
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "dateModified": latest.date,
+};
+html = replaceBlock(html, "jsonld",
+  `<script type="application/ld+json">${JSON.stringify(websiteLD)}</script>` +
+  `<script type="application/ld+json">${JSON.stringify(datasetLD)}</script>`);
 writeFileSync(join(root, "site", "index.html"), html);
 
 for (const page of providerPages) writeFileSync(join(root, "site", `${page.slug}.html`), providerPageHtml(page));
@@ -620,13 +641,13 @@ for (const c of comparisons) writeFileSync(join(root, "site", `${c.slug}.html`),
 const latestMod = out.generated_at.slice(0, 10);
 writeFileSync(join(root, "site", "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${siteUrl}/sitemap.xml\n`);
 const sitemapUrls = [
-  { loc: `${siteUrl}/`, priority: "1.0", changefreq: "daily" },
-  ...providerPages.map((p) => ({ loc: `${siteUrl}/${p.slug}`, priority: "0.8", changefreq: "weekly" })),
-  ...comparisons.map((c) => ({ loc: `${siteUrl}/${c.slug}`, priority: "0.6", changefreq: "weekly" })),
+  { loc: `${siteUrl}/`, priority: "1.0", changefreq: "daily", lastmod: latestMod },
+  ...providerPages.map((p) => ({ loc: `${siteUrl}/${p.slug}`, priority: "0.8", changefreq: "weekly", lastmod: latest.date })),
+  ...comparisons.map((c) => ({ loc: `${siteUrl}/${c.slug}`, priority: "0.6", changefreq: "weekly", lastmod: latest.date })),
 ];
 writeFileSync(join(root, "site", "sitemap.xml"),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  sitemapUrls.map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${latestMod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`).join("\n") +
+  sitemapUrls.map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`).join("\n") +
   `\n</urlset>\n`);
 const rssItems = out.changes.slice(0, 25).map((c) => {
   const title = changeText(c);
