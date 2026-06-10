@@ -279,15 +279,16 @@ const niceLimit = (value, unit, window) => {
   return value == null ? `${unit}${w}` : `${fmt(value)} ${unit}${w}`;
 };
 const provName = (p) => ({ GitHub: "GitHub Copilot" }[p] ?? p);
+// Self-hosted (site/icons/) so the prerendered provider pages ping no third party — was google.com/s2.
 const providerLogos = {
-  OpenAI: "https://www.google.com/s2/favicons?domain=openai.com&sz=64",
-  Anthropic: "https://www.google.com/s2/favicons?domain=anthropic.com&sz=64",
-  Google: "https://www.google.com/s2/favicons?domain=gemini.google.com&sz=64",
-  xAI: "https://www.google.com/s2/favicons?domain=x.ai&sz=64",
-  Perplexity: "https://www.google.com/s2/favicons?domain=perplexity.ai&sz=64",
-  Cursor: "https://www.google.com/s2/favicons?domain=cursor.com&sz=64",
-  GitHub: "https://www.google.com/s2/favicons?domain=github.com&sz=64",
-  Replit: "https://www.google.com/s2/favicons?domain=replit.com&sz=64",
+  OpenAI: "/icons/openai.png",
+  Anthropic: "/icons/anthropic.png",
+  Google: "/icons/google.png",
+  xAI: "/icons/xai.png",
+  Perplexity: "/icons/perplexity.png",
+  Cursor: "/icons/cursor.png",
+  GitHub: "/icons/github.png",
+  Replit: "/icons/replit.png",
 };
 const provMark = (p) => providerLogos[p]
   ? `<span class="pmark" title="${escHtml(provName(p))}"><img src="${escHtml(providerLogos[p])}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">${escHtml((p ?? "?")[0])}</span></span>`
