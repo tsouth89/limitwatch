@@ -945,16 +945,16 @@
         if (!c) return;
         if (c.dataset.all !== undefined) active.clear();
         else { const p = c.dataset.prov; active.has(p) ? active.delete(p) : active.add(p); }
-        renderChips(); renderLatest();
+        renderChips(); renderLatest(); syncUrl();
       });
       document.getElementById("groupBy").addEventListener("click", (ev) => {
         const c = ev.target.closest(".chip"); if (!c) return;
         groupMode = c.dataset.group;
         [...ev.currentTarget.children].forEach((ch) => ch.classList.toggle("active", ch === c));
-        renderLatest();
+        renderLatest(); syncUrl();
       });
       document.getElementById("search").addEventListener("input", (ev) => {
-        query = ev.target.value.trim().toLowerCase(); renderLatest();
+        query = ev.target.value.trim().toLowerCase(); renderLatest(); syncUrl();
       });
       // Click a sortable column header in the flat view to sort (toggle direction on repeat).
       latestEl.addEventListener("click", (ev) => {
@@ -963,6 +963,28 @@
         if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = 1; }
         renderLatest();
       });
+      // Make the Limits filter state shareable: reflect search / provider / grouping into the URL
+      // query string (and back), so "Anthropic + OpenAI, by price" is a linkable, tweetable URL.
+      const syncUrl = () => {
+        const params = new URLSearchParams();
+        if (query) params.set("q", query);
+        if (active.size) params.set("p", [...active].join(","));
+        if (groupMode !== "flat") params.set("g", groupMode);
+        const qs = params.toString();
+        history.replaceState(null, "", (qs ? "?" + qs : location.pathname) + location.hash);
+      };
+      (() => {
+        const params = new URLSearchParams(location.search);
+        const q = params.get("q");
+        if (q) { query = q.toLowerCase(); document.getElementById("search").value = q; }
+        const p = params.get("p");
+        if (p) for (const x of p.split(",")) if (providers.includes(x)) active.add(x);
+        const g = params.get("g");
+        if (g === "provider" || g === "price") {
+          groupMode = g;
+          document.querySelectorAll("#groupBy .chip").forEach((ch) => ch.classList.toggle("active", ch.dataset.group === g));
+        }
+      })();
       renderChips();
       renderLatest();
 
@@ -1519,7 +1541,7 @@
           t.nav.classList.toggle("active", t.id === id);
         });
         if (scroll) document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-        history.replaceState(null, "", "#" + id);
+        history.replaceState(null, "", (location.search || "") + "#" + id); // keep filter params in the URL
       };
       tabs.forEach((t) => t.nav.addEventListener("click", (e) => { e.preventDefault(); showTab(t.id, true); }));
       const tabSet = new Set(tabs.map((t) => t.id));
