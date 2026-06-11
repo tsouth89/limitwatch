@@ -1,10 +1,9 @@
 name: weekly-source-watch
 
-# Checks the HTTP-fetchable official/primary pages for changes and opens an issue if anything
-# moved. OpenAI pages are Cloudflare-protected and need a headed desktop browser, so they are
-# NOT run here. The local PC scheduled task (scripts/watch-and-report.ps1) still covers ALL
-# sources incl. OpenAI; this workflow runs the HTTP-only subset automatically every week so
-# drift detection keeps working even when the PC is off, and can also be dispatched manually.
+# Checks all monitored pages for changes and opens an issue if anything moved.
+# HTTP sources run via plain fetch. Cloudflare-protected pages (e.g. OpenAI) run
+# via headed patchright + Xvfb — Chrome gets a real X11 display and passes CF bot
+# detection the same way a local desktop session does (headless = 403).
 
 on:
   workflow_dispatch: {}
@@ -29,8 +28,20 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Run source watch (HTTP only)
-        run: node scripts/fetch.mjs --http-only --ci
+      - name: Install Chrome + Xvfb
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y google-chrome-stable xvfb
+
+      - name: Start virtual display
+        run: |
+          Xvfb :99 -screen 0 1280x800x24 &
+          sleep 1
+
+      - name: Run source watch (all sources)
+        env:
+          DISPLAY: ":99"
+        run: node scripts/fetch.mjs --ci
 
       - name: Open issue if pages changed
         if: hashFiles('data/_watch-summary.md') != ''
