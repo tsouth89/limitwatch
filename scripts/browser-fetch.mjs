@@ -26,7 +26,7 @@ const looksBlocked = (t) => {
 };
 
 // Returns { ok, text, status, note }
-export async function fetchRendered(url, { timeoutMs = 45000, headless = true } = {}) {
+export async function fetchRendered(url, { timeoutMs = 90000, headless = true } = {}) {
   const userDataDir = mkdtempSync(join(tmpdir(), "lw-chrome-"));
   let ctx;
   try {
