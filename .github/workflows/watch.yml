@@ -41,6 +41,10 @@ jobs:
       - name: Run source watch (all sources)
         env:
           DISPLAY: ":99"
+          # Optional residential proxy for Cloudflare-hard pages (e.g. openai.com/chatgpt/pricing/).
+          # First attempt goes direct (free); retries route through this proxy.
+          # Set repo secret BROWSER_PROXY=http://user:pass@host:port to enable.
+          BROWSER_PROXY: ${{ secrets.BROWSER_PROXY }}
         run: node scripts/fetch.mjs --ci
 
       - name: Open issue if pages changed

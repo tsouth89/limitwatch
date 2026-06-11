@@ -6,6 +6,10 @@
 //  - launchPersistentContext (a real profile) beats launch() — fewer headless tells.
 //  - do NOT set a custom user-agent or extra headers; that reintroduces leaks.
 //  - let the Cloudflare interstitial resolve, then read the real DOM text.
+//
+// Proxy fallback: set BROWSER_PROXY=http://user:pass@host:port (or socks5://...).
+// Used automatically on retry attempts so the first try goes direct (free) and
+// subsequent attempts route through a residential IP to bypass CF IP reputation.
 import { chromium } from "patchright";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -25,21 +29,21 @@ const looksBlocked = (t) => {
   return CF_MARKERS.some((m) => s.includes(m));
 };
 
-// Returns { ok, text, status, note }
-export async function fetchRendered(url, { timeoutMs = 90000, headless = true } = {}) {
+async function fetchOnce(url, { timeoutMs, headless, proxy }) {
   const userDataDir = mkdtempSync(join(tmpdir(), "lw-chrome-"));
+  const launchOpts = {
+    channel: "chrome",
+    headless,
+    viewport: { width: 1280, height: 800 },
+  };
+  if (proxy) launchOpts.proxy = { server: proxy };
   let ctx;
   try {
-    ctx = await chromium.launchPersistentContext(userDataDir, {
-      channel: "chrome", // use real Chrome if present — strongest fingerprint
-      headless,
-      viewport: { width: 1280, height: 800 },
-    });
+    ctx = await chromium.launchPersistentContext(userDataDir, launchOpts);
     const page = ctx.pages()[0] ?? (await ctx.newPage());
     const resp = await page.goto(url, { waitUntil: "domcontentloaded", timeout: timeoutMs });
     const status = resp?.status() ?? 0;
 
-    // Wait out the Cloudflare challenge: poll until markers clear or timeout.
     const deadline = Date.now() + timeoutMs;
     let text = await page.evaluate(() => document.body?.innerText ?? "");
     while (looksBlocked(text) && Date.now() < deadline) {
@@ -55,6 +59,23 @@ export async function fetchRendered(url, { timeoutMs = 90000, headless = true } 
   } finally {
     if (ctx) await ctx.close().catch(() => {});
   }
+}
+
+// Returns { ok, text, status, note }
+// Attempt 1: direct (no proxy). Attempt 2+: via BROWSER_PROXY if set.
+export async function fetchRendered(url, { timeoutMs = 90000, headless = true, retries = 2 } = {}) {
+  const proxy = process.env.BROWSER_PROXY || null;
+  let last;
+  for (let i = 0; i < retries; i++) {
+    const useProxy = i > 0 && proxy;
+    last = await fetchOnce(url, { timeoutMs, headless, proxy: useProxy ? proxy : null });
+    if (last.ok) return last;
+    if (i < retries - 1) {
+      const label = useProxy ? "proxy" : "direct";
+      console.error(`  [browser-fetch] attempt ${i + 1} failed (${label}): ${last.note} — retrying${proxy && !useProxy ? " via proxy" : ""}…`);
+    }
+  }
+  return last;
 }
 
 // CLI: node scripts/browser-fetch.mjs <url> [--headed]
