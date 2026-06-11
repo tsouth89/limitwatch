@@ -316,13 +316,16 @@ const renderLimitCell = (e) => e.limits.map((l) => {
   const basis = l.basis && l.basis !== "published" ? ` <span class="meta">· ${escHtml(l.basis)}</span>` : "";
   return `<span>${escHtml(unitLabel(l))}${escHtml(win)}${credWin}${model}</span>${basis}`;
 }).join("<br>");
-const renderLatest = (latest) => {
+const renderLatest = (latest, changes) => {
+  const cutoff90 = new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10);
+  const recentKeys = new Set((changes ?? []).filter((c) => c.date >= cutoff90).map((c) => c.key.split("|").slice(0, 3).join("|")));
   const rows = [...latest.entries].sort((a, b) =>
     a.price_usd - b.price_usd || provName(a.provider).localeCompare(provName(b.provider)) || a.plan.localeCompare(b.plan)
   ).map((e) => {
     const surf = e.surface ? ` <span class="meta">· ${escHtml(e.surface)}</span>` : "";
+    const changed = recentKeys.has(`${e.provider}|${e.product}|${e.plan}`) ? ` <span class="changed-chip">updated</span>` : "";
     return `<tr>` +
-      `<td class="cardtitle">${provMark(e.provider)}<span class="pname">${escHtml(provName(e.provider))}</span> <strong>${escHtml(e.plan)}</strong>${surf}</td>` +
+      `<td class="cardtitle">${provMark(e.provider)}<span class="pname">${escHtml(provName(e.provider))}</span> <strong>${escHtml(e.plan)}</strong>${surf}${changed}</td>` +
       `<td class="num" data-label="Price / mo">$${escHtml(e.price_usd)}</td>` +
       `<td data-label="Limits">${renderLimitCell(e)}</td>` +
       `<td data-label="Confidence"><span class="badge ${escHtml(e.confidence)}">${escHtml(e.confidence)}</span></td>` +
@@ -614,7 +617,7 @@ ${related ? `<div class="provs">More comparisons: ${related}</div>` : ""}
 
 let html = readFileSync(join(root, "site", "index.html"), "utf8");
 html = replaceBlock(html, "stats", renderStats(latest));
-html = replaceBlock(html, "latest", renderLatest(latest));
+html = replaceBlock(html, "latest", renderLatest(latest, out.changes));
 html = replaceBlock(html, "changelog", renderChangelog());
 html = replaceBlock(html, "providerlinks", providerPages.map((p) => `<a href="/${p.slug}">${escHtml(p.name)}</a>`).join(" · "));
 html = replaceBlock(html, "comparelinks", popularComparisons.map((c) => `<a href="/${c.slug}">${escHtml(c.a.name)} vs ${escHtml(c.b.name)}</a>`).join(" · "));
