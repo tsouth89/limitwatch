@@ -634,6 +634,14 @@
   </footer>
 
   <script>
+    // Analytics helper — backend-agnostic. Calls Cloudflare Web Analytics custom events
+    // (window.cfBeacon) and/or Vercel Analytics (window.va) if either is present. No-ops silently
+    // if neither is set up yet, so adding the analytics script later auto-activates tracking.
+    function track(name, props) {
+      try { if (window.cfBeacon?.sendEvent) window.cfBeacon.sendEvent(name, props || {}); } catch (_) {}
+      try { if (window.va) window.va("event", { name, data: props || {} }); } catch (_) {}
+    }
+
     // Theme toggle: flip the root attribute and remember the explicit choice. With no stored
     // choice we keep following the OS, so the live theme reacts to system changes too.
     (() => {
@@ -920,6 +928,10 @@
           }
         }
         latestEl.innerHTML = html;
+        // Track source link clicks — fires after each re-render since content is replaced.
+        latestEl.querySelectorAll('td[data-label="Source"] a').forEach((a) => {
+          a.addEventListener("click", () => track("source_click", { provider: a.closest("tr")?.querySelector(".pname")?.textContent, url: a.href }), { once: true });
+        });
       }
 
       const chipsEl = document.getElementById("provChips");
@@ -931,24 +943,29 @@
       chipsEl.addEventListener("click", (ev) => {
         const c = ev.target.closest(".chip");
         if (!c) return;
-        if (c.dataset.all !== undefined) active.clear();
-        else { const p = c.dataset.prov; active.has(p) ? active.delete(p) : active.add(p); }
+        if (c.dataset.all !== undefined) { active.clear(); track("filter_provider", { provider: "all" }); }
+        else { const p = c.dataset.prov; active.has(p) ? active.delete(p) : active.add(p); track("filter_provider", { provider: p, active: active.has(p) }); }
         renderChips(); renderLatest(); syncUrl();
       });
       document.getElementById("groupBy").addEventListener("click", (ev) => {
         const c = ev.target.closest(".chip"); if (!c) return;
         groupMode = c.dataset.group;
         [...ev.currentTarget.children].forEach((ch) => ch.classList.toggle("active", ch === c));
+        track("group_by", { mode: groupMode });
         renderLatest(); syncUrl();
       });
+      let searchTimer;
       document.getElementById("search").addEventListener("input", (ev) => {
         query = ev.target.value.trim().toLowerCase(); renderLatest(); syncUrl();
+        clearTimeout(searchTimer);
+        if (query.length >= 2) searchTimer = setTimeout(() => track("search", { query }), 600);
       });
       // Click a sortable column header in the flat view to sort (toggle direction on repeat).
       latestEl.addEventListener("click", (ev) => {
         const th = ev.target.closest("th.sortable"); if (!th) return;
         const k = th.dataset.sort;
         if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = 1; }
+        track("sort_table", { key: k, dir: sortDir > 0 ? "asc" : "desc" });
         renderLatest();
       });
       // Make the Limits filter state shareable: reflect search / provider / grouping into the URL
@@ -1179,6 +1196,7 @@
           const c = ev.target.closest(".chip"); if (!c) return;
           pkMax = Number(c.dataset.max) || Infinity;
           [...budEl.children].forEach((ch) => ch.classList.toggle("active", ch === c));
+          track("picker_budget", { max: pkMax === Infinity ? "any" : pkMax });
           render();
         });
         render();
@@ -1353,7 +1371,7 @@
             clBtn.textContent = expanded ? "Show less" : `Show all ${db.changes.length} changes`;
           }
         };
-        clBtn.addEventListener("click", () => { expanded = !expanded; render(); });
+        clBtn.addEventListener("click", () => { expanded = !expanded; track("changelog_expand", { expanded }); render(); });
         render();
       }
 
@@ -1526,7 +1544,7 @@
         if (scroll) document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
         history.replaceState(null, "", (location.search || "") + "#" + id); // keep filter params in the URL
       };
-      tabs.forEach((t) => t.nav.addEventListener("click", (e) => { e.preventDefault(); showTab(t.id, true); }));
+      tabs.forEach((t) => t.nav.addEventListener("click", (e) => { e.preventDefault(); track("tab_click", { tab: t.id }); showTab(t.id, true); }));
       const tabSet = new Set(tabs.map((t) => t.id));
       // Any in-content link to a tab section (e.g. the Bottom Line's "cross-provider estimate") should
       // switch tabs, not just set the hash on a hidden section.
