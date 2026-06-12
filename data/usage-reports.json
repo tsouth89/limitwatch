@@ -243,7 +243,7 @@
       "reset_at": "2026-06-13T02:02:00Z",
       "observed": 9,
       "model": "Opus 4.8 (nearly all turns)",
-      "note": "First MAX 5h reading. In-app 5h indicator = 9% (resets ~4h). MEASURED trailing-5h Claude Code burn, ALL projects (only the personal Max login active; no claude.ai web chat, desktop-app Claude Code only). 363 turns, ~157M total tokens (mostly cache-read), $109.87 API-equiv. Extrapolated full 5h Max cap ~1.75B tokens / ~$1221 API-equiv (single low-% reading, wide error bars). vs the 0 Pro 5h cap-hit (~63M tokens) this is ~28x. Cap mechanic looks token-weighted (see prior 5h notes); $ is a value proxy only.",
+      "note": "[SUPERSEDED — see the 54% reading] First MAX 5h reading. In-app 5h indicator = 9% (resets ~4h). MEASURED trailing-5h Claude Code burn, ALL projects (only the personal Max login active; no claude.ai web chat, desktop-app Claude Code only). 363 turns, ~157M total tokens (mostly cache-read), $109.87 API-equiv. Extrapolated full 5h Max cap ~1.75B tokens / ~$1221 API-equiv (single low-% reading, wide error bars). vs the 0 Pro 5h cap-hit (~63M tokens) this is ~28x. Cap mechanic looks token-weighted (see prior 5h notes); $ is a value proxy only. CORRECTION: the 5h window is FIXED (countdown to a hard reset), not rolling; this trailing-5h extrapolation overcounted the denominator. Treat as unreliable.",
       "usage_tokens": {
         "input": 38330,
         "output": 365251,
@@ -293,6 +293,99 @@
       "api_equiv_usd": 396.86,
       "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
       "evidence": "cc-usage.mjs --since 2026-06-12T01:09:00Z (since Max upgrade), all projects, deduped by message.id."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Max",
+      "surface": "Claude Code",
+      "account": "personal",
+      "metric": "percent",
+      "limit_hit": false,
+      "reporter": "self",
+      "window": "5h",
+      "captured_at": "2026-06-12T23:51:00Z",
+      "reset_at": "2026-06-13T01:55:00Z",
+      "observed": 54,
+      "model": "Opus 4.8 (nearly all turns)",
+      "note": "Strong MAX 5h reading. In-app 5h = 54% (resets ~2h). The 5h window is FIXED: an earlier reading 1h49m before showed 9% (resets 4h) on the SAME window (start ~2026-06-12T21:00Z, end ~02:00Z). Measured burn since window start = ~360M tokens, $222.93 -> full 5h cap ~0.67B tokens / ~$413. ANCHOR-FREE cross-check: burn between the 9% and 54% reads = ~267M tokens = 45% of cap -> full ~0.59B tokens / ~$378. Best estimate full 5h Max ~0.6-0.7B tokens / ~80-510 API-equiv. ~10-12x the 0 Pro 5h cap-hit (~63M tokens). All-Opus; token-weighted, cache-read included.",
+      "usage_tokens": {
+        "input": 86695,
+        "output": 530492,
+        "cache_write": 3489380,
+        "cache_read": 356232511
+      },
+      "by_model": {
+        "claude-opus-4-8": {
+          "turns": 539,
+          "usd": 222.42
+        },
+        "claude-haiku-4-5-20251001": {
+          "turns": 52,
+          "usd": 0.5
+        }
+      },
+      "api_equiv_usd": 222.93,
+      "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
+      "evidence": "cc-usage.mjs --since 2026-06-12T21:00:00Z (5h window start); delta vs --since 22:02Z. All projects, deduped by message.id."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Max",
+      "surface": "Claude Code",
+      "account": "personal",
+      "metric": "percent",
+      "limit_hit": false,
+      "reporter": "self",
+      "window": "week",
+      "captured_at": "2026-06-12T23:51:00Z",
+      "reset_at": "2026-06-16T23:51:00Z",
+      "observed": 24,
+      "model": "mixed (Opus 4.8 primary, Haiku 4.5; zero Sonnet)",
+      "note": "MAX weekly (all models) = 24% (resets ~4d), up from 19% 1h49m earlier. Measured burn since Max upgrade ~2026-06-12T01:09Z (indicator reset to 0% then) = ~776M tokens, $562.12 -> full weekly cap ~3.23B tokens / ~$2342 API-equiv (use absolute; the 19->24% delta is too small to extrapolate cleanly). Full-weekly / full-5h ~5.0 => ~5 maxed 5h windows per week; weekly is the binding constraint. Burn is Opus + a little Haiku, ZERO Sonnet (consistent with the separate Sonnet-only meter reading 0%).",
+      "usage_tokens": {
+        "input": 378396,
+        "output": 2017612,
+        "cache_write": 14268171,
+        "cache_read": 758846771
+      },
+      "by_model": {
+        "claude-opus-4-8": {
+          "turns": 2028,
+          "usd": 560.14
+        },
+        "claude-haiku-4-5-20251001": {
+          "turns": 250,
+          "usd": 1.98
+        }
+      },
+      "api_equiv_usd": 562.12,
+      "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
+      "evidence": "cc-usage.mjs --since 2026-06-12T01:09:00Z (since Max upgrade). All projects, deduped by message.id."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Max",
+      "surface": "Claude Code",
+      "account": "personal",
+      "metric": "percent",
+      "limit_hit": false,
+      "reporter": "self",
+      "window": "week",
+      "captured_at": "2026-06-12T23:51:00Z",
+      "reset_at": "2026-06-16T23:51:00Z",
+      "observed": 0,
+      "model": "Sonnet 4.6 (none used)",
+      "note": "NEW METER discovered on Max: a separate \"Sonnet only\" weekly cap, distinct from \"Weekly - all models\" (= 24%) and the 5h cap. Reads 0% (resets ~4d) because all burn since upgrade was Opus 4.8 (+ trace Haiku), ZERO Sonnet. CONFIRMS the Max weekly has a per-model sub-limit and it is Sonnet-tracked here (Opus usage does NOT move it). Cannot size the cap yet (0% / no Sonnet burn). To measure: run a Sonnet-heavy session, then pair Sonnet token burn with this meter %. Answers the user open question: a separate Sonnet limit DOES exist.",
+      "usage_tokens": {
+        "input": 0,
+        "output": 0,
+        "cache_write": 0,
+        "cache_read": 0
+      },
+      "by_model": {},
+      "api_equiv_usd": 0,
+      "api_equiv_basis": "n/a (no Sonnet burn yet).",
+      "evidence": "In-app Plan usage panel showing a third row \"Sonnet only 0% resets 4d\"; cc-usage by_model confirms zero Sonnet since upgrade."
     }
   ]
 }
