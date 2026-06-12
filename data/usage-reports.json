@@ -229,6 +229,70 @@
       "api_equiv_basis": "Anthropic API list rates per model (Opus 4.8 in $5/out $25/cw5 $6.25/cw1h $10/cr $0.50; Sonnet 4.6 in $3/out $15/cr $0.30 per 1M). Value comparison, not the cap mechanic.",
       "reporter": "self",
       "evidence": "Aggregated ~/.claude/projects/**/*.jsonl via scripts/cc-usage.mjs --since 2026-06-11T20:10:45Z, deduped by message.id, all projects (personal-only login this window)."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Max",
+      "surface": "Claude Code",
+      "account": "personal",
+      "metric": "percent",
+      "limit_hit": false,
+      "reporter": "self",
+      "window": "5h",
+      "captured_at": "2026-06-12T22:02:00Z",
+      "reset_at": "2026-06-13T02:02:00Z",
+      "observed": 9,
+      "model": "Opus 4.8 (nearly all turns)",
+      "note": "First MAX 5h reading. In-app 5h indicator = 9% (resets ~4h). MEASURED trailing-5h Claude Code burn, ALL projects (only the personal Max login active; no claude.ai web chat, desktop-app Claude Code only). 363 turns, ~157M total tokens (mostly cache-read), $109.87 API-equiv. Extrapolated full 5h Max cap ~1.75B tokens / ~$1221 API-equiv (single low-% reading, wide error bars). vs the 0 Pro 5h cap-hit (~63M tokens) this is ~28x. Cap mechanic looks token-weighted (see prior 5h notes); $ is a value proxy only.",
+      "usage_tokens": {
+        "input": 38330,
+        "output": 365251,
+        "cache_write": 2317420,
+        "cache_read": 154754642
+      },
+      "by_model": {
+        "claude-opus-4-8": {
+          "turns": 361,
+          "usd": 109.87
+        }
+      },
+      "api_equiv_usd": 109.87,
+      "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
+      "evidence": "cc-usage.mjs --since 2026-06-12T17:01:54Z (trailing 5h), all projects, deduped by message.id."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Max",
+      "surface": "Claude Code",
+      "account": "personal",
+      "metric": "percent",
+      "limit_hit": false,
+      "reporter": "self",
+      "window": "week",
+      "captured_at": "2026-06-12T22:02:00Z",
+      "reset_at": "2026-06-16T22:02:00Z",
+      "observed": 19,
+      "model": "mixed (Opus 4.8 primary, Haiku 4.5)",
+      "note": "First MAX weekly reading. In-app weekly (all models) = 19% (resets ~4d). MEASURED burn since the Max upgrade (~2026-06-12T01:09Z) when the indicator was reset to 0%, ALL projects (personal Max login only; desktop-app Claude Code, no claude.ai chat). 1870 turns, ~517M total tokens (~504M cache-read), $396.86 API-equiv. Extrapolated full weekly Max cap ~2.72B tokens / ~$2089 API-equiv. CONSISTENCY: 19% over ~21h -> 100% in ~4.6d, matches in-app resets ~4d. Full-weekly / full-5h ~1.6, so weekly is the binding constraint, not 5h.",
+      "usage_tokens": {
+        "input": 295796,
+        "output": 1656352,
+        "cache_write": 11046718,
+        "cache_read": 504081599
+      },
+      "by_model": {
+        "claude-opus-4-8": {
+          "turns": 1668,
+          "usd": 395.38
+        },
+        "claude-haiku-4-5-20251001": {
+          "turns": 198,
+          "usd": 1.47
+        }
+      },
+      "api_equiv_usd": 396.86,
+      "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
+      "evidence": "cc-usage.mjs --since 2026-06-12T01:09:00Z (since Max upgrade), all projects, deduped by message.id."
     }
   ]
 }
