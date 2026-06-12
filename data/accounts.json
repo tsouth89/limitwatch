@@ -1,16 +1,16 @@
 {
   "schema": 1,
-  "note": "LOCAL config for scripts/burn-log.mjs — maps each Claude login on this machine to a project-path proxy and (optionally) its weekly reset, so the logger can scope measured Claude Code burn per account. Transcripts carry no account identity and Claude Code's login is global per instance, so 'match'/'exclude' on the project-dir name is a WEAK proxy: a session run on the wrong login lands in the wrong bucket. weekday: 0=Sun..6=Sat. tz_offset_min: account-local UTC offset (EDT = -240). weekly_reset null = unknown, so only trailing-24h burn is logged for that account.",
+  "note": "LOCAL config for scripts/burn-log.mjs — maps each Claude login on this machine to a project-path proxy and (optionally) its weekly reset, so the logger can scope measured Claude Code burn per account. Transcripts carry no account identity and Claude Code's login is global per instance, so 'match'/'exclude' on the project-dir name is a WEAK proxy: a session run on the wrong login lands in the wrong bucket. weekday: 0=Sun..6=Sat. tz_offset_min: account-local UTC offset (EDT = -240). weekly_reset null = unknown, so only trailing-24h burn is logged for that account. 2026-06-11: personal upgraded to Max; user runs ONLY the personal login on this machine for now (work login parked), so personal has NO match scope and sums ALL projects = a CLEAN per-account total, not a proxy. Restore 'match' on personal + re-enable work if the second login resumes.",
   "accounts": [
     {
       "label": "personal",
-      "plan": "Pro",
-      "match": "personal",
+      "plan": "Max",
       "weekly_reset": { "weekday": 3, "hour": 17, "tz_offset_min": -240 }
     },
     {
       "label": "work",
       "plan": "Pro",
+      "active": false,
       "exclude": "personal",
       "weekly_reset": { "weekday": 1, "hour": 23, "tz_offset_min": -240 }
     }

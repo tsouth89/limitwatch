@@ -206,6 +206,29 @@
       "api_equiv_basis": "Anthropic API list price per model (see scripts/lib/usage-core.mjs PRICES). Value comparison, not the cap mechanic.",
       "reporter": "self",
       "evidence": "scripts/cc-usage.mjs --report; aggregated ~/.claude/projects/**/*.jsonl, deduped by message.id, scoped to one account's projects."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Pro",
+      "surface": "Claude Code",
+      "window": "5h",
+      "captured_at": "2026-06-12T01:12:03Z",
+      "metric": "percent",
+      "observed": 100,
+      "account": "personal",
+      "limit_hit": true,
+      "model": "mixed (Opus 4.8 + Sonnet 4.6)",
+      "note": "CAP HIT (100%) on the $20 Pro 5h window, immediately before upgrading to Max (which reset the indicator to 0%). MEASURED from local Claude Code transcripts over the trailing 5h up to the hit (2026-06-11T20:12..2026-06-12T01:12), summing ALL projects on this machine because only the personal login was burning this window. 494 assistant turns: Opus 4.8 142 turns ($24.19), Sonnet 4.6 357 turns ($21.78). Total tokens ~63.0M (39,665 input + 264,348 output + 2,351,769 cache-write + 60,335,677 cache-read). At API list rates that is ~$45.97 API-equivalent. KEY: an earlier Opus-only session read 75% at ~54.3M tokens (->~72M extrapolated to 100%) yet ~$71 API-equivalent; this 100% hit is ~63M tokens yet only ~$46. Token counts cluster (~63-72M for a full 5h) while dollars swing 1.5x, so the 5h cap looks ~TOKEN-weighted (cache-reads included), not dollar-weighted. (Cap mechanic is not published.)",
+      "usage_tokens": {
+        "input": 39665,
+        "output": 264348,
+        "cache_write": 2351769,
+        "cache_read": 60335677
+      },
+      "api_equiv_usd": 45.97,
+      "api_equiv_basis": "Anthropic API list rates per model (Opus 4.8 in $5/out $25/cw5 $6.25/cw1h $10/cr $0.50; Sonnet 4.6 in $3/out $15/cr $0.30 per 1M). Value comparison, not the cap mechanic.",
+      "reporter": "self",
+      "evidence": "Aggregated ~/.claude/projects/**/*.jsonl via scripts/cc-usage.mjs --since 2026-06-11T20:10:45Z, deduped by message.id, all projects (personal-only login this window)."
     }
   ]
 }

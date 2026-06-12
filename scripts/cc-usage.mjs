@@ -21,6 +21,7 @@ const now = new Date();
 let match = flag("--match");
 let exclude = flag("--exclude");
 let since = flag("--since") ? new Date(flag("--since")) : null;
+let acctPlan = "Pro";
 
 // --account <label>: read data/accounts.json and auto-derive scope (match/exclude) + the weekly
 // since-anchor from that account's reset. One short command instead of remembering reset ISO + scope.
@@ -30,7 +31,7 @@ if (acctLabel) {
   const cfg = JSON.parse(readFileSync(join(root, "data", "accounts.json"), "utf8"));
   const acc = cfg.accounts.find((a) => a.label === acctLabel);
   if (!acc) { console.error(`--account "${acctLabel}" not in data/accounts.json (have: ${cfg.accounts.map((a) => a.label).join(", ")})`); process.exit(1); }
-  match = acc.match; exclude = acc.exclude;
+  match = acc.match; exclude = acc.exclude; acctPlan = acc.plan;
   if (!since && acc.weekly_reset) since = lastWeeklyReset(acc.weekly_reset, now);
   // no reset configured (e.g. work): fall through to --since/--days handling below.
 }
@@ -64,7 +65,7 @@ if (has("--by-project")) {
 
 if (has("--report")) {
   const entry = {
-    provider: "Anthropic", plan: "Pro", surface: "Claude Code", window: "week",
+    provider: "Anthropic", plan: acctPlan, surface: "Claude Code", window: "week",
     captured_at: now.toISOString(),
     metric: "percent", observed: null, limit_hit: false,
     value_basis: "floor",
