@@ -220,8 +220,10 @@ try {
     if (!REPORT_WINDOWS.includes(r.window)) throw new Error(`usage-reports.json: ${who} bad window "${r.window}" (expected ${REPORT_WINDOWS.join("|")})`);
     if (!REPORT_METRICS.includes(r.metric)) throw new Error(`usage-reports.json: ${who} bad metric "${r.metric}" (expected ${REPORT_METRICS.join("|")})`);
     if (typeof r.observed !== "number" || Number.isNaN(r.observed)) throw new Error(`usage-reports.json: ${who} observed must be a number`);
-    // percent rows drive the "→ $/window" extrapolation (api_equiv_usd / (observed/100)); 0 or out-of-range breaks it.
-    if (r.metric === "percent" && (r.observed <= 0 || r.observed > 100)) throw new Error(`usage-reports.json: ${who} percent observed ${r.observed} out of range (0,100]`);
+    // percent rows drive the "→ $/window" extrapolation (api_equiv_usd / (observed/100)); the
+    // render skips that math when observed is 0 (index.html `!r.observed`), so 0 is a valid reading
+    // (a meter that exists but is untouched, e.g. the Sonnet-only cap while running pure Opus).
+    if (r.metric === "percent" && (r.observed < 0 || r.observed > 100)) throw new Error(`usage-reports.json: ${who} percent observed ${r.observed} out of range [0,100]`);
     if (r.api_equiv_usd != null && (typeof r.api_equiv_usd !== "number" || r.api_equiv_usd < 0)) throw new Error(`usage-reports.json: ${who} api_equiv_usd must be a non-negative number`);
     if (r.value_basis != null && !["floor", "receipt"].includes(r.value_basis)) throw new Error(`usage-reports.json: ${who} bad value_basis "${r.value_basis}" (expected floor|receipt)`);
     if (r.account != null && typeof r.account !== "string") throw new Error(`usage-reports.json: ${who} account must be a string`);
