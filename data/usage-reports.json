@@ -371,11 +371,11 @@
       "limit_hit": false,
       "reporter": "self",
       "window": "week",
-      "captured_at": "2026-06-12T23:51:00Z",
+      "captured_at": "2026-06-16T15:56:00Z",
       "reset_at": "2026-06-16T23:51:00Z",
       "observed": 0,
       "model": "Sonnet 4.6 (none used)",
-      "note": "NEW METER discovered on Max: a separate \"Sonnet only\" weekly cap, distinct from \"Weekly - all models\" (= 24%) and the 5h cap. Reads 0% (resets ~4d) because all burn since upgrade was Opus 4.8 (+ trace Haiku), ZERO Sonnet. CONFIRMS the Max weekly has a per-model sub-limit and it is Sonnet-tracked here (Opus usage does NOT move it). Cannot size the cap yet (0% / no Sonnet burn). To measure: run a Sonnet-heavy session, then pair Sonnet token burn with this meter %. Answers the user open question: a separate Sonnet limit DOES exist.",
+      "note": "[CORRECTED 2026-06-16] Separate \"Sonnet only\" weekly meter on Max, distinct from \"Weekly - all models\". Still reads 0% EVEN AFTER ~266 Sonnet 4.6 turns (~$13) in Claude Code this week with the all-models weekly at 90%. So it is NOT \"Sonnet tokens consumed\" (earlier guess was wrong): normal Sonnet usage in Claude Code counts toward the all-models weekly, not this meter. Working hypothesis: it is a RESERVE pool — a Sonnet-only allowance that only begins depleting AFTER the all-models weekly is exhausted (100%), giving continued Sonnet access past the main cap. Untouched here because all-models is at 90%, not 100%. To test: push all-models to 100% and watch whether this meter then starts moving. Unsized either way.",
       "usage_tokens": {
         "input": 0,
         "output": 0,
@@ -386,6 +386,44 @@
       "api_equiv_usd": 0,
       "api_equiv_basis": "n/a (no Sonnet burn yet).",
       "evidence": "In-app Plan usage panel showing a third row \"Sonnet only 0% resets 4d\"; cc-usage by_model confirms zero Sonnet since upgrade."
+    },
+    {
+      "provider": "Anthropic",
+      "plan": "Max",
+      "surface": "Claude Code",
+      "account": "personal",
+      "window": "week",
+      "metric": "percent",
+      "observed": 90,
+      "limit_hit": false,
+      "reporter": "self",
+      "captured_at": "2026-06-16T15:56:00Z",
+      "reset_at": "2026-06-16T17:00:00Z",
+      "model": "mixed (Opus 4.8 primary, Sonnet 4.6, Haiku 4.5)",
+      "note": "HIGH-CONFIDENCE Max weekly point. In-app weekly (all models) = 90%, near its first reset since the upgrade. Measured burn since upgrade ~2026-06-12T01:09Z (indicator was 0% then) = ~3.90B tokens, $2802.7 API-equiv -> full weekly Max cap ~4.33B tokens / ~$3114 API-equiv. REVISES the earlier 24%-based estimate (~3.2B) UP to ~4.3B; the 90% reading has far less rounding leverage, so trust this one. Burn mix now includes Sonnet (266 turns, $13) yet the separate Sonnet-only meter still read 0% (see that report) -> Sonnet Claude Code usage counts toward THIS all-models weekly, not the Sonnet-only meter.",
+      "usage_tokens": {
+        "input": 1692610,
+        "output": 11205791,
+        "cache_write": 66225776,
+        "cache_read": 3818097865
+      },
+      "by_model": {
+        "claude-opus-4-8": {
+          "turns": 9459,
+          "usd": 2783.06
+        },
+        "claude-haiku-4-5-20251001": {
+          "turns": 699,
+          "usd": 6.33
+        },
+        "claude-sonnet-4-6": {
+          "turns": 266,
+          "usd": 13.31
+        }
+      },
+      "api_equiv_usd": 2802.7,
+      "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
+      "evidence": "cc-usage.mjs --since 2026-06-12T01:09:00Z (since Max upgrade). All projects, deduped by message.id."
     }
   ]
 }
