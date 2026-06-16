@@ -3,19 +3,19 @@
   "note": "Time-bounded limit events (promos, temporary boosts, throttles). Separate from snapshots because these are spans, not point-in-time facts. The site computes active/upcoming/ended from today vs starts_on/ends_on, so an event auto-expires with no redeploy. ends_on null = standing/permanent change (no countdown). Every event must cite a source; record the published wording verbatim in quote.",
   "events": [
     {
-      "id": "anthropic-fable5-free-window-2026",
+      "id": "anthropic-fable-mythos-gov-suspension-2026",
       "provider": "Anthropic",
       "product": "Claude",
-      "applies_to": ["Pro", "Max 5x", "Max 20x", "Team", "Enterprise"],
-      "title": "Claude Fable 5 free on plans through Jun 22, then needs usage credits",
-      "kind": "promo",
-      "starts_on": "2026-06-09",
-      "ends_on": "2026-06-22",
+      "applies_to": ["Pro", "Max 5x", "Max 20x", "Team", "Enterprise", "API"],
+      "title": "Claude Fable 5 & Mythos 5 suspended by US government directive",
+      "kind": "removal",
+      "starts_on": "2026-06-12",
+      "ends_on": null,
       "permanent": false,
-      "confidence": "announced",
-      "quote": "From today through June 22, Fable 5 is included on Pro, Max, Team, and seat-based Enterprise plans at no extra cost. On June 23, we'll remove Fable 5 from those plans. Using it after that will require usage credits.",
-      "source": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
-      "note": "Launch of Claude Fable 5 (general) and Claude Mythos 5 (restricted) on June 9, 2026. For subscriptions this is a capacity-gated free window: Fable 5 is bundled on Pro/Max/Team/seat-based Enterprise at no extra cost Jun 9-22, then removed Jun 23, after which access requires purchased usage credits. Anthropic 'aim[s] to restore Fable 5 as a standard part of subscription plans' once capacity allows (no date given, so no countdown). Subscription message/5h/weekly caps are unchanged; this only governs whether Fable 5 itself is reachable without credits. API: claude-fable-5 available from launch at $10 per million input tokens and $50 per million output tokens (same price for both models)."
+      "confidence": "official",
+      "quote": "We received the directive from the government today at 5:21pm (ET). ... We apologize for this disruption to our customers. We believe this is a misunderstanding and are working to restore access as soon as possible.",
+      "source": "https://www.anthropic.com/news/fable-mythos-access",
+      "note": "On 2026-06-12 (~5:21pm ET) the US government issued an export-control directive ordering Anthropic to suspend ALL access to Claude Fable 5 and Mythos 5; Anthropic complied the same evening. Per secondary reporting (9to5Mac, Decrypt, TechCrunch) the directive came from the Commerce Department (Secretary Howard Lutnick, drafted with the Bureau of Industry and Security) after a third party claimed to jailbreak Mythos, raising national-security concerns; it bars access by any foreign national inside or outside the US, including foreign-national Anthropic employees. First time a US lab has been forced to pull a generally available model. No restoration timeline given (ends_on null = indefinite, no countdown). SUPERSEDES the earlier Jun 9-22 free-window promo (source https://www.anthropic.com/news/claude-fable-5-mythos-5), which is now moot since the models are entirely unavailable. This also coincided with a force-reset of subscription weekly limits on the evening of Fri 2026-06-12 (observed, not stated in the directive)."
     },
     {
       "id": "anthropic-claudecode-weekly-plus50-2026",
