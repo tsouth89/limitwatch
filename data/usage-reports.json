@@ -398,32 +398,32 @@
       "limit_hit": false,
       "reporter": "self",
       "captured_at": "2026-06-16T15:56:00Z",
-      "reset_at": "2026-06-16T17:00:00Z",
+      "reset_at": "2026-06-13T01:00:00Z",
       "model": "mixed (Opus 4.8 primary, Sonnet 4.6, Haiku 4.5)",
-      "note": "HIGH-CONFIDENCE Max weekly point. In-app weekly (all models) = 90%, near its first reset since the upgrade. Measured burn since upgrade ~2026-06-12T01:09Z (indicator was 0% then) = ~3.90B tokens, $2802.7 API-equiv -> full weekly Max cap ~4.33B tokens / ~$3114 API-equiv. REVISES the earlier 24%-based estimate (~3.2B) UP to ~4.3B; the 90% reading has far less rounding leverage, so trust this one. Burn mix now includes Sonnet (266 turns, $13) yet the separate Sonnet-only meter still read 0% (see that report) -> Sonnet Claude Code usage counts toward THIS all-models weekly, not the Sonnet-only meter.",
+      "note": "[ANCHOR CORRECTED] Max weekly (all models) = 90% at 2026-06-16T16:22Z. IMPORTANT: the weekly limit was force-RESET Friday night 2026-06-12 when Fable 5 was pulled, so the window does NOT run from the Max upgrade (01:09Z 06-12) — it runs from that Friday-night reset. Measured burn since the reset (~2026-06-13T01:00:00Z, a Fri ~21:00 EDT estimate; refine when exact time known) = ~3.08B tokens, $2206.7 API-equiv -> full weekly Max cap ~3.43B tokens / ~$2452. Across plausible Fri-night reset times (06-12T23:00Z..06-13T03:00Z) the full cap ranges ~3.35-3.60B tokens / ~$2,376-2,575 — only ~7% anchor sensitivity. This CONVERGES with the earlier 24%-based estimate (~3.2B), confirming that figure; the transient 4.3B estimate was an artifact of a reset-spanning anchor and is retracted.",
       "usage_tokens": {
-        "input": 1692610,
-        "output": 11205791,
-        "cache_write": 66225776,
-        "cache_read": 3818097865
+        "input": 1283944,
+        "output": 9046215,
+        "cache_write": 50193670,
+        "cache_read": 3023114844
       },
       "by_model": {
         "claude-opus-4-8": {
-          "turns": 9459,
-          "usd": 2783.06
-        },
-        "claude-haiku-4-5-20251001": {
-          "turns": 699,
-          "usd": 6.33
+          "turns": 7377,
+          "usd": 2198.7
         },
         "claude-sonnet-4-6": {
-          "turns": 266,
-          "usd": 13.31
+          "turns": 45,
+          "usd": 3.01
+        },
+        "claude-haiku-4-5-20251001": {
+          "turns": 505,
+          "usd": 4.99
         }
       },
-      "api_equiv_usd": 2802.7,
+      "api_equiv_usd": 2206.7,
       "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
-      "evidence": "cc-usage.mjs --since 2026-06-12T01:09:00Z (since Max upgrade). All projects, deduped by message.id."
+      "evidence": "cc-usage.mjs --since 2026-06-13T01:00:00Z (Friday-night reset anchor, approximate). All projects, deduped by message.id."
     }
   ]
 }
