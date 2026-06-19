@@ -3,6 +3,16 @@
   "note": "Auto-flagged news radar. Items the discovery LLM (scripts/discover.mjs) marked limit/pricing-relevant from provider feeds. UNVERIFIED machine output, NOT verified facts: a human promotes the real ones into data/events.json (with a verbatim quote) and they then appear in What's New / the changelog. Appended automatically by discover.mjs (dedup by link, newest first, capped). Safe to hand-prune.",
   "items": [
     {
+      "at": "2026-06-18",
+      "provider": "OpenAI",
+      "product": "ChatGPT",
+      "title": "New usage analytics and updated spend controls for enterprises",
+      "link": "https://openai.com/index/chatgpt-enterprise-spend-controls",
+      "why": "Announces updated spend controls for enterprise plans, which relates to usage limits and quota management.",
+      "kind": "limit_boost",
+      "confidence": "announced"
+    },
+    {
       "at": "2026-06-16",
       "provider": "GitHub",
       "product": "Copilot",
