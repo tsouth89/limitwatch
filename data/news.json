@@ -3,6 +3,16 @@
   "note": "Auto-flagged news radar. Items the discovery LLM (scripts/discover.mjs) marked limit/pricing-relevant from provider feeds. UNVERIFIED machine output, NOT verified facts: a human promotes the real ones into data/events.json (with a verbatim quote) and they then appear in What's New / the changelog. Appended automatically by discover.mjs (dedup by link, newest first, capped). Safe to hand-prune.",
   "items": [
     {
+      "at": "2026-06-19",
+      "provider": "GitHub",
+      "product": "Copilot",
+      "title": "AI credits consumed per user now in the Copilot usage metrics API",
+      "link": "https://github.blog/changelog/2026-06-19-ai-credits-consumed-per-user-now-in-the-copilot-usage-metrics-api",
+      "why": "Adds visibility to AI credits consumption metrics, which relates to tracking subscription usage and quota monitoring for Copilot.",
+      "kind": "limit_boost",
+      "confidence": "official"
+    },
+    {
       "at": "2026-06-18",
       "provider": "OpenAI",
       "product": "ChatGPT",
