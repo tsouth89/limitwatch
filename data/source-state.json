@@ -1,20 +1,20 @@
 {
   "anthropic-api-rate-limits": {
-    "hash": "a07a1bb057e4cfeb",
-    "checked": "2026-06-15",
-    "len": 17037,
+    "hash": "15f952d3225afcbd",
+    "checked": "2026-06-22",
+    "len": 17040,
     "method": "http"
   },
   "anthropic-pricing": {
-    "hash": "6bd55bdb464d7725",
-    "checked": "2026-06-15",
-    "len": 24399,
+    "hash": "010e559f7d20b4bd",
+    "checked": "2026-06-22",
+    "len": 24489,
     "method": "http"
   },
   "openai-gpt55-help": {
-    "hash": "8cbea4ca9e4b972a",
-    "checked": "2026-06-15",
-    "len": 8368,
+    "hash": "585bba6681b5ecd4",
+    "checked": "2026-06-22",
+    "len": 8335,
     "method": "browser"
   },
   "openai-pricing": {
@@ -25,44 +25,44 @@
   },
   "google-gemini-subscriptions": {
     "hash": "06af2833c7a4a100",
-    "checked": "2026-06-15",
+    "checked": "2026-06-22",
     "len": 17268,
     "method": "http"
   },
   "github-copilot-plans": {
-    "hash": "071d9d1f17421dce",
-    "checked": "2026-06-15",
-    "len": 18449,
+    "hash": "8a402cd928ad9f9c",
+    "checked": "2026-06-22",
+    "len": 17972,
     "method": "http"
   },
   "github-copilot-premium-requests": {
-    "hash": "05206f794738ae27",
-    "checked": "2026-06-15",
-    "len": 16942,
+    "hash": "ba7467b08b4bb761",
+    "checked": "2026-06-22",
+    "len": 17005,
     "method": "http"
   },
   "replit-pricing": {
     "hash": "82b124b1491ccdda",
-    "checked": "2026-06-15",
+    "checked": "2026-06-22",
     "len": 3604,
     "method": "http"
   },
   "cursor-pricing-docs": {
     "hash": "188ce4c3c8498c93",
-    "checked": "2026-06-15",
+    "checked": "2026-06-22",
     "len": 28,
     "method": "http"
   },
   "xai-supergrok-limits": {
     "hash": "e4c19e7442f6494b",
-    "checked": "2026-06-15",
+    "checked": "2026-06-22",
     "len": 20061,
     "method": "http"
   },
   "perplexity-pro-pricing": {
-    "hash": "01d3003bb21de06f",
-    "checked": "2026-06-15",
-    "len": 19514,
+    "hash": "4c1a0a84f8907b2a",
+    "checked": "2026-06-22",
+    "len": 19658,
     "method": "http"
   },
   "openai-go-help": {
