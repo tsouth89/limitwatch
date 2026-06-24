@@ -243,7 +243,10 @@ try {
   const nw = JSON.parse(readFileSync(join(root, "data", "news.json"), "utf8"));
   if (Array.isArray(nw.items)) {
     for (const i of nw.items) if (!i.title || !i.link) throw new Error("news.json: an item is missing title/link");
-    radar = nw.items.slice(0, 15);
+    // Drop radar items whose link already became a published event — once a lead is promoted it shows
+    // in What's new with a verified quote, so leaving it on the radar would double-list the same item.
+    const eventSrc = new Set(events.map((e) => e.source));
+    radar = nw.items.filter((i) => !eventSrc.has(i.link)).slice(0, 15);
   }
 } catch (err) {
   if (err.code !== "ENOENT") throw err;

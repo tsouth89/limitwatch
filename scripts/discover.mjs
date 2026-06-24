@@ -48,15 +48,36 @@ const ids = Object.entries(state.seen).sort((a, b) => (a[1] < b[1] ? 1 : -1)).sl
 state.seen = Object.fromEntries(ids);
 writeFileSync(statePath, JSON.stringify(state, null, 2));
 
+// Radar aging: drop flagged items older than the TTL so the radar self-curates into a rolling
+// recent-news feed (no human pruning). Runs every invocation, including days with no new items —
+// an item that never gets promoted to a verified event simply ages off instead of piling up.
+const RADAR_TTL_DAYS = Number(process.env.RADAR_TTL_DAYS || 21);
+const newsPath = join(root, "data", "news.json");
+const radarCutoff = new Date(Date.now() - RADAR_TTL_DAYS * 86400000).toISOString().slice(0, 10);
+function ageRadar() {
+  if (!existsSync(newsPath)) return;
+  const news = JSON.parse(readFileSync(newsPath, "utf8"));
+  if (!Array.isArray(news.items) || !news.items.length) return;
+  const before = news.items.length;
+  news.items = news.items.filter((i) => (i.at || "") >= radarCutoff);
+  if (news.items.length !== before) {
+    writeFileSync(newsPath, JSON.stringify(news, null, 2));
+    console.log(`radar: expired ${before - news.items.length} item(s) older than ${RADAR_TTL_DAYS}d`);
+  }
+}
+ageRadar();
+
 if (!fresh.length) { console.log("No new items."); process.exit(0); }
 console.log(`\n${fresh.length} new item(s).`);
 
 // Optional relevance filter + event-stub drafting (cheap model, one batched call).
 let relevant = null;
 if (process.env.ANTHROPIC_API_KEY && fresh.length) {
-  const model = process.env.ANTHROPIC_DISCOVER_MODEL || "claude-haiku-4-5-20251001";
+  // Classify is one batched call/day and sets the precision of the whole radar, so it runs on a
+  // stronger default model than the per-article extract step (override with ANTHROPIC_CLASSIFY_MODEL).
+  const model = process.env.ANTHROPIC_CLASSIFY_MODEL || process.env.ANTHROPIC_DISCOVER_MODEL || "claude-sonnet-4-6";
   const list = fresh.map((it, i) => `${i}. [${it.provider}] ${it.title} — ${it.link}`).join("\n");
-  const prompt = `You triage AI-provider news for a site that tracks SUBSCRIPTION usage limits, quotas, rate limits, and consumer plan pricing over time.\n\nFrom the numbered items below, return ONLY the ones that announce a change to subscription/plan usage limits, quotas, rate limits, message/request/token caps, or consumer plan pricing/credits. Ignore model releases, infra, security, SDKs, partnerships, and enterprise sales unless they change a published consumer limit or price.\n\nReturn a JSON array (no prose). Each element: {"index": <number>, "why": "<one sentence>", "kind": "limit_boost|limit_cut|pricing_change|promo|new_plan", "confidence": "official|announced"}. If none qualify, return [].\n\nItems:\n${list}`;
+  const prompt = `You triage AI-provider news for a site that tracks CONSUMER SUBSCRIPTION usage limits, quotas, rate limits, and plan pricing over time (e.g. Claude Pro/Max, ChatGPT Plus/Pro, Gemini AI Plus/Pro, Copilot Pro/Pro+, Cursor Pro). The bar is high: flag an item ONLY if a person on a NAMED consumer/prosumer plan would see a concrete change to what they can do or pay.\n\nINCLUDE only items that announce a concrete change to: a consumer plan's usage limit / quota / rate cap (messages, requests, tokens, credits per window), the price of a consumer plan, the credit pool bundled with a consumer plan, or a new/removed consumer plan. The change should be specific (a number, a multiplier, a price, a plan name) — not a vague "improvements."\n\nEXCLUDE (do NOT flag) even if usage-adjacent: enterprise/Business/Team-only changes; usage metrics, dashboards, analytics, reporting, or admin spend-control features (visibility ≠ a limit change); API/SDK tier or developer-platform changes; deprecations or availability changes of developer tools/playgrounds that are not a consumer subscription; model releases or capability/context-window changes unless they explicitly change a published consumer usage cap; security, infra, partnerships, and sales. When unsure, EXCLUDE.\n\nReturn a JSON array (no prose). Each element: {"index": <number>, "why": "<one sentence naming the consumer plan and the concrete change>", "kind": "limit_boost|limit_cut|pricing_change|promo|new_plan", "confidence": "official|announced"}. If none qualify, return [].\n\nItems:\n${list}`;
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -102,20 +123,20 @@ console.log(`Wrote ${summaryPath}${relevant ? ` (${relevant.length} relevant)` :
 // Append the LLM-flagged items to the site's news radar (data/news.json) so relevant news shows
 // on the site automatically — badged unverified, never promoted to a verified event without a human.
 if (relevant && relevant.length) {
-  const newsPath = join(root, "data", "news.json");
   const news = existsSync(newsPath) ? JSON.parse(readFileSync(newsPath, "utf8")) : { schema: 1, note: "Auto-flagged news radar (unverified). Appended by scripts/discover.mjs.", items: [] };
   const have = new Set((news.items || []).map((i) => i.link));
   let added = 0;
   for (const r of relevant) {
     const it = fresh[r.index]; if (!it || have.has(it.link)) continue;
+    const at = (it.date && new Date(it.date).toISOString().slice(0, 10)) || nowIso.slice(0, 10);
+    if (at < radarCutoff) continue;   // a freshly-discovered but already-stale article isn't "recent news"
     news.items.unshift({
-      at: (it.date && new Date(it.date).toISOString().slice(0, 10)) || nowIso.slice(0, 10),
-      provider: it.provider, product: it.product ?? null, title: it.title, link: it.link,
+      at, provider: it.provider, product: it.product ?? null, title: it.title, link: it.link,
       why: r.why, kind: r.kind, confidence: r.confidence,
     });
     have.add(it.link); added++;
   }
-  news.items = news.items.slice(0, 40);   // keep the radar recent
+  news.items = news.items.filter((i) => (i.at || "") >= radarCutoff).slice(0, 40);   // age off, keep recent
   writeFileSync(newsPath, JSON.stringify(news, null, 2));
   console.log(`news.json: +${added} flagged item(s) (${news.items.length} total)`);
 }
