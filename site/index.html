@@ -422,9 +422,9 @@
         <li><b>Metered usage capture</b>: read provider rate-limit headers and usage meters (anthropic-ratelimit-*, x-ratelimit-remaining) to measure real budgets without draining accounts</li>
         <li><b>Deeper history</b> — more backfilled dates to turn jumps into trends</li>
         <li><b>Crowdsourced receipts</b> — submit your own measured usage</li>
-        <li><b>Change alerts</b> — email when a limit or price moves</li>
+        <li><b>Email change alerts</b> — RSS feed is live now (see Changelog); an email digest is next</li>
         <li><b>More providers</b> — broader coverage as pages are verified</li>
-        <li><b>Per-limit drift charts</b> — sparklines on limits, not just price</li>
+        <li><b>Per-limit drift sparklines</b> — the Drift leaderboard is live; sparklines on individual limits next</li>
       </ul>
     </div>
   </div>
@@ -451,7 +451,7 @@
   <header class="hero" id="top">
     <h1><span class="kicker">AI usage limits, with receipts</span>LimitWatch</h1>
     <p class="tag">What AI subscriptions actually let you use: compared, source-linked, and tracked as limits quietly change.</p>
-    <div class="stats" id="stats"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">26</div><div class="l">plans</div></div><div class="stat"><div class="n">13</div><div class="l">changes logged</div></div><div class="stat"><div class="n">6</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-06-16</div><div class="l">last updated</div></div><!-- BUILD:stats:end --></div>
+    <div class="stats" id="stats"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">26</div><div class="l">plans</div></div><div class="stat"><div class="n">13</div><div class="l">changes logged</div></div><div class="stat"><div class="n">6</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-06-16</div><div class="l">data through</div></div><!-- BUILD:stats:end --></div>
     <div class="notice" id="dataNotice"></div>
   </header>
   <main>
@@ -868,7 +868,7 @@
         stat(latest.entries.length, "plans") +
         stat(db.changes.length, "changes logged") +
         stat(db.snapshot_count, "snapshots") +
-        stat(freshestDate(db), "last updated");
+        stat(freshestDate(db), "data through");
       const buildWarnings = Array.isArray(db.data_warnings) ? db.data_warnings : [];
       if (futureRecords.length || upcomingRecords.length || buildWarnings.length) {
         const dn = document.getElementById("dataNotice");
@@ -1489,10 +1489,15 @@
 
       // ---- Dev/status bar ----
       (() => {
+        const refreshed = (db.generated_at || "").slice(0, 10);
         const last = db.snapshots.at(-1)?.date;
         const live = (db.events ?? []).filter((e) => e.starts_on <= todayIso && (!e.ends_on || e.ends_on >= todayIso)).length;
-        const bits = ["<b>Live</b> · actively updated"];
-        if (last) bits.push(`last snapshot ${last}`);
+        // The site auto-rebuilds daily (CI discovery + deploy), so "refreshed" is today's build date and
+        // reflects that the radar/news are current; "latest snapshot" is the last full pricing capture,
+        // which moves less often. Two distinct, non-contradictory dates.
+        const bits = ["<b>Live</b>"];
+        if (refreshed) bits.push(`refreshed ${refreshed}`);
+        if (last) bits.push(`latest snapshot ${last}`);
         bits.push(`${db.changes.length} changes tracked`);
         if (live) bits.push(`<b>${live} live event${live > 1 ? "s" : ""}</b>`);
         document.getElementById("devbarText").innerHTML = bits.join(" · ");

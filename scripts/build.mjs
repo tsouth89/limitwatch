@@ -332,7 +332,7 @@ const renderStats = (latest) => {
     stat(latest.entries.length, "plans"),
     stat(out.changes.length, "changes logged"),
     stat(out.snapshot_count, "snapshots"),
-    stat(freshestDate(), "last updated"),
+    stat(freshestDate(), "data through"),
   ].join("");
 };
 const renderLimitCell = (e) => e.limits.map((l) => {
