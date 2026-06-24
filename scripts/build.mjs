@@ -252,6 +252,25 @@ try {
   if (err.code !== "ENOENT") throw err;
 }
 
+// Reset-window reference: how each provider's caps refresh (rolling vs fixed-per-account). Sourced
+// mechanic only — never an invented clock time. Optional file; validated like the rest of the data.
+const RESET_REQUIRED = ["provider", "window", "type", "detail", "confidence", "source"];
+const RESET_TYPES = ["rolling", "rolling-on-hit", "fixed-per-account", "fixed"];
+let resets = [];
+try {
+  const rw = JSON.parse(readFileSync(join(root, "data", "reset-windows.json"), "utf8"));
+  if (!Array.isArray(rw.windows)) throw new Error("reset-windows.json: windows not array");
+  for (const w of rw.windows) {
+    const who = `${w.provider ?? "?"} ${w.window ?? "?"}`;
+    for (const k of RESET_REQUIRED) if (!w[k]) throw new Error(`reset-windows.json: ${who} missing ${k}`);
+    if (!RESET_TYPES.includes(w.type)) throw new Error(`reset-windows.json: ${who} bad type "${w.type}" (expected ${RESET_TYPES.join("|")})`);
+    if (!TIERS.includes(w.confidence)) throw new Error(`reset-windows.json: ${who} bad confidence "${w.confidence}"`);
+  }
+  resets = rw.windows;
+} catch (err) {
+  if (err.code !== "ENOENT") throw err;
+}
+
 const out = {
   generated_at: new Date().toISOString(),
   snapshot_count: snapshots.length,
@@ -261,6 +280,7 @@ const out = {
   changes: collapsed.reverse(), // newest first
   usage_reports: usageReports,
   radar,
+  resets,
   drift: [],   // per-provider generosity trend, derived below once changeText() helpers exist
   snapshots,
 };

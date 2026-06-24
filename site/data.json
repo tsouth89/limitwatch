@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T14:39:25.291Z",
+  "generated_at": "2026-06-24T14:42:44.050Z",
   "snapshot_count": 6,
   "date_range": [
     "2026-01-15",
@@ -684,6 +684,56 @@
       "why": "GitHub Models service is being discontinued for new customers, effectively removing access to a consumer plan.",
       "kind": "limit_cut",
       "confidence": "official"
+    }
+  ],
+  "resets": [
+    {
+      "provider": "Anthropic",
+      "window": "5h",
+      "type": "rolling-on-hit",
+      "detail": "Rolling 5-hour session window. The 5-hour timer starts when you first reach the cap, and your allowance resets 5 hours after that — not on a fixed daily clock. Settings > Usage shows time remaining in the current session.",
+      "confidence": "official",
+      "source": "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+    },
+    {
+      "provider": "Anthropic",
+      "window": "week",
+      "type": "fixed-per-account",
+      "detail": "Weekly cap (applies across all models) resets at a fixed time each week that is assigned to your account — so the reset day/time varies per account, with no single global moment. Runs alongside the 5-hour session limit.",
+      "confidence": "official",
+      "source": "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+    },
+    {
+      "provider": "OpenAI",
+      "window": "3h",
+      "type": "rolling",
+      "detail": "Rolling 3-hour window. ChatGPT shows the reset time when you hit the cap; until it resets, chats fall back to a mini version of the model rather than blocking.",
+      "confidence": "official",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
+    {
+      "provider": "OpenAI",
+      "window": "week",
+      "type": "rolling",
+      "detail": "Thinking-model messages also carry a weekly allowance that refreshes on a rolling 7-day basis; the in-product reset time is shown when you reach it.",
+      "confidence": "official",
+      "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt"
+    },
+    {
+      "provider": "Google",
+      "window": "5h",
+      "type": "rolling",
+      "detail": "Under Google's product-based usage-limit model (Gemini), allowances refresh on a 5-hour basis on top of a weekly cap, weighted by prompt complexity and features used rather than a flat message count.",
+      "confidence": "announced",
+      "source": "https://support.google.com/googleone/answer/16882689"
+    },
+    {
+      "provider": "Google",
+      "window": "week",
+      "type": "fixed-per-account",
+      "detail": "A weekly cap sits above the 5-hour refresh in Gemini's usage-limit model; subscribers get a higher multiple of the free-tier allowance.",
+      "confidence": "announced",
+      "source": "https://support.google.com/googleone/answer/16882689"
     }
   ],
   "drift": [
