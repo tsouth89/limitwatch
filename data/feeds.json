@@ -7,7 +7,11 @@
     { "provider": "OpenAI", "product": "ChatGPT", "url": "https://openai.com/news/rss.xml", "format": "rss" },
     { "provider": "Anthropic", "product": "Claude", "url": "https://www.anthropic.com/news", "format": "html", "base": "https://www.anthropic.com", "link_pattern": "/news/[A-Za-z0-9\\-]+" },
     { "provider": "Google", "product": "Gemini", "url": "https://blog.google/products/gemini/rss/", "format": "rss" },
-    { "provider": "Cursor", "product": "Cursor", "url": "https://www.cursor.com/changelog", "format": "html", "base": "https://www.cursor.com", "link_pattern": "/changelog/[A-Za-z0-9\\-]+" }
+    { "provider": "Cursor", "product": "Cursor", "url": "https://www.cursor.com/changelog", "format": "html", "base": "https://www.cursor.com", "link_pattern": "/changelog/[A-Za-z0-9\\-]+" },
+    { "provider": "Replit", "product": "Replit", "url": "https://replit.com/blog/feed.xml", "format": "rss" }
   ],
-  "no_feed": []
+  "no_feed": [
+    { "provider": "Perplexity", "product": "Perplexity", "why": "Blog (perplexity.ai/hub) is a JS-rendered Framer site that returns no scrapeable article links to plain HTTP, and exposes no RSS. Needs a headed-browser fetch (the watch path) or a third-party mirror; left out of discovery until a plain-HTTP source is found." },
+    { "provider": "xAI", "product": "Grok", "why": "x.ai/news is server-rendered and scrapeable via curl, but Cloudflare returns 403 to Node's plain fetch (same block that keeps OpenAI's pages on the headed-browser watch path). The daily discovery job uses plain fetch, so it can't poll this; revisit if a non-Cloudflare mirror or feed appears, or route via the headed-browser path." }
+  ]
 }
