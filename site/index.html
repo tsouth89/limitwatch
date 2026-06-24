@@ -304,6 +304,27 @@
     .rsttype { flex: none; }
     .rstdetail { color: var(--ink); font-size: 13.5px; }
     .rstdetail .meta { font-size: 12px; }
+    #hub { border-color: var(--blue-soft); }
+    .hub-sec { margin-top: 1.2rem; }
+    .hub-sec:first-of-type { margin-top: .5rem; }
+    .hub-lbl { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 .55rem; }
+    .hub-lbl .meta { font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .hub-chips { display: flex; flex-direction: column; gap: .4rem; }
+    .hub-chip { display: flex; gap: .55rem; align-items: flex-start; padding: .5rem .7rem; border-radius: 8px; font-size: 13.5px; }
+    .hub-chip.up { background: var(--pos-soft); } .hub-chip.up .ic { color: var(--pos); }
+    .hub-chip.down { background: var(--neg-soft); } .hub-chip.down .ic { color: var(--neg); }
+    .hub-chip.flat { background: var(--neutral-soft); } .hub-chip.flat .ic { color: var(--muted-2); }
+    .hub-chip .ic { flex: none; font-weight: 800; }
+    .hub-chip a { font-size: 12px; }
+    .hub-rank { display: flex; flex-direction: column; gap: .35rem; }
+    .hub-rankrow { display: flex; align-items: center; gap: .5rem; font-size: 13.5px; flex-wrap: wrap; }
+    .hub-rankrow .nm { min-width: 5rem; font-weight: 700; flex: none; }
+    .hub-rankrow .why { color: var(--muted); font-size: 13px; }
+    .hub-receipts { display: flex; gap: .55rem; flex-wrap: wrap; margin-top: .5rem; }
+    .hub-rcard { background: var(--neutral-soft); border-radius: 8px; padding: .55rem .8rem; }
+    .hub-rcard .k { font-size: 12px; color: var(--muted); }
+    .hub-rcard .v { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .hub-more { margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--line-soft); display: flex; gap: 1.1rem; flex-wrap: wrap; font-size: 13px; }
     .bottomline { border-color: var(--blue-soft); background: linear-gradient(180deg, var(--paper-soft), var(--paper)); }
     .bl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .8rem; margin: .3rem 0 .2rem; }
     .bl-tile { border: 1px solid var(--line); border-radius: 10px; padding: .7rem .85rem; background: var(--paper); }
@@ -455,6 +476,35 @@
     <div class="notice" id="dataNotice"></div>
   </header>
   <main>
+    <div class="card" id="hub" style="display:none">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Where things stand</p>
+          <h2>AI limits right now</h2>
+          <p class="meta">The takeaway first: what just moved, who's getting more or less generous, and what a plan actually delivers. The full tables and history are below.</p>
+        </div>
+      </div>
+      <div class="hub-sec" id="hubMonthSec" style="display:none">
+        <p class="hub-lbl">Recent moves</p>
+        <div class="hub-chips" id="hubMonth"></div>
+      </div>
+      <div class="hub-sec" id="hubDriftSec" style="display:none">
+        <p class="hub-lbl">Getting more or less generous</p>
+        <div class="hub-rank" id="hubDrift"></div>
+      </div>
+      <div class="hub-sec" id="hubReceiptsSec" style="display:none">
+        <p class="hub-lbl">What your subscription actually buys <span class="meta">— measured in API-equivalent dollars, not claimed</span></p>
+        <div id="hubReceiptsLead" class="meta"></div>
+        <div class="hub-receipts" id="hubReceipts"></div>
+      </div>
+      <div class="hub-more">
+        <a href="#whatsnew"><b>What's new</b> — all live events</a>
+        <a href="#limits">Full limits table</a>
+        <a href="#resets">When limits reset</a>
+        <a href="#measured">All measured receipts</a>
+      </div>
+    </div>
+
     <div class="card bottomline" id="bottomLine" style="display:none">
       <p class="eyebrow">Bottom line</p>
       <div id="bottomLineBody"></div>
@@ -1634,6 +1684,78 @@
         }).join("");
         document.getElementById("resets").style.display = "";
         document.getElementById("navResets").style.display = "";
+      })();
+
+      // ---- Hub: answer-first summary pinned at the top (recent moves + generosity + measured value).
+      // Reuses the same derived data as the Drift/Measured tabs; the tabs stay as the detailed view. ----
+      (() => {
+        const esc6 = (s) => (s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        let shown = false;
+
+        // Recent moves: every drift signal across providers, newest first, colored by direction.
+        // Tie-break by decisiveness so a same-day price move beats its own context blurb, then dedupe
+        // by provider+date so one announcement (a price cut + its event) shows once, not twice.
+        const sigs = (db.drift ?? []).flatMap((p) => p.signals.map((s) => ({ ...s, provider: p.provider })));
+        sigs.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0) || (Math.abs(b.dir) - Math.abs(a.dir)));
+        const seenMove = new Set();
+        const moves = [];
+        for (const s of sigs) {
+          const k = `${s.provider}|${s.date}`;
+          if (seenMove.has(k)) continue;
+          seenMove.add(k); moves.push(s);
+          if (moves.length >= 5) break;
+        }
+        if (moves.length) {
+          const ic = (d) => d > 0 ? "↑" : d < 0 ? "↓" : "→";
+          document.getElementById("hubMonth").innerHTML = moves.map((s) => {
+            const cls = s.dir > 0 ? "up" : s.dir < 0 ? "down" : "flat";
+            return `<div class="hub-chip ${cls}"><span class="ic">${ic(s.dir)}</span><span>${esc6(s.text)}${s.source ? ` <a href="${safeUrl(s.source)}" target="_blank" rel="nofollow noopener">src</a>` : ""}</span></div>`;
+          }).join("");
+          document.getElementById("hubMonthSec").style.display = ""; shown = true;
+        }
+
+        // Generosity verdict per provider (db.drift is already sorted most-favorable first).
+        const drift = db.drift ?? [];
+        if (drift.length) {
+          const verdict = { "more generous": ["up", "↑ more generous"], "less generous": ["down", "↓ less generous"], mixed: ["mixed", "~ mixed"], stable: ["stable", "± stable"] };
+          document.getElementById("hubDrift").innerHTML = drift.map((p) => {
+            const [cls, txt] = verdict[p.label] ?? verdict.stable;
+            const why = p.signals[0] ? esc6(p.signals[0].text) : "";
+            return `<div class="hub-rankrow"><span class="nm">${provName(p.provider)}</span><span class="driftverdict ${cls}">${txt}</span><span class="why">${why}</span></div>`;
+          }).join("");
+          document.getElementById("hubDriftSec").style.display = ""; shown = true;
+        }
+
+        // What a $20 plan buys: implied per-window budget (same math as the Measured rollup).
+        const reps = (db.usage_reports ?? []).filter((r) => r.metric === "percent" && r.api_equiv_usd != null && r.observed);
+        if (reps.length) {
+          const winOrder = { "5h": 0, day: 1, week: 2, month: 3 };
+          const groups = {};
+          for (const r of reps) (groups[`${r.provider}|${r.plan}|${r.window}`] ||= []).push(r);
+          const cards = Object.entries(groups)
+            .sort((a, b) => (winOrder[a[0].split("|")[2]] ?? 9) - (winOrder[b[0].split("|")[2]] ?? 9))
+            .map(([k, rs]) => {
+              const [prov, plan, window] = k.split("|");
+              const implied = rs.map((r) => r.api_equiv_usd / (r.observed / 100));
+              const lo = Math.round(Math.min(...implied)), hi = Math.round(Math.max(...implied));
+              return { prov, plan, window, range: lo !== hi ? `$${lo}–$${hi}` : `$${lo}`, floor: rs.some((r) => r.value_basis === "floor") };
+            });
+          if (cards.length) {
+            const lead = cards[0];
+            document.getElementById("hubReceiptsLead").innerHTML =
+              `The limit you hit is worth more than you pay: ${provName(lead.prov)} ${esc6(lead.plan)}'s caps run roughly the API prices below${cards.some((c) => c.floor) ? " (floors — Claude Code burn only, so the real value is higher)" : ""}.`;
+            document.getElementById("hubReceipts").innerHTML = cards.map((c) =>
+              `<div class="hub-rcard"><div class="k">${esc6(provName(c.prov))} ${esc6(c.plan)} · per ${shortWin(c.window)}</div><div class="v">~${c.range}</div></div>`
+            ).join("");
+            document.getElementById("hubReceiptsSec").style.display = ""; shown = true;
+          }
+        }
+
+        if (shown) {
+          document.getElementById("hub").style.display = "";
+          // The hub supersedes the old "Bottom line" tile card — hide it to avoid a duplicate summary.
+          const bl = document.getElementById("bottomLine"); if (bl) bl.style.display = "none";
+        }
       })();
 
       // Highlight the nav link for whichever section is centered in the viewport.
