@@ -170,6 +170,15 @@ Required: `id`, `provider`, `title`, `kind`, `starts_on`, `confidence`, `quote`,
 as everything else: **record the published wording verbatim and cite a source**; if you can't verify
 the window/end-date, don't publish the event.
 
+**`consumer_impact`** (optional, `"favorable"` | `"unfavorable"`) — an explicit human-judged direction
+for the **drift verdict** only. Use it for structural changes that genuinely help or hurt subscribers
+but carry **no numeric from/to** the snapshot diff can score — e.g. a billing-model overhaul that's an
+effective tightening without a sticker-price move (Copilot PRUs → metered AI Credits). It's a sourced
+editorial call, not a measured delta: document the reasoning in `note`, and it must be defensible from
+the cited source, never sentiment alone. It moves the per-provider generosity verdict but is **never**
+turned into a changelog row or a fabricated number. Without it, a `pricing_change`/`new_plan` event
+stays neutral in the drift score (only price/limit numbers that actually moved score a direction).
+
 ## Reset windows (`data/reset-windows.json`, optional)
 
 How each cap *refreshes* (the "when does my limit come back" reference), separate from how big it is.

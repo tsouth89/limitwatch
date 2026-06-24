@@ -177,6 +177,7 @@ try {
   for (const e of ev.events) {
     for (const k of EVENT_REQUIRED) if (e[k] == null) throw new Error(`events.json: ${e.id ?? "?"} missing ${k}`);
     if (!TIERS.includes(e.confidence)) throw new Error(`events.json: ${e.id} bad confidence "${e.confidence}"`);
+    if (e.consumer_impact != null && !["favorable", "unfavorable"].includes(e.consumer_impact)) throw new Error(`events.json: ${e.id} bad consumer_impact "${e.consumer_impact}" (favorable|unfavorable)`);
     if (e.ends_on && e.ends_on < e.starts_on) throw new Error(`events.json: ${e.id} ends_on before starts_on`);
     if (e.starts_on > today) dataWarnings.push(`events.json: ${e.id} starts_on ${e.starts_on} is after ${today}`);
   }
@@ -412,6 +413,11 @@ for (const e of events) {
   // capability bump mis-tagged "limit_boost" was reading a provider users feel got worse as "more
   // generous".) Human-curated events and removals/promos still score by kind.
   if (e.auto && (e.kind === "limit_boost" || e.kind === "limit_cut") && e.factor == null && !e.window) dir = 0;
+  // Explicit human-judged direction for structural changes with no numeric from/to (e.g. a billing-
+  // model overhaul that's an effective tightening without a sticker-price move). A sourced editorial
+  // call, documented in the event note — overrides the kind-based default. Wins last.
+  if (e.consumer_impact === "favorable") dir = 1;
+  else if (e.consumer_impact === "unfavorable") dir = -1;
   const temp = e.ends_on ? " (temporary)" : "";
   driftSig(e.provider, dir, `${e.title}${temp}`, e.source, when);
 }

@@ -60,13 +60,14 @@
       "applies_to": ["Pro", "Pro+", "Business", "Enterprise"],
       "title": "Copilot moves to usage-based billing (AI Credits)",
       "kind": "pricing_change",
+      "consumer_impact": "unfavorable",
       "starts_on": "2026-06-01",
       "ends_on": null,
       "permanent": true,
       "confidence": "announced",
       "quote": "Starting June 1, premium request units (PRUs) will be replaced by GitHub AI Credits.",
       "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
-      "note": "Billing-model change, not a promo. Premium request units (PRUs) are replaced by GitHub AI Credits, consumed by token usage (input, output, cached) at each model's published API rate. Monthly price is unchanged but now bundles a matching credit pool: Pro $10/mo incl $10 in credits, Pro+ $39/mo incl $39 in credits; Business $19/seat, Enterprise $39/seat. Existing annual Pro/Pro+ subscribers stay on PRU-based pricing until their plan expires (with model multipliers rising Jun 1 for annual plans). GitHub shipped a preview-bill experience in early May so users could project costs before the switch."
+      "note": "Billing-model change, not a promo. Premium request units (PRUs) are replaced by GitHub AI Credits, consumed by token usage (input, output, cached) at each model's published API rate. Monthly price is unchanged but now bundles a matching credit pool: Pro $10/mo incl $10 in credits, Pro+ $39/mo incl $39 in credits; Business $19/seat, Enterprise $39/seat. Existing annual Pro/Pro+ subscribers stay on PRU-based pricing until their plan expires (with model multipliers rising Jun 1 for annual plans). GitHub shipped a preview-bill experience in early May so users could project costs before the switch. consumer_impact: unfavorable — on balance a tightening for active users: a fixed monthly request allowance becomes a depletable metered pool you can exhaust mid-cycle, and annual-plan model multipliers rise, even though the sticker price held. No published per-plan number moved, so this is a sourced human judgment (widely reported as a downgrade), not a measured delta — which is why it drives the drift verdict but not the changelog."
     },
     {
       "id": "google-aiplus-pricedrop-credits-2026",
