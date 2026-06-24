@@ -261,10 +261,11 @@ const out = {
   changes: collapsed.reverse(), // newest first
   usage_reports: usageReports,
   radar,
+  drift: [],   // per-provider generosity trend, derived below once changeText() helpers exist
   snapshots,
 };
 
-writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
+// site/data.json is written below (after out.drift is derived) so the shipped file is complete.
 
 const escHtml = (s) => String(s ?? "")
   .replace(/&/g, "&amp;")
@@ -347,6 +348,59 @@ const changeText = (c) => {
   if (c.kind === "limit_added") return c.to == null ? `${prov} ${plan} plan added (usage unpublished)` : `${prov} ${plan} ${niceLimit(c.to, unit, window)}`;
   return `${prov} ${plan} ${niceLimit(null, unit, window)} removed`;
 };
+
+// ── Drift leaderboard ────────────────────────────────────────────────────────────────────────
+// Per-provider read on whether a consumer is getting MORE or LESS over a recent window. Scored ONLY
+// from signals that carry an unambiguous direction: numeric price moves, numeric same-unit limit
+// moves, and explicit boost/cut/removal/promo events. Anything ambiguous (model swaps, "?x"→"4x"
+// unknowns, plan added/removed, billing-model changes) is listed as context but never scored, so the
+// verdict can't be manufactured from a unit mismatch. Source-linked; this turns the time-series moat
+// into a one-glance headline. Window is generous (default 120d) because snapshot cadence is sparse.
+const DRIFT_WINDOW_DAYS = Number(process.env.DRIFT_WINDOW_DAYS || 120);
+const driftCutoff = new Date(Date.now() - DRIFT_WINDOW_DAYS * 86400000).toISOString().slice(0, 10);
+const numOf = (v) => { const m = String(v ?? "").replace(/,/g, "").match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; };
+const driftMap = new Map();   // provider -> { up:[], down:[], context:[] }
+const driftFor = (p) => { if (!driftMap.has(p)) driftMap.set(p, { up: [], down: [], context: [] }); return driftMap.get(p); };
+const driftSig = (provider, dir, text, source, date) => {
+  const bucket = dir > 0 ? "up" : dir < 0 ? "down" : "context";
+  driftFor(provider)[bucket].push({ text, source: source ?? null, date });
+};
+// Derived snapshot diffs (collapsed). out.changes is newest-first; date already reflects real effective date.
+for (const c of out.changes) {
+  if (c.date < driftCutoff) continue;
+  const provider = c.key.split("|")[0];
+  const text = changeText(c);
+  if (c.kind === "price_changed") {
+    const a = numOf(c.from), b = numOf(c.to);
+    driftSig(provider, a != null && b != null ? Math.sign(a - b) : 0, text, c.source, c.date);   // cheaper = up (favorable)
+  } else if (c.kind === "limit_changed") {
+    const a = numOf(c.from), b = numOf(c.to);
+    driftSig(provider, a != null && b != null ? Math.sign(b - a) : 0, text, c.source, c.date);   // bigger limit = up
+  } else {
+    driftSig(provider, 0, text, c.source, c.date);   // added/removed/model swap → context only
+  }
+}
+// Events (incl auto): explicit direction by kind. pricing_change/new_plan stay context (direction not
+// guaranteed numeric here, and a real price move is already captured from the snapshot diff above).
+const EVENT_DIR = { limit_boost: 1, promo: 1, limit_cut: -1, removal: -1 };
+for (const e of events) {
+  const when = e.starts_on || "";
+  if (when < driftCutoff) continue;
+  const dir = EVENT_DIR[e.kind] ?? 0;
+  const temp = e.ends_on ? " (temporary)" : "";
+  driftSig(e.provider, dir, `${e.title}${temp}`, e.source, when);
+}
+out.drift = [...driftMap.entries()].map(([provider, b]) => {
+  const score = b.up.length - b.down.length;
+  const label = (!b.up.length && !b.down.length) ? "stable"
+    : (b.down.length && b.up.length) ? "mixed"
+    : score > 0 ? "more generous" : "less generous";
+  const all = [...b.up.map((s) => ({ ...s, dir: 1 })), ...b.down.map((s) => ({ ...s, dir: -1 })), ...b.context.map((s) => ({ ...s, dir: 0 }))]
+    .sort((x, y) => (x.date < y.date ? 1 : x.date > y.date ? -1 : 0));
+  return { provider, label, score, up: b.up.length, down: b.down.length, signals: all };
+}).sort((x, y) => y.score - x.score || (y.up + y.down) - (x.up + x.down) || provName(x.provider).localeCompare(provName(y.provider)));
+
+writeFileSync(join(root, "site", "data.json"), JSON.stringify(out, null, 2));
 const renderChangelog = () => {
   if (!out.changes.length) return `<p class="empty">No changes yet, need 2+ snapshots.</p>`;
   const kindClass = { model_changed: "model", price_changed: "price", limit_changed: "limit", limit_added: "added", limit_removed: "removed" };

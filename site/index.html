@@ -280,6 +280,22 @@
     .radtitle a { color: var(--ink); font-weight: 600; text-decoration: none; }
     .radtitle a:hover { color: var(--blue-ink); text-decoration: underline; }
     .radwhy { font-size: 13px; }
+    .driftrow { padding: .7rem 0; border-bottom: 1px solid var(--line-soft); }
+    .driftrow:last-child { border-bottom: 0; }
+    .drifthead { display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; }
+    .driftprov { display: inline-flex; align-items: center; gap: .35rem; font-weight: 700; }
+    .driftverdict { font-size: 11.5px; font-weight: 800; padding: .1rem .5rem; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+    .driftverdict.up { color: var(--pos); background: var(--pos-soft); border-color: var(--pos-line); }
+    .driftverdict.down { color: var(--neg); background: var(--neg-soft); border-color: var(--neg-line); }
+    .driftverdict.mixed { color: var(--amber); background: var(--amber-soft); border-color: var(--amber-line); }
+    .driftverdict.stable { color: var(--muted); background: var(--neutral-soft); }
+    .driftsigs { margin: .4rem 0 0 .1rem; display: flex; flex-direction: column; gap: .18rem; }
+    .driftsig { font-size: 13px; color: var(--ink); display: flex; gap: .45rem; align-items: baseline; }
+    .driftsig .ds { font-weight: 800; width: .8rem; flex: none; text-align: center; }
+    .driftsig .ds.up { color: var(--pos); }
+    .driftsig .ds.down { color: var(--neg); }
+    .driftsig .ds.ctx { color: var(--muted-2); }
+    .driftsig a { font-size: 12px; }
     .bottomline { border-color: var(--blue-soft); background: linear-gradient(180deg, var(--paper-soft), var(--paper)); }
     .bl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .8rem; margin: .3rem 0 .2rem; }
     .bl-tile { border: 1px solid var(--line); border-radius: 10px; padding: .7rem .85rem; background: var(--paper); }
@@ -409,6 +425,7 @@
       <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
       <div class="navlinks" id="navlinks">
         <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">What's new</a>
+        <a href="#drift" data-section="drift" id="navDrift" style="display:none">Drift</a>
         <a href="#limits" data-section="limits">Limits</a>
         <a href="#compare" data-section="compare">Compare</a>
         <a href="#measured" data-section="measured" id="navMeasured" style="display:none">Measured</a>
@@ -472,6 +489,17 @@
         <p class="meta">Fresh limit/pricing-relevant announcements the discovery bot surfaces automatically from provider feeds, newest first. Machine-flagged, not yet hand-verified; the concrete ones get promoted above with a sourced quote, and items age off after a few weeks. <span class="badge announced">auto</span></p>
         <div id="radarBody"></div>
       </div>
+    </div>
+
+    <div class="card" id="drift" style="display:none">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">The moat</p>
+          <h2>Who's getting more (or less) generous</h2>
+          <p class="meta" id="driftIntro">Net direction of each provider's consumer plans over the tracked window, from logged limit and price changes. Favorable (<span style="color:var(--pos);font-weight:700">↑</span>) = cheaper or higher limits; unfavorable (<span style="color:var(--neg);font-weight:700">↓</span>) = price hikes or cuts. Model swaps and billing-model changes are shown as context, not scored.</p>
+        </div>
+      </div>
+      <div id="driftBody"></div>
     </div>
 
     <div class="card" id="limits">
@@ -1527,12 +1555,43 @@
         document.getElementById("navWhatsnew").style.display = "";
       })();
 
+      // ---- Drift leaderboard: per-provider generosity trend, derived in build.mjs (data.json .drift) ----
+      (() => {
+        const drift = db.drift ?? [];
+        if (!drift.length) return;
+        const esc4 = (s) => (s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const verdict = {
+          "more generous": { cls: "up", txt: "↑ more generous" },
+          "less generous": { cls: "down", txt: "↓ less generous" },
+          mixed: { cls: "mixed", txt: "~ mixed" },
+          stable: { cls: "stable", txt: "± stable" },
+        };
+        const sigMark = (d) => d > 0 ? `<span class="ds up">+</span>` : d < 0 ? `<span class="ds down">−</span>` : `<span class="ds ctx">·</span>`;
+        document.getElementById("driftBody").innerHTML = drift.map((p) => {
+          const v = verdict[p.label] ?? verdict.stable;
+          const tally = (p.up || p.down) ? `<span class="meta">${p.up} up · ${p.down} down</span>` : "";
+          const sigs = p.signals.map((s) =>
+            `<div class="driftsig">${sigMark(s.dir)}<span>${esc4(s.text)}${s.source ? ` <a href="${safeUrl(s.source)}" target="_blank" rel="nofollow noopener">src</a>` : ""}</span></div>`
+          ).join("");
+          return `<div class="driftrow">
+            <div class="drifthead">
+              <span class="driftprov">${provMark(p.provider)} ${provName(p.provider)}</span>
+              <span class="driftverdict ${v.cls}">${v.txt}</span>
+              ${tally}
+            </div>
+            <div class="driftsigs">${sigs}</div>
+          </div>`;
+        }).join("");
+        document.getElementById("drift").style.display = "";
+        document.getElementById("navDrift").style.display = "";
+      })();
+
       // Highlight the nav link for whichever section is centered in the viewport.
       // ---- Tabs: show ONE section at a time instead of an endless stack. The Bottom Line stays
       // pinned above as a persistent summary; the nav switches the rest. ----
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const tabOrder = ["whatsnew", "limits", "compare", "measured", "trends", "changelog", "trust"];
+      const tabOrder = ["whatsnew", "drift", "limits", "compare", "measured", "trends", "changelog", "trust"];
       const tabs = tabOrder
         .map((id) => ({ id, el: document.getElementById(id), nav: navMap[id] }))
         .filter((t) => t.el && t.nav && t.nav.style.display !== "none"); // only sections that have data

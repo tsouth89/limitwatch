@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T14:28:18.294Z",
+  "generated_at": "2026-06-24T14:38:27.365Z",
   "snapshot_count": 6,
   "date_range": [
     "2026-01-15",
@@ -684,6 +684,167 @@
       "why": "GitHub Models service is being discontinued for new customers, effectively removing access to a consumer plan.",
       "kind": "limit_cut",
       "confidence": "official"
+    }
+  ],
+  "drift": [
+    {
+      "provider": "Google",
+      "label": "more generous",
+      "score": 2,
+      "up": 2,
+      "down": 0,
+      "signals": [
+        {
+          "text": "Google AI Plus $7.99 -> $4.99 / mo",
+          "source": "https://support.google.com/googleone/answer/16882689",
+          "date": "2026-06-08",
+          "dir": 1
+        },
+        {
+          "text": "AI Plus cut to $4.99, storage doubled, base AI credits dropped",
+          "source": "https://support.google.com/googleone/answer/16882689",
+          "date": "2026-06-08",
+          "dir": 0
+        },
+        {
+          "text": "Google AI Ultra (20x) $249.99 -> $199.99 / mo",
+          "source": "https://gemini.google/subscriptions/",
+          "date": "2026-05-19",
+          "dir": 1
+        },
+        {
+          "text": "Google AI Ultra (20x) ?x usage -> 20x usage",
+          "source": "https://gemini.google/subscriptions/",
+          "date": "2026-05-19",
+          "dir": 0
+        },
+        {
+          "text": "Google AI Ultra (5x) 5x usage",
+          "source": "https://gemini.google/subscriptions/",
+          "date": "2026-05-19",
+          "dir": 0
+        },
+        {
+          "text": "Google AI Pro ?x usage -> 4x usage",
+          "source": "https://gemini.google/subscriptions/",
+          "date": "2026-05-19",
+          "dir": 0
+        },
+        {
+          "text": "Google AI Plus ?x usage -> 2x usage",
+          "source": "https://gemini.google/subscriptions/",
+          "date": "2026-05-19",
+          "dir": 0
+        },
+        {
+          "text": "Google AI Plus plan added (usage unpublished)",
+          "source": "http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/",
+          "date": "2026-04-01",
+          "dir": 0
+        }
+      ]
+    },
+    {
+      "provider": "Anthropic",
+      "label": "mixed",
+      "score": 1,
+      "up": 2,
+      "down": 1,
+      "signals": [
+        {
+          "text": "Claude Fable 5 & Mythos 5 suspended by US government directive",
+          "source": "https://www.anthropic.com/news/fable-mythos-access",
+          "date": "2026-06-12",
+          "dir": -1
+        },
+        {
+          "text": "Claude Code weekly limit +50% (temporary)",
+          "source": "https://aicatchup.com/news/claude-code-weekly-limits-50-percent-promo",
+          "date": "2026-05-13",
+          "dir": 1
+        },
+        {
+          "text": "Claude Code 5-hour limit doubled",
+          "source": "https://www.verdent.ai/guides/claude-code-limits-doubled-may-2026",
+          "date": "2026-05-06",
+          "dir": 1
+        }
+      ]
+    },
+    {
+      "provider": "GitHub",
+      "label": "more generous",
+      "score": 1,
+      "up": 1,
+      "down": 0,
+      "signals": [
+        {
+          "text": "GitHub Copilot adds larger context windows and reasoning levels",
+          "source": "https://github.blog/changelog/2026-06-04-larger-context-windows-and-configurable-reasoning-levels-for-github-copilot",
+          "date": "2026-06-04",
+          "dir": 1
+        },
+        {
+          "text": "Copilot moves to usage-based billing (AI Credits)",
+          "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
+          "date": "2026-06-01",
+          "dir": 0
+        }
+      ]
+    },
+    {
+      "provider": "Cursor",
+      "label": "stable",
+      "score": 0,
+      "up": 0,
+      "down": 0,
+      "signals": [
+        {
+          "text": "Cursor Pro+ $70 credit / mo",
+          "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
+          "date": "2026-02-25",
+          "dir": 0
+        }
+      ]
+    },
+    {
+      "provider": "OpenAI",
+      "label": "stable",
+      "score": 0,
+      "up": 0,
+      "down": 0,
+      "signals": [
+        {
+          "text": "OpenAI Go GPT-5.4 Thinking -> GPT-5.5 Thinking (10 messages / 5h)",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "date": "2026-04-23",
+          "dir": 0
+        },
+        {
+          "text": "OpenAI Go GPT-5.3 -> GPT-5.5 (160 messages / 3h)",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "date": "2026-04-23",
+          "dir": 0
+        },
+        {
+          "text": "OpenAI Pro GPT-5.3 -> GPT-5.5",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "date": "2026-04-23",
+          "dir": 0
+        },
+        {
+          "text": "OpenAI Plus GPT-5.4 Thinking -> GPT-5.5 Thinking (3,000 messages / wk)",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "date": "2026-04-23",
+          "dir": 0
+        },
+        {
+          "text": "OpenAI Plus GPT-5.3 -> GPT-5.5 (160 messages / 3h)",
+          "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
+          "date": "2026-04-23",
+          "dir": 0
+        }
+      ]
     }
   ],
   "snapshots": [
