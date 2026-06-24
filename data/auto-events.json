@@ -1,28 +1,5 @@
 {
   "schema": 1,
-  "note": "Auto-published events from scripts/discover.mjs. Machine-extracted, but every quote is verified to appear VERBATIM in the cited source before publishing, and only high-certainty items pass. Tagged auto:true and badged on-site. build.mjs merges these with the hand-curated data/events.json; a manual event with the same id/source supersedes. Safe to hand-correct or delete any entry.",
-  "events": [
-    {
-      "id": "auto-github-github-copilot-context-window-expanded-to-1-mill-2026",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "applies_to": [
-        "Copilot Pro",
-        "Copilot Pro+",
-        "Copilot Max"
-      ],
-      "title": "GitHub Copilot adds larger context windows and reasoning levels",
-      "kind": "limit_boost",
-      "window": null,
-      "factor": null,
-      "starts_on": "2026-06-04",
-      "ends_on": null,
-      "permanent": true,
-      "confidence": "official",
-      "quote": "GitHub Copilot now supports larger context windows and configurable reasoning levels to help you tackle deeper, more complex work.",
-      "source": "https://github.blog/changelog/2026-06-04-larger-context-windows-and-configurable-reasoning-levels-for-github-copilot",
-      "auto": true,
-      "flagged_at": "2026-06-08T20:46:22.439Z"
-    }
-  ]
+  "note": "Auto-published events from scripts/discover.mjs. Machine-extracted, but every quote is verified to appear VERBATIM in the cited source before publishing, and only high-certainty items pass. Tagged auto:true and badged on-site. build.mjs merges these with the hand-curated data/events.json; a manual event with the same id/source supersedes. Safe to hand-correct or delete any entry. (Removed the 2026-06-04 'larger context windows / reasoning levels' entry: a capability change, not a consumer usage-limit or price change, so it fails the tightened scope and shouldn't read as a 'limit boost'.)",
+  "events": []
 }

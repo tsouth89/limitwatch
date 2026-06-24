@@ -406,7 +406,12 @@ const EVENT_DIR = { limit_boost: 1, promo: 1, limit_cut: -1, removal: -1 };
 for (const e of events) {
   const when = e.starts_on || "";
   if (when < driftCutoff) continue;
-  const dir = EVENT_DIR[e.kind] ?? 0;
+  let dir = EVENT_DIR[e.kind] ?? 0;
+  // An AUTO-classified boost/cut with no magnitude (no factor, no window) is too weak to move the
+  // verdict — its direction is a bare machine guess. Show it as context, not a scored direction. (A
+  // capability bump mis-tagged "limit_boost" was reading a provider users feel got worse as "more
+  // generous".) Human-curated events and removals/promos still score by kind.
+  if (e.auto && (e.kind === "limit_boost" || e.kind === "limit_cut") && e.factor == null && !e.window) dir = 0;
   const temp = e.ends_on ? " (temporary)" : "";
   driftSig(e.provider, dir, `${e.title}${temp}`, e.source, when);
 }

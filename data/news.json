@@ -1,46 +1,5 @@
 {
   "schema": 1,
-  "note": "Auto-flagged news radar. Items the discovery LLM (scripts/discover.mjs) marked limit/pricing-relevant from provider feeds. UNVERIFIED machine output, NOT verified facts: a human promotes the real ones into data/events.json (with a verbatim quote) and they then appear in What's New / the changelog. Appended automatically by discover.mjs (dedup by link, newest first, capped). Safe to hand-prune.",
-  "items": [
-    {
-      "at": "2026-06-19",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "title": "AI credits consumed per user now in the Copilot usage metrics API",
-      "link": "https://github.blog/changelog/2026-06-19-ai-credits-consumed-per-user-now-in-the-copilot-usage-metrics-api",
-      "why": "Adds visibility to AI credits consumption metrics, which relates to tracking subscription usage and quota monitoring for Copilot.",
-      "kind": "limit_boost",
-      "confidence": "official"
-    },
-    {
-      "at": "2026-06-18",
-      "provider": "OpenAI",
-      "product": "ChatGPT",
-      "title": "New usage analytics and updated spend controls for enterprises",
-      "link": "https://openai.com/index/chatgpt-enterprise-spend-controls",
-      "why": "Announces updated spend controls for enterprise plans, which relates to usage limits and quota management.",
-      "kind": "limit_boost",
-      "confidence": "announced"
-    },
-    {
-      "at": "2026-06-16",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "title": "GitHub Models is no longer available to new customers",
-      "link": "https://github.blog/changelog/2026-06-16-github-models-is-no-longer-available-to-new-customers",
-      "why": "GitHub Models service is being discontinued for new customers, effectively removing access to a consumer plan.",
-      "kind": "limit_cut",
-      "confidence": "official"
-    },
-    {
-      "at": "2026-06-04",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "title": "Larger context windows and configurable reasoning levels for GitHub Copilot",
-      "link": "https://github.blog/changelog/2026-06-04-larger-context-windows-and-configurable-reasoning-levels-for-github-copilot",
-      "why": "Larger context windows are a direct increase to a published Copilot usage limit.",
-      "kind": "limit_boost",
-      "confidence": "announced"
-    }
-  ]
+  "note": "Auto-flagged news radar. Items the discovery LLM (scripts/discover.mjs) marked limit/pricing-relevant from provider feeds. UNVERIFIED machine output, NOT verified facts: a human promotes the real ones into data/events.json (with a verbatim quote) and they then appear in What's New / the changelog. Appended automatically by discover.mjs (dedup by link, newest first, capped). Safe to hand-prune. (Cleared 2026-06-24: the four items here predated the classifier tightening and were all out of scope — usage-metrics visibility, enterprise-only spend controls, a dev-playground deprecation, and a context-window capability bump. The stricter classifier won't re-flag them.)",
+  "items": []
 }

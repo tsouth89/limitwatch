@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T18:55:07.033Z",
+  "generated_at": "2026-06-24T19:03:20.721Z",
   "snapshot_count": 6,
   "date_range": [
     "2026-01-15",
@@ -109,28 +109,6 @@
       "quote": "Decrease in price: The standard monthly price of your AI Plus plan will be lowered from $7.99/month to $4.99/month, and annual plans will be lowered from $79.99/year to $49.99/year. Increase in storage: We're doubling the amount of cloud storage included with your AI Plus plan from 200 GB to 400 GB. While 200 AI credits will no longer be included as a benefit in your base plan each month, the new usage limit model we are introducing should allow you to maintain the same experience you are used to.",
       "source": "https://support.google.com/googleone/answer/16882689",
       "note": "Source: official Google email to AI Plus subscribers, June 8, 2026 (corroborated by 9to5Google, Engadget, Android Police). Three concurrent changes: (1) price down $7.99->$4.99/mo and $79.99->$49.99/yr, applied next 1-2 billing cycles or at offer-period end; (2) cloud storage 200GB->400GB, rolling out over a few days; (3) the bundled 200 AI credits/month are removed from the base plan as Google shifts to product-based, compute-weighted usage limits (factoring prompt complexity, features used, chat length; 5h refresh + weekly cap; AI Plus still 2x non-subscriber). The AI-credit usage model is rolling out to other products starting with Flow and Antigravity. Per Google One support, AI credits remain purchasable only on AI Pro/Ultra, not AI Plus. Public pricing pages (one.google.com, gemini.google) still showed old $7.99/200GB at time of capture; snapshot row stays as-is (never edit a past snapshot) until the next snapshot confirms the new figures."
-    },
-    {
-      "id": "auto-github-github-copilot-context-window-expanded-to-1-mill-2026",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "applies_to": [
-        "Copilot Pro",
-        "Copilot Pro+",
-        "Copilot Max"
-      ],
-      "title": "GitHub Copilot adds larger context windows and reasoning levels",
-      "kind": "limit_boost",
-      "window": null,
-      "factor": null,
-      "starts_on": "2026-06-04",
-      "ends_on": null,
-      "permanent": true,
-      "confidence": "official",
-      "quote": "GitHub Copilot now supports larger context windows and configurable reasoning levels to help you tackle deeper, more complex work.",
-      "source": "https://github.blog/changelog/2026-06-04-larger-context-windows-and-configurable-reasoning-levels-for-github-copilot",
-      "auto": true,
-      "flagged_at": "2026-06-08T20:46:22.439Z"
     }
   ],
   "changes": [
@@ -654,38 +632,7 @@
       "evidence": "cc-usage.mjs --since 2026-06-13T01:00:00Z (Friday-night reset anchor, approximate). All projects, deduped by message.id."
     }
   ],
-  "radar": [
-    {
-      "at": "2026-06-19",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "title": "AI credits consumed per user now in the Copilot usage metrics API",
-      "link": "https://github.blog/changelog/2026-06-19-ai-credits-consumed-per-user-now-in-the-copilot-usage-metrics-api",
-      "why": "Adds visibility to AI credits consumption metrics, which relates to tracking subscription usage and quota monitoring for Copilot.",
-      "kind": "limit_boost",
-      "confidence": "official"
-    },
-    {
-      "at": "2026-06-18",
-      "provider": "OpenAI",
-      "product": "ChatGPT",
-      "title": "New usage analytics and updated spend controls for enterprises",
-      "link": "https://openai.com/index/chatgpt-enterprise-spend-controls",
-      "why": "Announces updated spend controls for enterprise plans, which relates to usage limits and quota management.",
-      "kind": "limit_boost",
-      "confidence": "announced"
-    },
-    {
-      "at": "2026-06-16",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "title": "GitHub Models is no longer available to new customers",
-      "link": "https://github.blog/changelog/2026-06-16-github-models-is-no-longer-available-to-new-customers",
-      "why": "GitHub Models service is being discontinued for new customers, effectively removing access to a consumer plan.",
-      "kind": "limit_cut",
-      "confidence": "official"
-    }
-  ],
+  "radar": [],
   "resets": [
     {
       "provider": "Anthropic",
@@ -822,27 +769,6 @@
       ]
     },
     {
-      "provider": "GitHub",
-      "label": "more generous",
-      "score": 1,
-      "up": 1,
-      "down": 0,
-      "signals": [
-        {
-          "text": "GitHub Copilot adds larger context windows and reasoning levels",
-          "source": "https://github.blog/changelog/2026-06-04-larger-context-windows-and-configurable-reasoning-levels-for-github-copilot",
-          "date": "2026-06-04",
-          "dir": 1
-        },
-        {
-          "text": "Copilot moves to usage-based billing (AI Credits)",
-          "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
-          "date": "2026-06-01",
-          "dir": 0
-        }
-      ]
-    },
-    {
       "provider": "Cursor",
       "label": "stable",
       "score": 0,
@@ -853,6 +779,21 @@
           "text": "Cursor Pro+ $70 credit / mo",
           "source": "http://web.archive.org/web/20260225213855/https://cursor.com/docs/account/pricing",
           "date": "2026-02-25",
+          "dir": 0
+        }
+      ]
+    },
+    {
+      "provider": "GitHub",
+      "label": "stable",
+      "score": 0,
+      "up": 0,
+      "down": 0,
+      "signals": [
+        {
+          "text": "Copilot moves to usage-based billing (AI Credits)",
+          "source": "https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/",
+          "date": "2026-06-01",
           "dir": 0
         }
       ]
