@@ -20,7 +20,9 @@ The history is the moat. Snapshots are copyable; a 6-month time series is not.
 3. `data/events.json` (optional) — time-bounded promos/boosts/throttles (spans, not point-in-time
    facts). Passed through to `site/data.json`; the page computes active/upcoming/ended from today.
 4. `site/index.html` — static page. Renders a slim "Live" status bar with a roadmap, a **What's new**
-   card (live events with countdowns + headline changes), the latest limits, value-per-dollar bars,
+   card (live events with countdowns + headline changes), a **Drift** leaderboard (per-provider
+   "getting more/less generous" verdict derived from logged changes + events), the latest limits, a
+   **Resets** reference (how each cap refreshes — `data/reset-windows.json`), value-per-dollar bars,
    a cross-provider token estimate, real measured receipts, a **price-history sparkline per plan**
    (every plan in 2+ snapshots), and the derived changelog. All numbers link back to their source.
 
@@ -94,9 +96,17 @@ feed). Only verified sources are listed; remaining gaps are recorded in `no_feed
 `data/discover-state.json`; the first run seeds a silent baseline.
 
 - **Without an API key:** lists the new items for manual triage.
-- **With `ANTHROPIC_API_KEY`:** one cheap batched call filters to just the items that change a
-  subscription limit / quota / price, and drafts an `events.json` stub for each (verify the quote
-  against the source before merging — it never auto-publishes).
+- **With `ANTHROPIC_API_KEY`:** one batched classify call (Sonnet by default, override with
+  `ANTHROPIC_CLASSIFY_MODEL`) keeps only items that change a **named consumer plan's** limit / quota /
+  price, drops enterprise/metrics/SDK/dev-tool noise, and appends the survivors to the on-site news
+  radar (`data/news.json`). High-certainty, quote-verified items are auto-published to
+  `data/auto-events.json` (the quote must appear verbatim in the source, so a hallucinated fact can't
+  ship); everything else stays on the radar as an unverified lead.
+
+**The radar self-curates** — no manual queue. Items auto-expire after `RADAR_TTL_DAYS` (default 21),
+and the build drops any radar item whose link already became a published event, so leads roll off on
+their own instead of piling up. New feeds are seeded into `data/discover-state.json` so adding a
+source doesn't flood the radar with its back-catalog.
 
 **In CI, off your PC:** `.github/workflows/discover.yml` runs this daily and opens an issue when
 something new appears. Add the `ANTHROPIC_API_KEY` repo secret to turn on relevance filtering;

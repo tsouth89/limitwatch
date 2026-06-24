@@ -170,6 +170,26 @@ Required: `id`, `provider`, `title`, `kind`, `starts_on`, `confidence`, `quote`,
 as everything else: **record the published wording verbatim and cite a source**; if you can't verify
 the window/end-date, don't publish the event.
 
+## Reset windows (`data/reset-windows.json`, optional)
+
+How each cap *refreshes* (the "when does my limit come back" reference), separate from how big it is.
+Records only the reset **mechanic** with a source — never an invented clock time, because most caps
+are rolling windows anchored to your own usage and weekly caps are assigned per account.
+
+```jsonc
+{
+  "provider": "Anthropic",
+  "window": "5h",                  // matches the limit windows: 5h | 3h | 4h | 2h | day | week | month
+  "type": "rolling-on-hit",        // rolling | rolling-on-hit | fixed-per-account | fixed
+  "detail": "Rolling 5-hour session window. The timer starts when you first reach the cap...",
+  "confidence": "official",        // same tiers as snapshots
+  "source": "https://support.claude.com/en/articles/11647753-..."
+}
+```
+
+Required: `provider`, `window`, `type`, `detail`, `confidence`, `source`. If you can't source the
+reset mechanic for a provider, leave it out — don't guess a reset day/time.
+
 ## Hard rules
 
 - **Never edit a past snapshot.** Wrong-then is still the record. Drift is the product.
