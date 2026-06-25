@@ -497,7 +497,7 @@
         <div class="hub-rank" id="hubDrift"></div>
       </div>
       <div class="hub-sec" id="hubReceiptsSec" style="display:none">
-        <p class="hub-lbl">What your subscription actually buys <span class="meta">— measured in API-equivalent dollars, not claimed</span></p>
+        <p class="hub-lbl">What your subscription actually buys <span class="meta">— in real dollars, measured from usage, not provider claims</span></p>
         <div id="hubReceiptsLead" class="meta"></div>
         <div class="hub-receipts" id="hubReceipts"></div>
       </div>
@@ -1787,7 +1787,7 @@
           if (cards.length) {
             const lead = cards[0];
             document.getElementById("hubReceiptsLead").innerHTML =
-              `The limit you hit is worth more than you pay: ${provName(lead.prov)} ${esc6(lead.plan)}'s caps run roughly the API prices below${cards.some((c) => c.floor) ? " (floors — Claude Code burn only, so the real value is higher)" : ""}.`;
+              `The cap you hit is worth more than you pay. Buying the same usage straight from the API would cost about this much${cards.some((c) => c.floor) ? ", and these are floors (measured from Claude Code only, so the real value is higher)" : ""}:`;
             document.getElementById("hubReceipts").innerHTML = cards.map((c) =>
               `<div class="hub-rcard"><div class="k">${esc6(provName(c.prov))} ${esc6(c.plan)} · per ${shortWin(c.window)}</div><div class="v">~${c.range}</div></div>`
             ).join("");
