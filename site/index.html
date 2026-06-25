@@ -472,7 +472,7 @@
   <header class="hero" id="top">
     <h1><span class="kicker">AI usage limits, with receipts</span>LimitWatch</h1>
     <p class="tag">What AI subscriptions actually let you use: compared, source-linked, and tracked as limits quietly change.</p>
-    <div class="stats" id="stats"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">26</div><div class="l">plans</div></div><div class="stat"><div class="n">13</div><div class="l">changes logged</div></div><div class="stat"><div class="n">6</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-06-16</div><div class="l">data through</div></div><!-- BUILD:stats:end --></div>
+    <div class="stats" id="stats"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">26</div><div class="l">plans</div></div><div class="stat"><div class="n">13</div><div class="l">changes logged</div></div><div class="stat"><div class="n">6</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-06-25</div><div class="l">refreshed</div></div><!-- BUILD:stats:end --></div>
     <div class="notice" id="dataNotice"></div>
   </header>
   <main>
@@ -918,7 +918,7 @@
         stat(latest.entries.length, "plans") +
         stat(db.changes.length, "changes logged") +
         stat(db.snapshot_count, "snapshots") +
-        stat(freshestDate(db), "data through");
+        stat((db.generated_at || "").slice(0, 10), "refreshed");
       const buildWarnings = Array.isArray(db.data_warnings) ? db.data_warnings : [];
       if (futureRecords.length || upcomingRecords.length || buildWarnings.length) {
         const dn = document.getElementById("dataNotice");
