@@ -1,0 +1,26 @@
+name: alert-digest
+
+# Pokes the /api/notify Cloudflare Function daily. The function diffs the live changelog against a
+# marker in KV and emails confirmed subscribers only when something new landed, so this is safe to run
+# repeatedly (no new changes => no email). Needs the NOTIFY_SECRET repo secret (same value as the
+# NOTIFY_SECRET env var on the Cloudflare Pages project).
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Daily 13:47 UTC — after the news-discovery run (12:23) so any new changes are deployed first.
+    - cron: "47 13 * * *"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger digest
+        env:
+          NOTIFY_SECRET: ${{ secrets.NOTIFY_SECRET }}
+        run: |
+          if [ -z "$NOTIFY_SECRET" ]; then echo "NOTIFY_SECRET not set; skipping."; exit 0; fi
+          code=$(curl -s -o /tmp/out.txt -w "%{http_code}" -X POST https://limitwatch.dev/api/notify \
+            -H "x-notify-secret: $NOTIFY_SECRET")
+          echo "HTTP $code"; cat /tmp/out.txt
+          [ "$code" = "200" ] || echo "notify did not return 200"

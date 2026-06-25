@@ -336,6 +336,10 @@
     .rform .ractions { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
     .rform button { font: inherit; font-weight: 700; padding: .5rem 1.1rem; border-radius: 8px; border: 1px solid var(--blue); background: var(--blue); color: #fff; cursor: pointer; }
     .rform button:disabled { opacity: .55; cursor: default; }
+    .alert-form { margin: 0 0 1.1rem; max-width: none; gap: .35rem; }
+    .alert-inline { flex-direction: column; gap: .45rem; font-size: 13px; }
+    .alert-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .alert-row input[type=email] { flex: 1; min-width: 200px; max-width: 320px; }
     .bottomline { border-color: var(--blue-soft); background: linear-gradient(180deg, var(--paper-soft), var(--paper)); }
     .bl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .8rem; margin: .3rem 0 .2rem; }
     .bl-tile { border: 1px solid var(--line); border-radius: 10px; padding: .7rem .85rem; background: var(--paper); }
@@ -742,6 +746,16 @@
           <p class="meta">Derived by diffing snapshots. This is the part nobody else tracks: when limits silently move. <a href="/changes.xml" title="Subscribe to limit &amp; price changes (RSS)">Subscribe via RSS →</a></p>
         </div>
       </div>
+      <form id="alertForm" class="rform alert-form">
+        <label class="alert-inline">Get changes by email
+          <span class="alert-row">
+            <input name="email" type="email" placeholder="you@example.com" required>
+            <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+            <button type="submit">Notify me</button>
+          </span>
+        </label>
+        <span id="alertMsg" class="meta"></span>
+      </form>
       <div class="cllist" id="changelogList"><!-- BUILD:changelog:start --><div class="clrow"><span class="num">2026-06-08</span> <span class="hk price">price</span> <span class="cltxt">Google AI Plus $7.99 -&gt; $4.99 / mo</span> <a href="https://support.google.com/googleone/answer/16882689">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk price">price</span> <span class="cltxt">Google AI Ultra (20x) $249.99 -&gt; $199.99 / mo</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Ultra (20x) ?x usage -&gt; 20x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk added">new</span> <span class="cltxt">Google AI Ultra (5x) 5x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Pro ?x usage -&gt; 4x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Plus ?x usage -&gt; 2x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.4 Thinking -&gt; GPT-5.5 Thinking (10 messages / 5h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.3 -&gt; GPT-5.5 (160 messages / 3h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Pro GPT-5.3 -&gt; GPT-5.5</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Plus GPT-5.4 Thinking -&gt; GPT-5.5 Thinking (3,000 messages / wk)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Plus GPT-5.3 -&gt; GPT-5.5 (160 messages / 3h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-01</span> <span class="hk added">new</span> <span class="cltxt">Google AI Plus plan added (usage unpublished)</span> <a href="http://web.archive.org/web/20260401134314/https://gemini.google/subscriptions/">src</a></div><!-- BUILD:changelog:end --></div>
       <button class="morebtn" id="changelogMore" type="button" style="display:none"></button>
     </div>
@@ -1859,6 +1873,32 @@
             track("receipt_submit", { provider: data.provider, window: data.window });
           } catch (err) { fallback(); }
           finally { btn.disabled = false; }
+        });
+      })();
+
+      // ---- Email change alerts: double opt-in via /api/subscribe (Cloudflare Function). Falls back
+      // to pointing at the RSS feed if the endpoint isn't configured/reachable. ----
+      (() => {
+        const form = document.getElementById("alertForm");
+        if (!form) return;
+        const msg = document.getElementById("alertMsg");
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (form.website.value) return;                 // honeypot
+          if (!form.checkValidity()) { form.reportValidity(); return; }
+          const email = form.email.value.trim();
+          const btn = form.querySelector("button");
+          btn.disabled = true; msg.textContent = "Sending…";
+          try {
+            const res = await fetch("/api/subscribe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email }) });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const j = await res.json().catch(() => ({}));
+            msg.textContent = j.already ? "You're already subscribed." : "Almost there — check your email to confirm.";
+            form.reset();
+            track("alert_subscribe", {});
+          } catch (err) {
+            msg.innerHTML = `Couldn't subscribe right now — you can <a href="/changes.xml">follow the RSS feed</a> instead.`;
+          } finally { btn.disabled = false; }
         });
       })();
 

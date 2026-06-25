@@ -184,9 +184,31 @@ To turn it on, set three env vars in the Cloudflare Pages project (Settings → 
 
 - `RESEND_API_KEY` (secret) — your Resend API key.
 - `RECEIPT_TO` — where leads are emailed (your inbox).
-- `RECEIPT_FROM` — a **verified** Resend sender. Only `ready-gig.com` is verified today, so use e.g.
-  `LimitWatch <receipts@ready-gig.com>`. To send from `limitwatch.dev`, verify it in Resend first
-  (also recommended before building subscriber-facing email alerts).
+- `RECEIPT_FROM` — a **verified** Resend sender. `limitwatch.dev` is verified, so use
+  `LimitWatch <receipts@limitwatch.dev>`.
+
+## Email change alerts (double opt-in)
+
+The "Get changes by email" form on the Changelog card lets visitors subscribe to a digest that fires
+when a tracked plan's limits or price move. All in Cloudflare Pages Functions + Resend + KV, with
+double opt-in (subscribe → confirm email → confirmed) so nobody can sign up someone else, and a
+one-click unsubscribe on every email.
+
+- `functions/api/subscribe.js` — stores a pending subscriber in KV, sends the confirm email.
+- `functions/api/confirm.js` / `unsubscribe.js` — flip status / remove (token links).
+- `functions/api/notify.js` — diffs the live `data.json` changelog against a KV marker and emails
+  confirmed subscribers any new entries. Idempotent (no new changes → no email).
+- `.github/workflows/alerts.yml` — pokes `/api/notify` daily (needs the `NOTIFY_SECRET` repo secret).
+
+Setup (one time):
+
+1. KV namespace `limitwatch-subscribers` already exists (id `7adec8a72aea4860b180ef7afdf3733c`). In the
+   Pages project → Settings → Functions → **KV namespace bindings**, bind it as **`SUBS`**.
+2. Pages env vars: `ALERT_FROM` = `LimitWatch <alerts@limitwatch.dev>`, `NOTIFY_SECRET` = a long random
+   string (reuse `RESEND_API_KEY` from above).
+3. GitHub repo secret `NOTIFY_SECRET` = the same value, so the daily workflow can authenticate.
+
+Until the KV binding + env vars are set, the form degrades to pointing at the RSS feed.
 
 ## Record schema
 
