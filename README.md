@@ -173,6 +173,21 @@ already exists whenever you read an in-app `%` — pair the reading to the neare
 Pricing and aggregation live once in `scripts/lib/usage-core.mjs` (shared with `npm run usage`); bump
 `PRICES` / `PRICES_AS_OF` there when rates change.
 
+## Crowdsourced readings (on-site form)
+
+The "Share your own reading" form in the Measured section posts to a Cloudflare Pages Function
+(`functions/api/receipt.js`) that emails a ready-to-verify `usage-reports.json` stub via Resend.
+Nothing is auto-published; a human still verifies every reading. If the function isn't configured or
+is unreachable, the form falls back to the GitHub issue template, so it's never a dead end.
+
+To turn it on, set three env vars in the Cloudflare Pages project (Settings → Environment variables):
+
+- `RESEND_API_KEY` (secret) — your Resend API key.
+- `RECEIPT_TO` — where leads are emailed (your inbox).
+- `RECEIPT_FROM` — a **verified** Resend sender. Only `ready-gig.com` is verified today, so use e.g.
+  `LimitWatch <receipts@ready-gig.com>`. To send from `limitwatch.dev`, verify it in Resend first
+  (also recommended before building subscriber-facing email alerts).
+
 ## Record schema
 
 Each snapshot is `{ "date": "YYYY-MM-DD", "entries": [ ... ] }`. See `data/schema.md`.

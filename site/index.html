@@ -325,6 +325,17 @@
     .hub-rcard .k { font-size: 12px; color: var(--muted); }
     .hub-rcard .v { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
     .hub-more { margin-top: 1.2rem; padding-top: .9rem; border-top: 1px solid var(--line-soft); display: flex; gap: 1.1rem; flex-wrap: wrap; font-size: 13px; }
+    .contribute summary { cursor: pointer; font-size: 15px; }
+    .rform { margin-top: .4rem; display: flex; flex-direction: column; gap: .7rem; max-width: 640px; }
+    .rform label { display: flex; flex-direction: column; gap: .25rem; font-size: 12.5px; color: var(--muted); font-weight: 700; }
+    .rform input, .rform select, .rform textarea { font: inherit; font-weight: 400; padding: .45rem .55rem; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); }
+    .rform .rgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .7rem; }
+    .rform .rcheck { flex-direction: row; align-items: center; gap: .45rem; font-weight: 500; color: var(--ink); }
+    .rform .rcheck input { width: auto; }
+    .rform .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .rform .ractions { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
+    .rform button { font: inherit; font-weight: 700; padding: .5rem 1.1rem; border-radius: 8px; border: 1px solid var(--blue); background: var(--blue); color: #fff; cursor: pointer; }
+    .rform button:disabled { opacity: .55; cursor: default; }
     .bottomline { border-color: var(--blue-soft); background: linear-gradient(180deg, var(--paper-soft), var(--paper)); }
     .bl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: .8rem; margin: .3rem 0 .2rem; }
     .bl-tile { border: 1px solid var(--line); border-radius: 10px; padding: .7rem .85rem; background: var(--paper); }
@@ -688,6 +699,27 @@
         <h3 class="subh">Credit-plan token receipts <span class="meta" style="font-weight:400">— dollar-credit plans</span></h3>
         <p class="meta">For plans that publish only a dollar credit (Cursor, Replit): what a real maxed-out billing month actually delivered in tokens. Not a cap, a receipt.</p>
         <div id="measuredBody"></div>
+      </div>
+      <div id="contributeSub" style="margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--line)">
+        <details class="contribute">
+          <summary><strong>Share your own reading</strong> <span class="meta" style="font-weight:400">— help measure the caps no API exposes</span></summary>
+          <p class="meta" style="margin:.6rem 0 .8rem">Saw a usage % or message count on your provider's screen? Add it. A maintainer verifies before it's published, so record exactly what you saw, never a guess.</p>
+          <form id="receiptForm" class="rform" novalidate>
+            <div class="rgrid">
+              <label>Provider<select name="provider" required><option value="">Pick one</option><option>Anthropic</option><option>OpenAI</option><option>Google</option><option>xAI</option><option>Perplexity</option><option>Cursor</option><option>GitHub Copilot</option><option>Replit</option><option>Other</option></select></label>
+              <label>Plan<input name="plan" placeholder="Pro" required></label>
+              <label>Where you saw it<select name="surface"><option value="">Optional</option><option>claude.ai</option><option>desktop app</option><option>Claude Code</option><option>chatgpt.com</option><option>other</option></select></label>
+              <label>Cap window<select name="window" required><option value="">Pick one</option><option value="5h">5-hour</option><option value="day">daily</option><option value="week">weekly</option><option value="month">monthly</option></select></label>
+              <label>The reading is<select name="metric" required><option value="percent">a percent used</option><option value="messages">messages sent</option><option value="tokens">tokens</option></select></label>
+              <label>Value<input name="observed" type="number" step="any" placeholder="72" required></label>
+            </div>
+            <label class="rcheck"><input type="checkbox" name="limit_hit"> I actually hit the cap at this reading</label>
+            <label>What you did, and the exact wording on screen<textarea name="note" rows="3" required placeholder="ran agentic coding ~3h; screen said '72% of weekly limit used'"></textarea></label>
+            <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+            <label class="rcheck"><input type="checkbox" name="confirm" required> This is a real reading I observed, recorded as shown.</label>
+            <div class="ractions"><button type="submit">Submit reading</button> <span id="rmsg" class="meta"></span></div>
+          </form>
+        </details>
       </div>
     </div>
 
@@ -1800,6 +1832,34 @@
           // The hub supersedes the old "Bottom line" tile card — hide it to avoid a duplicate summary.
           const bl = document.getElementById("bottomLine"); if (bl) bl.style.display = "none";
         }
+      })();
+
+      // ---- Crowdsourced reading form: POST to the /api/receipt Cloudflare Function, which emails the
+      // maintainer a ready-to-verify stub. Degrades gracefully to the GitHub issue if the endpoint
+      // isn't configured/reachable, so the form is never a dead end. ----
+      (() => {
+        const form = document.getElementById("receiptForm");
+        if (!form) return;
+        const msg = document.getElementById("rmsg");
+        const ISSUE_URL = "https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml";
+        const fallback = () => { msg.innerHTML = `Couldn't submit right now — you can <a href="${ISSUE_URL}" target="_blank" rel="noopener">file it on GitHub</a> instead.`; };
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          if (form.website.value) return;                 // honeypot tripped: silently drop
+          if (!form.checkValidity()) { form.reportValidity(); return; }
+          const data = Object.fromEntries(new FormData(form).entries());
+          data.limit_hit = form.limit_hit.checked;
+          const btn = form.querySelector("button");
+          btn.disabled = true; msg.textContent = "Sending…";
+          try {
+            const res = await fetch("/api/receipt", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            msg.textContent = "Thanks! A maintainer will verify and publish it.";
+            form.reset();
+            track("receipt_submit", { provider: data.provider, window: data.window });
+          } catch (err) { fallback(); }
+          finally { btn.disabled = false; }
+        });
       })();
 
       // Highlight the nav link for whichever section is centered in the viewport.
