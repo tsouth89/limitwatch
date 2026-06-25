@@ -5,19 +5,25 @@
   <style>
     * { margin: 0; box-sizing: border-box; }
     body { width: 1200px; height: 630px; background: #0d1117; color: #e6edf3;
-           font: 28px/1.4 system-ui, sans-serif; padding: 70px 80px; position: relative; overflow: hidden; }
-    .brand { display: flex; align-items: center; gap: 20px; }
-    .brand svg { width: 70px; height: 70px; }
-    h1 { font-size: 76px; letter-spacing: -1px; }
-    .tag { color: #9aa7b4; font-size: 34px; margin-top: 26px; max-width: 900px; }
-    .badges { margin-top: 56px; display: flex; gap: 16px; }
-    .b { border-radius: 999px; padding: 8px 22px; font-size: 24px; font-weight: 600; }
-    .official { background: #2ea04326; color: #3fb950; }
-    .community { background: #d2992226; color: #d29922; }
-    .crowd { background: #8957e526; color: #a371f7; }
-    .row { position: absolute; bottom: 70px; left: 80px; right: 80px; display: flex;
-           justify-content: space-between; color: #6e7681; font-size: 26px; }
-    .url { color: #58a6ff; }
+           font: 28px/1.4 system-ui, sans-serif; padding: 56px 80px;
+           display: flex; flex-direction: column; overflow: hidden; }
+    .brand { display: flex; align-items: center; gap: 16px; }
+    .brand svg { width: 48px; height: 48px; }
+    .brand span { font-size: 32px; font-weight: 700; letter-spacing: -.5px; }
+    h1 { font-size: 56px; line-height: 1.07; letter-spacing: -1.5px; margin-top: 28px; }
+    .sub { color: #9aa7b4; font-size: 29px; margin-top: 16px; }
+    .board { margin-top: 28px; }
+    .r { display: flex; align-items: center; justify-content: space-between;
+         padding: 15px 2px; border-bottom: 1px solid #1c2430; }
+    .r:last-child { border-bottom: 0; }
+    .p { font-size: 34px; font-weight: 600; }
+    .v { border-radius: 999px; padding: 7px 22px; font-size: 26px; font-weight: 700; white-space: nowrap; }
+    .up { background: #2ea04326; color: #3fb950; }
+    .mixed { background: #d2992226; color: #e3a72c; }
+    .down { background: #da36331f; color: #f85149; }
+    .foot { margin-top: auto; padding-top: 22px; display: flex;
+            justify-content: space-between; align-items: center; color: #6e7681; font-size: 25px; }
+    .url { color: #58a6ff; font-weight: 600; font-size: 29px; }
   </style>
 </head>
 <body>
@@ -28,16 +34,20 @@
       <rect x="36" y="30" width="7" height="20" rx="2" fill="#d29922"/>
       <rect x="47" y="20" width="3" height="30" rx="1.5" fill="#6e7681"/>
       <path d="M14 22 L25 17 L36 21 L47 13" fill="none" stroke="#e6edf3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <h1>LimitWatch</h1>
+    <span>LimitWatch</span>
   </div>
-  <div class="tag">Official AI subscription limits across providers, tracked over time. Every number links to its source.</div>
-  <div class="badges">
-    <span class="b official">official</span>
-    <span class="b community">community</span>
-    <span class="b crowd">crowdsourced</span>
+
+  <h1>Is your AI plan quietly getting worse?</h1>
+  <div class="sub">We track how subscription limits drift over time. Lately:</div>
+
+  <div class="board">
+    <div class="r"><span class="p">Google</span><span class="v up">&#8593; more generous</span></div>
+    <div class="r"><span class="p">Anthropic</span><span class="v mixed">~ mixed</span></div>
+    <div class="r"><span class="p">GitHub Copilot</span><span class="v down">&#8595; less generous</span></div>
   </div>
-  <div class="row">
-    <span>Claude · ChatGPT · Gemini · Grok · Perplexity</span>
+
+  <div class="foot">
+    <span>source-linked &middot; measured receipts &middot; updated daily</span>
     <span class="url">limitwatch.dev</span>
   </div>
 </body>
