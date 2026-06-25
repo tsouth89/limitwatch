@@ -342,6 +342,10 @@
     .pk-body { flex: 1; }
     .pk-name { font-weight: 700; }
     .pk-meta { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: .1rem; }
+    .pk-verdict { background: var(--blue-soft); border: 1px solid var(--blue-soft); border-radius: 12px; padding: .85rem 1rem; margin: 0 0 1rem; font-size: 15px; line-height: 1.5; }
+    .pk-verdict strong { color: var(--blue-ink); }
+    .pk-verdict .pkwarn { color: var(--neg); font-weight: 600; }
+    .pk-verdict .pkgood { color: var(--pos); font-weight: 600; }
 
     /* Provider logo */
     .pmark { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; font-size: 13px; font-weight: 800; vertical-align: -6px; margin-right: .45rem; background: var(--paper); border: 1px solid var(--line); overflow: hidden; }
@@ -513,22 +517,31 @@
     <div class="card" id="picker">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Best value plans</p>
-          <h2>Top plans ranked by tokens per dollar</h2>
-          <p class="meta">Ranked by estimated tokens/day per $ — the same math as the <a href="#compare">cross-provider estimate</a>. Filter by budget. An estimate, never a hard cap.</p>
+          <p class="eyebrow">Find your plan</p>
+          <h2>Which plan should you get?</h2>
+          <p class="meta">Tell me what you use AI for and your budget. I'll point you at the best value for it, factoring in whether each provider's limits are trending up or down.</p>
         </div>
       </div>
       <div class="picker-controls">
         <div class="pgrp">
+          <span class="plabel">Mostly for</span>
+          <div class="chips" id="pkUse">
+            <span class="chip active" data-use="general">Chat / general</span>
+            <span class="chip" data-use="coding">Coding</span>
+            <span class="chip" data-use="research">Research</span>
+          </div>
+        </div>
+        <div class="pgrp">
           <span class="plabel">Budget / mo</span>
           <div class="chips" id="pkBudget">
-            <span class="chip" data-max="20">≤ $20</span>
+            <span class="chip active" data-max="20">≤ $20</span>
             <span class="chip" data-max="50">≤ $50</span>
             <span class="chip" data-max="100">≤ $100</span>
-            <span class="chip active" data-max="0">Any</span>
+            <span class="chip" data-max="0">Any</span>
           </div>
         </div>
       </div>
+      <div id="pkVerdict"></div>
       <div id="pkResults"></div>
       <p class="meta" id="pkNote"></p>
     </div>
@@ -1263,41 +1276,72 @@
       cpmEl.addEventListener("input", renderCross);
       renderCross();
 
-      // ---- "Best value plans" picker: budget filter over normalized tokens/day/$ estimate ----
-      // Use-case doesn't shift the ranking (all top plans are message-capped and scale uniformly),
-      // so only budget matters. tpm=400 is a typical chat baseline; see cross-provider table for
-      // adjustable assumptions.
+      // ---- Plan recommender: "which should I get" for a use case + budget, over the unified
+      // tokens/day/$ estimate, plus drift (trending up/down). Honest: plans sell different units, so
+      // this is a guided estimate, not a hard ranking. Use case narrows the eligible providers and
+      // sets a rough tokens-per-interaction baseline (coding burns more per turn than chat). ----
       (() => {
+        const useEl = document.getElementById("pkUse");
         const budEl = document.getElementById("pkBudget");
+        const verdictEl = document.getElementById("pkVerdict");
         const resEl = document.getElementById("pkResults"), noteEl = document.getElementById("pkNote");
         if (!resEl) return;
-        const PKG_TPM = 400;
-        let pkMax = Infinity;
+        const USECASE = {
+          general:  { label: "chat / general use", provs: ["OpenAI", "Anthropic", "Google", "xAI"], tpm: 400 },
+          coding:   { label: "coding", provs: ["Anthropic", "Cursor", "GitHub", "Replit"], tpm: 800 },
+          research: { label: "research", provs: ["Perplexity", "Google", "OpenAI"], tpm: 600 },
+        };
+        const driftBy = Object.fromEntries((db.drift ?? []).map((d) => [d.provider, d.label]));
+        const budgetLabel = (m) => m === Infinity ? "any budget" : `a ≤ $${m}/mo budget`;
+        const driftClause = (prov) => {
+          const l = driftBy[prov];
+          if (l === "more generous") return ` and <span class="pkgood">${provName(prov)}'s limits have been trending up</span>`;
+          if (l === "less generous") return `, though <span class="pkwarn">${provName(prov)} has been getting less generous lately</span> (see <a href="#drift">Drift</a>)`;
+          if (l === "mixed") return `, though ${provName(prov)}'s recent changes are mixed`;
+          return "";
+        };
+        let use = "general", pkMax = 20;
         const dataDate = freshestDate(db);
         const render = () => {
+          const uc = USECASE[use];
           const cpm = Number(cpmEl.value) || 5;
-          const { ranked } = computeCross(PKG_TPM, cpm);
-          const elig = ranked.filter((x) => x.price > 0 && x.price <= pkMax);
+          const { ranked } = computeCross(uc.tpm, cpm);
+          // A plan can rank multiple times (one row per model cap) — keep only its best entry so the
+          // shortlist shows distinct plans. ranked is sorted by value desc, so the first one wins.
+          const seenPlan = new Set();
+          const elig = ranked
+            // pay-per-token $-credit plans (Agent SDK, Cursor, Replit) are coding/agent tools, not chat —
+            // only surface them for the coding use case.
+            .filter((x) => x.price > 0 && x.price <= pkMax && uc.provs.includes(x.prov) && (use === "coding" || x.kind !== "credit-est"))
+            .filter((x) => { const k = x.name.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim(); if (seenPlan.has(k)) return false; seenPlan.add(k); return true; });
           if (!elig.length) {
-            resEl.innerHTML = `<p class="empty">No rankable plan under that budget. Multiplier-only plans (e.g. "5× Pro") can't be scored — raise the budget or see the <a href="#compare">full comparison</a>.</p>`;
+            verdictEl.className = ""; verdictEl.innerHTML = "";
+            resEl.innerHTML = `<p class="empty">Nothing rankable for ${uc.label} under ${budgetLabel(pkMax)}. Some plans sell multiplier-only limits ("5× Pro") that can't be scored — try a higher budget or the <a href="#compare">full comparison</a>.</p>`;
             noteEl.innerHTML = ""; return;
           }
+          const top = elig[0];
+          const clean = (s) => s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+          const alts = elig.slice(1, 3).map((x) => clean(x.name));
+          verdictEl.className = "pk-verdict";
+          verdictEl.innerHTML = `For <strong>${uc.label}</strong> on ${budgetLabel(pkMax)}, start with <strong>${clean(top.name)}</strong> at $${top.price}/mo. ` +
+            `Best estimated value of the options that fit${driftClause(top.prov)}.` +
+            (alts.length ? ` Close alternatives: ${alts.join(", ")}.` : "");
           resEl.innerHTML = elig.slice(0, 3).map((x, i) => {
-            const best = i === 0 ? ` <span class="bestpill">Best value</span>` : "";
-            const msgDay = fmt(Math.round(x.tokPerDay / PKG_TPM));
+            const best = i === 0 ? ` <span class="bestpill">Top pick</span>` : "";
+            const msgDay = fmt(Math.round(x.tokPerDay / uc.tpm));
             return `<div class="pk-row"><div class="pk-rank">${i + 1}</div>` +
               `<div class="pk-body"><div class="pk-name">${provMark(x.prov)}${x.name}${best}</div>` +
               `<div class="pk-meta">$${x.price}/mo · ~${fmt(Math.round(x.tokPerDay))} tokens/day (≈ ${msgDay} msg/day) · <strong>${fmt(Math.round(x.perDollar))}</strong> tokens/day/$</div></div></div>`;
           }).join("");
-          noteEl.innerHTML = `Assumes ≈ ${PKG_TPM} tokens/message${pkMax !== Infinity ? `, budget ≤ $${pkMax}/mo` : ""}. Estimate only — multiplier-only plans can't be scored. Data as of ${dataDate}. Full method in the <a href="#compare">cross-provider estimate</a>.`;
+          noteEl.innerHTML = `Guided estimate, not a hard ranking: plans sell different units (messages, tokens, $-credits), normalized to ~${uc.tpm} tokens/interaction for ${uc.label}. Multiplier-only plans ("5× Pro") can't be scored. Data as of ${dataDate}. Method in the <a href="#compare">cross-provider estimate</a>.`;
         };
-        budEl.addEventListener("click", (ev) => {
+        const pick = (el, set) => el.addEventListener("click", (ev) => {
           const c = ev.target.closest(".chip"); if (!c) return;
-          pkMax = Number(c.dataset.max) || Infinity;
-          [...budEl.children].forEach((ch) => ch.classList.toggle("active", ch === c));
-          track("picker_budget", { max: pkMax === Infinity ? "any" : pkMax });
-          render();
+          [...el.children].forEach((ch) => ch.classList.toggle("active", ch === c));
+          set(c); render();
         });
+        pick(useEl, (c) => { use = c.dataset.use; track("rec_use", { use }); });
+        pick(budEl, (c) => { pkMax = Number(c.dataset.max) || Infinity; track("rec_budget", { max: pkMax === Infinity ? "any" : pkMax }); });
         render();
       })();
 
