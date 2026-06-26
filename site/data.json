@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T05:20:52.497Z",
+  "generated_at": "2026-06-26T05:22:55.617Z",
   "snapshot_count": 6,
   "date_range": [
     "2026-01-15",
@@ -633,7 +633,18 @@
       "evidence": "cc-usage.mjs --since 2026-06-13T01:00:00Z (Friday-night reset anchor, approximate). All projects, deduped by message.id."
     }
   ],
-  "radar": [],
+  "radar": [
+    {
+      "at": "2026-06-24",
+      "provider": "GitHub",
+      "product": "Copilot",
+      "title": "Changes to model selection for Free and Student plans",
+      "link": "https://github.blog/changelog/2026-06-24-changes-to-model-selection-for-free-and-student-plans",
+      "why": "GitHub's Free and Student plans are receiving a concrete change to which AI models users can select, directly affecting what those named consumer plan subscribers can access.",
+      "kind": "limit_cut",
+      "confidence": "official"
+    }
+  ],
   "resets": [
     {
       "provider": "Anthropic",
