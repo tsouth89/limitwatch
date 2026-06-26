@@ -349,6 +349,10 @@ const renderLimitCell = (e) => e.limits.map((l) => {
   const credWin = l.unit === "usd_credit" && l.window ? ` <span class="meta">/ ${escHtml(winShort(l.window))}</span>` : "";
   const model = l.model ? ` <span class="meta">(${escHtml(l.model)})</span>` : "";
   const basis = l.basis && l.basis !== "published" ? ` <span class="meta">· ${escHtml(l.basis)}</span>` : "";
+  // Mirror the client: an unpublished count limit is an explicit "not published", not a "?" cell.
+  if (l.value == null && l.unit !== "multiplier" && l.unit !== "usd_credit") {
+    return `<span class="undisclosed">not published</span> <span class="meta">· ${escHtml(l.unit + win)}</span>${model}`;
+  }
   return `<span>${escHtml(unitLabel(l))}${escHtml(win)}${credWin}${model}</span>${basis}`;
 }).join("<br>");
 const renderLatest = (latest, changes) => {
