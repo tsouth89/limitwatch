@@ -355,6 +355,31 @@ const renderLimitCell = (e) => e.limits.map((l) => {
   }
   return `<span>${escHtml(unitLabel(l))}${escHtml(win)}${credWin}${model}</span>${basis}`;
 }).join("<br>");
+// Measured value per plan: ties an opaque sticker (e.g. "5x Free") to real, measured API-dollar
+// value, right in the main table. Keyed by provider|plan; only the subscription row (no surface)
+// whose plan name matches a reading unambiguously gets a badge — so an ambiguous "Max" reading never
+// gets pinned to a specific Max tier. Same rollup as the Measured section: implied budget =
+// api_equiv_usd / (observed%/100), summarized over the most relatable window present (5h first).
+const MEASURED_WIN_RANK = { "5h": 0, day: 1, week: 2, month: 3 };
+const measuredByPlan = (() => {
+  const reps = usageReports.filter((r) => r.metric === "percent" && r.api_equiv_usd != null && r.observed);
+  const g = {};
+  for (const r of reps) ((g[`${r.provider}|${r.plan}`] ??= {})[r.window] ??= []).push(r);
+  const out = {};
+  for (const [key, wins] of Object.entries(g)) {
+    const win = Object.keys(wins).sort((a, b) => (MEASURED_WIN_RANK[a] ?? 9) - (MEASURED_WIN_RANK[b] ?? 9))[0];
+    const implied = wins[win].map((r) => r.api_equiv_usd / (r.observed / 100));
+    out[key] = { win, lo: Math.round(Math.min(...implied)), hi: Math.round(Math.max(...implied)), floor: wins[win].some((r) => r.value_basis === "floor") };
+  }
+  return out;
+})();
+const measuredPill = (e) => {
+  const m = !e.surface && measuredByPlan[`${e.provider}|${e.plan}`];
+  if (!m) return "";
+  const range = m.lo === m.hi ? `$${m.lo}` : `$${m.lo} to $${m.hi}`;
+  const title = `Measured from real usage${m.floor ? " (a floor, from Claude Code only, so real value is higher)" : ""}`;
+  return `<a class="measured-pill" href="#measured" title="${escHtml(title)}">≈ ${escHtml(range)} real value / ${escHtml(winShort(m.win))}${m.floor ? "+" : ""} →</a>`;
+};
 const renderLatest = (latest, changes) => {
   const cutoff90 = new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10);
   const recentKeys = new Set((changes ?? []).filter((c) => c.date >= cutoff90).map((c) => c.key.split("|").slice(0, 3).join("|")));
@@ -366,7 +391,7 @@ const renderLatest = (latest, changes) => {
     return `<tr>` +
       `<td class="cardtitle">${provMark(e.provider)}<span class="pname">${escHtml(provName(e.provider))}</span> <strong>${escHtml(e.plan)}</strong>${surf}${changed}</td>` +
       `<td class="num" data-label="Price / mo">$${escHtml(e.price_usd)}</td>` +
-      `<td data-label="Limits">${renderLimitCell(e)}</td>` +
+      `<td data-label="Limits">${renderLimitCell(e)}${measuredPill(e)}</td>` +
       `<td data-label="Confidence"><span class="badge ${escHtml(e.confidence)}">${escHtml(e.confidence)}</span></td>` +
       `<td data-label="Source"><a href="${escHtml(e.source)}">src</a> <span class="meta">${escHtml(e.verified_on)}</span></td>` +
       `</tr>`;
