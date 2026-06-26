@@ -262,6 +262,8 @@
     .stat { background: var(--glass); border: 1px solid var(--line); border-radius: 11px; padding: .65rem .9rem; min-width: 104px; box-shadow: var(--shadow-sm); }
     .stat .n { font-size: 1.35rem; font-weight: 850; font-variant-numeric: tabular-nums; line-height: 1.05; color: var(--ink); }
     .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: .18rem; font-weight: 750; }
+    .stat.stat-stale { border-color: var(--amber-line); background: var(--amber-soft); }
+    .stat.stat-stale .n { color: var(--amber); }
     .key { display: flex; flex-wrap: wrap; gap: .4rem .9rem; align-items: center; margin: 1.1rem 0 0; font-size: 12.5px; color: var(--muted); }
     .notice { border: 1px solid var(--amber-line); background: var(--amber-soft); color: var(--amber); border-radius: 8px; padding: .75rem .9rem; margin: 1rem 0 0; font-size: 13.5px; display: none; }
     .notice strong { color: var(--ink); }
@@ -491,7 +493,7 @@
   <header class="hero" id="top">
     <h1><span class="kicker">AI usage limits, with receipts</span>LimitWatch</h1>
     <p class="tag">What AI subscriptions actually let you use: compared, source-linked, and tracked as limits quietly change.</p>
-    <div class="stats" id="stats"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">26</div><div class="l">plans</div></div><div class="stat"><div class="n">13</div><div class="l">changes logged</div></div><div class="stat"><div class="n">6</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-06-25</div><div class="l">refreshed</div></div><!-- BUILD:stats:end --></div>
+    <div class="stats" id="stats"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">26</div><div class="l">plans</div></div><div class="stat"><div class="n">13</div><div class="l">changes logged</div></div><div class="stat"><div class="n">6</div><div class="l">snapshots</div></div><div class="stat stat-stale"><div class="n">2026-06-08</div><div class="l">data as of</div></div><!-- BUILD:stats:end --></div>
     <div class="notice" id="dataNotice"></div>
   </header>
   <main>
@@ -971,18 +973,28 @@
         for (const e of db.events ?? []) { if (e.starts_on) dates.push(e.starts_on); if (e.effective_on) dates.push(e.effective_on); }
         return dates.filter((d) => d && d <= todayIso).sort().at(-1) ?? db.date_range?.at(-1) ?? "—";
       };
-      const stat = (n, l) => `<div class="stat"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+      const stat = (n, l, cls) => `<div class="stat${cls ? " " + cls : ""}"><div class="n">${n}</div><div class="l">${l}</div></div>`;
+      // Headline freshness = the latest pricing snapshot's date (the real data age), not the daily
+      // build date. daysAgo drives an amber tint + the staleness banner below so old data can't pass
+      // for current. STALE_DAYS mirrors scripts/build.mjs.
+      const STALE_DAYS = 14;
+      const snapDate = db.snapshots?.at(-1)?.date || (db.date_range || []).at(-1) || "";
+      const daysAgo = (d) => d ? Math.round((Date.parse(todayIso) - Date.parse(d)) / 86400000) : null;
+      const snapAge = daysAgo(snapDate);
       document.getElementById("stats").innerHTML =
         stat(new Set(latest.entries.map((e) => e.provider)).size, "providers") +
         stat(latest.entries.length, "plans") +
         stat(db.changes.length, "changes logged") +
         stat(db.snapshot_count, "snapshots") +
-        stat((db.generated_at || "").slice(0, 10), "refreshed");
+        stat(snapDate || "—", "data as of", snapAge != null && snapAge >= STALE_DAYS ? "stat-stale" : "");
       const buildWarnings = Array.isArray(db.data_warnings) ? db.data_warnings : [];
-      if (futureRecords.length || upcomingRecords.length || buildWarnings.length) {
+      const stale = snapAge != null && snapAge >= STALE_DAYS;
+      if (stale || futureRecords.length || upcomingRecords.length || buildWarnings.length) {
         const dn = document.getElementById("dataNotice");
         dn.style.display = "block";
         const parts = [];
+        // Lead with the honest age of the priced facts when the last capture has gone stale.
+        if (stale) parts.push(`<strong>Pricing snapshot is ${snapAge} days old</strong> (captured ${snapDate}). The limits and prices below reflect that date; we re-verify when a tracked source moves. Events, the changelog, and the radar update independently.`);
         if (upcomingRecords.length) parts.push(`<strong>Upcoming:</strong> ${upcomingRecords.length} announced plan changes have future effective dates and are labeled upcoming.`);
         if (futureRecords.length) parts.push(`<strong>Data check:</strong> ${futureRecords.length} evidence records are dated after today (${todayIso}) and are hidden from rankings until current.`);
         // Build-time integrity warnings (from scripts/build.mjs) — surface them instead of shipping silently.

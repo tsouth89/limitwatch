@@ -16,6 +16,11 @@ const TIERS = ["official", "announced", "community", "crowdsourced"];
 
 const files = readdirSync(snapDir).filter((f) => f.endsWith(".json")).sort();
 const today = new Date().toISOString().slice(0, 10);
+// Days a pricing snapshot can age before the hero stat + status bar flag it as stale. The site
+// rebuilds daily (radar/news), but the priced facts only move when we re-capture, so we surface
+// the snapshot's real age rather than letting the build date masquerade as data freshness.
+const STALE_DAYS = 14;
+const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000);
 const dataWarnings = [];
 
 const snapshots = files.map((f) => {
@@ -327,13 +332,16 @@ const freshestDate = () => {
   return dates.filter(Boolean).sort().at(-1) ?? "—";
 };
 const renderStats = (latest) => {
-  const stat = (n, l) => `<div class="stat"><div class="n">${escHtml(n)}</div><div class="l">${escHtml(l)}</div></div>`;
+  const stat = (n, l, cls) => `<div class="stat${cls ? " " + cls : ""}"><div class="n">${escHtml(n)}</div><div class="l">${escHtml(l)}</div></div>`;
+  // Last stat is the real pricing-data date (latest snapshot), not the daily build date — an
+  // honest freshness signal. Tinted amber once it crosses STALE_DAYS so old data can't look current.
+  const ageCls = daysBetween(latest.date, today) >= STALE_DAYS ? "stat-stale" : "";
   return [
     stat(new Set(latest.entries.map((e) => e.provider)).size, "providers"),
     stat(latest.entries.length, "plans"),
     stat(out.changes.length, "changes logged"),
     stat(out.snapshot_count, "snapshots"),
-    stat(out.generated_at.slice(0, 10), "refreshed"),
+    stat(latest.date, "data as of", ageCls),
   ].join("");
 };
 const renderLimitCell = (e) => e.limits.map((l) => {
