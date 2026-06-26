@@ -318,6 +318,7 @@
     .hub-chip.down { background: var(--neg-soft); } .hub-chip.down .ic { color: var(--neg); }
     .hub-chip.flat { background: var(--neutral-soft); } .hub-chip.flat .ic { color: var(--muted-2); }
     .hub-chip .ic { flex: none; font-weight: 800; }
+    .hub-chip .hub-date { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; min-width: 3.4em; padding-top: 1px; }
     .hub-chip a { font-size: 12px; }
     .hub-rank { display: flex; flex-direction: column; gap: .35rem; }
     .hub-rankrow { display: flex; align-items: center; gap: .5rem; font-size: 13.5px; flex-wrap: wrap; }
@@ -507,7 +508,7 @@
         </div>
       </div>
       <div class="hub-sec" id="hubMonthSec" style="display:none">
-        <p class="hub-lbl">Recent moves</p>
+        <p class="hub-lbl">What changed recently<span class="meta" id="hubMonthSpan"></span></p>
         <div class="hub-chips" id="hubMonth"></div>
       </div>
       <div class="hub-sec" id="hubDriftSec" style="display:none">
@@ -1816,10 +1817,17 @@
         }
         if (moves.length) {
           const ic = (d) => d > 0 ? "↑" : d < 0 ? "↓" : "→";
+          const fmtMD = (d) => { const t = new Date(d); return isNaN(t) ? d : t.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
+          // Time-anchor each move so "what changed" is concrete and scannable, not a floating list.
           document.getElementById("hubMonth").innerHTML = moves.map((s) => {
             const cls = s.dir > 0 ? "up" : s.dir < 0 ? "down" : "flat";
-            return `<div class="hub-chip ${cls}"><span class="ic">${ic(s.dir)}</span><span>${esc6(s.text)}${s.source ? ` <a href="${safeUrl(s.source)}" target="_blank" rel="nofollow noopener">src</a>` : ""}</span></div>`;
+            return `<div class="hub-chip ${cls}"><span class="ic">${ic(s.dir)}</span><span class="hub-date">${fmtMD(s.date)}</span><span>${esc6(s.text)}${s.source ? ` <a href="${safeUrl(s.source)}" target="_blank" rel="nofollow noopener">src</a>` : ""}</span></div>`;
           }).join("");
+          // Subtitle the section with the actual span the moves cover (oldest shown → newest).
+          const dates = moves.map((m) => m.date).filter(Boolean).sort();
+          const span = dates.length ? (dates[0] === dates.at(-1) ? fmtMD(dates[0]) : `${fmtMD(dates[0])} to ${fmtMD(dates.at(-1))}`) : "";
+          const lblMeta = document.getElementById("hubMonthSpan");
+          if (lblMeta && span) lblMeta.textContent = ` (${span})`;
           document.getElementById("hubMonthSec").style.display = ""; shown = true;
         }
 
