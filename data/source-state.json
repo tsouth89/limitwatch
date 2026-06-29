@@ -1,74 +1,74 @@
 {
   "anthropic-api-rate-limits": {
-    "hash": "15f952d3225afcbd",
-    "checked": "2026-06-22",
-    "len": 17040,
+    "hash": "f3b17b9ea5098685",
+    "checked": "2026-06-29",
+    "len": 15795,
     "method": "http"
   },
   "anthropic-pricing": {
-    "hash": "010e559f7d20b4bd",
-    "checked": "2026-06-22",
-    "len": 24489,
+    "hash": "2a2a9a5b13dc766b",
+    "checked": "2026-06-29",
+    "len": 24356,
     "method": "http"
   },
   "openai-gpt55-help": {
-    "hash": "585bba6681b5ecd4",
-    "checked": "2026-06-22",
-    "len": 8335,
+    "hash": "282cba4f918955ec",
+    "checked": "2026-06-29",
+    "len": 8101,
     "method": "browser"
   },
   "openai-pricing": {
-    "hash": "39dc7b4aac3ff09e",
-    "checked": "2026-06-15",
-    "len": 9570,
+    "hash": "7d9a08e3964644b8",
+    "checked": "2026-06-29",
+    "len": 8717,
     "method": "browser"
   },
   "google-gemini-subscriptions": {
     "hash": "06af2833c7a4a100",
-    "checked": "2026-06-22",
+    "checked": "2026-06-29",
     "len": 17268,
     "method": "http"
   },
   "github-copilot-plans": {
-    "hash": "8a402cd928ad9f9c",
-    "checked": "2026-06-22",
-    "len": 17972,
+    "hash": "73a144b1182c30c2",
+    "checked": "2026-06-29",
+    "len": 18112,
     "method": "http"
   },
   "github-copilot-premium-requests": {
-    "hash": "ba7467b08b4bb761",
-    "checked": "2026-06-22",
-    "len": 17005,
+    "hash": "b4fdec2b8fe0ffb8",
+    "checked": "2026-06-29",
+    "len": 17089,
     "method": "http"
   },
   "replit-pricing": {
     "hash": "82b124b1491ccdda",
-    "checked": "2026-06-22",
+    "checked": "2026-06-29",
     "len": 3604,
     "method": "http"
   },
   "cursor-pricing-docs": {
     "hash": "188ce4c3c8498c93",
-    "checked": "2026-06-22",
+    "checked": "2026-06-29",
     "len": 28,
     "method": "http"
   },
   "xai-supergrok-limits": {
     "hash": "e4c19e7442f6494b",
-    "checked": "2026-06-22",
+    "checked": "2026-06-29",
     "len": 20061,
     "method": "http"
   },
   "perplexity-pro-pricing": {
     "hash": "4c1a0a84f8907b2a",
-    "checked": "2026-06-22",
+    "checked": "2026-06-29",
     "len": 19658,
     "method": "http"
   },
   "openai-go-help": {
-    "hash": "fd1413d23590c92e",
-    "checked": "2026-06-15",
-    "len": 5092,
+    "hash": "168b6a359c1c9e7b",
+    "checked": "2026-06-29",
+    "len": 5225,
     "method": "browser"
   }
 }
