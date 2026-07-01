@@ -4,7 +4,28 @@
   <title>LimitWatch changes</title>
   <link>https://limitwatch.dev/</link>
   <description>Recent AI plan limit and price changes tracked by LimitWatch.</description>
-  <lastBuildDate>Wed, 01 Jul 2026 22:39:10 GMT</lastBuildDate>
+  <lastBuildDate>Wed, 01 Jul 2026 23:16:44 GMT</lastBuildDate>
+  <item>
+    <title>Anthropic Max 20x Agent SDK $? credit / mo removed</title>
+    <link>https://limitwatch.dev/#changelog</link>
+    <guid isPermaLink="false">2026-07-01-limit_removed-Anthropic|Claude|Max 20x|Agent SDK|usd_credit|month|--</guid>
+    <pubDate>Wed, 01 Jul 2026 12:00:00 GMT</pubDate>
+    <description>Anthropic Max 20x Agent SDK $? credit / mo removed</description>
+  </item>
+  <item>
+    <title>Anthropic Max 5x Agent SDK $? credit / mo removed</title>
+    <link>https://limitwatch.dev/#changelog</link>
+    <guid isPermaLink="false">2026-07-01-limit_removed-Anthropic|Claude|Max 5x|Agent SDK|usd_credit|month|--</guid>
+    <pubDate>Wed, 01 Jul 2026 12:00:00 GMT</pubDate>
+    <description>Anthropic Max 5x Agent SDK $? credit / mo removed</description>
+  </item>
+  <item>
+    <title>Anthropic Pro Agent SDK $? credit / mo removed</title>
+    <link>https://limitwatch.dev/#changelog</link>
+    <guid isPermaLink="false">2026-07-01-limit_removed-Anthropic|Claude|Pro|Agent SDK|usd_credit|month|--</guid>
+    <pubDate>Wed, 01 Jul 2026 12:00:00 GMT</pubDate>
+    <description>Anthropic Pro Agent SDK $? credit / mo removed</description>
+  </item>
   <item>
     <title>Google AI Plus $7.99 -&gt; $4.99 / mo</title>
     <link>https://limitwatch.dev/#changelog</link>

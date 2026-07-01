@@ -130,7 +130,24 @@
       "confidence": "official",
       "quote": "These changes will start for all new customers immediately, and renewing customers on billing cycles starting July 1st, 2026.",
       "source": "https://cursor.com/blog/teams-pricing-june-2026",
-      "note": "Official Cursor blog. Three Teams-plan changes effective 2026-07-01 (new customers immediately; renewing customers on cycles starting Jul 1): (1) a new Premium seat at $96/seat/mo annual ($120/seat/mo monthly) giving 5x the included usage of a Standard seat, aimed at the heaviest agent users; (2) each Teams seat now carries TWO separate included-usage pools - Composer + Auto (reserved for first-party Cursor models) and Third-Party API (third-party models) - instead of one shared dollar pool; (3) dashboard shows proximity to each pool's limit and admins can set dollar-threshold smart alerts via Slack/email. Cursor states the changes 'will lower costs for 90% of teams,' and that Premium's Composer pool covers a full month of heavy agent usage for 99% of users. consumer_impact left null (neutral context): it is a structural re-slice with a company-claimed net saving for most but a new higher-priced power tier and pool-splitting, no single published number moving in a scoreable direction - so it appears as context, not a scored drift signal. Snapshot rows unchanged until the next full capture confirms new Teams/Business figures (never edit a past snapshot)."
+      "note": "Official Cursor blog. Three Teams-plan changes effective 2026-07-01 (new customers immediately; renewing customers on cycles starting Jul 1): (1) a new Premium seat at $96/seat/mo annual ($120/seat/mo monthly) giving 5x the included usage of a Standard seat, aimed at the heaviest agent users; (2) each Teams seat now carries TWO separate included-usage pools - Composer + Auto (reserved for first-party Cursor models) and Third-Party API (third-party models) - instead of one shared dollar pool; (3) dashboard shows proximity to each pool's limit and admins can set dollar-threshold smart alerts via Slack/email. Cursor states the changes 'will lower costs for 90% of teams,' and that Premium's Composer pool covers a full month of heavy agent usage for 99% of users. consumer_impact left null (neutral context): it is a structural re-slice with a company-claimed net saving for most but a new higher-priced power tier and pool-splitting, no single published number moving in a scoreable direction - so it appears as context, not a scored drift signal. The individual Cursor plans (Pro $20, Pro+ $60, Ultra $200) are unchanged and were re-verified 2026-07-01."
+    },
+    {
+      "id": "anthropic-agent-sdk-billing-paused-2026",
+      "provider": "Anthropic",
+      "product": "Claude",
+      "surface": "Agent SDK",
+      "applies_to": ["Pro", "Max 5x", "Max 20x", "Team", "Enterprise"],
+      "title": "Anthropic pauses the Agent SDK separate-credit billing change",
+      "kind": "pricing_change",
+      "consumer_impact": "favorable",
+      "starts_on": "2026-06-15",
+      "ends_on": null,
+      "permanent": false,
+      "confidence": "announced",
+      "quote": "\"Nothing changes for now,\" the company told by email.",
+      "source": "https://the-decoder.com/anthropic-backs-off-unpopular-billing-overhaul-as-price-war-with-openai-looms/",
+      "note": "Reverses the change captured in the 2026-06-08 snapshot as three announced Agent SDK surface rows (effective_on 2026-06-15). On the day it was due (2026-06-15) Anthropic paused it: Agent SDK, `claude -p`, Claude Code GitHub Actions, and third-party apps authing via the Agent SDK CONTINUE to draw from the existing Pro/Max/Team/Enterprise subscription pools rather than a separate metered dollar credit. No new credit to claim; nothing changed for subscribers. Because the separate-credit surface never took effect, the 2026-07-01 snapshot drops those three Agent SDK rows (they show as 'removed' in the changelog vs 2026-06-08). Widely reported (The New Stack, The Decoder, DevOps.com) as a consumer-favorable reversal, likely tied to OpenAI's looming API price cuts and Anthropic's IPO timing. consumer_impact favorable: keeping SDK usage inside the subscription pool is a de-facto win for developers vs the announced metered credit. permanent:false because Anthropic framed it as a pause ('for now'), not a cancellation - revisit if they re-announce."
     }
   ]
 }

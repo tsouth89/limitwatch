@@ -399,12 +399,13 @@ const renderLatest = (latest, changes) => {
   return `<div class="table-scroll"><table class="ltable"><colgroup><col style="width:30%"><col style="width:9%"><col style="width:37%"><col style="width:12%"><col style="width:12%"></colgroup><thead><tr><th>Plan</th><th class="num">Price</th><th>Limits</th><th>Confidence</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 };
 const changeText = (c) => {
-  const [prov, , plan, , unit, window] = c.key.split("|");
-  if (c.kind === "limit_changed") return `${prov} ${plan} ${niceLimit(c.from, unit, window)} -> ${niceLimit(c.to, unit, window)}`;
-  if (c.kind === "model_changed") return `${prov} ${plan} ${c.from} -> ${c.to}${c.value != null ? ` (${niceLimit(c.value, unit, window)})` : ""}`;
-  if (c.kind === "price_changed") return `${prov} ${plan} $${c.from} -> $${c.to} / mo`;
-  if (c.kind === "limit_added") return c.to == null ? `${prov} ${plan} plan added (usage unpublished)` : `${prov} ${plan} ${niceLimit(c.to, unit, window)}`;
-  return `${prov} ${plan} ${niceLimit(null, unit, window)} removed`;
+  const [prov, , plan, surface, unit, window] = c.key.split("|");
+  const scope = `${prov} ${plan}${surface ? ` ${surface}` : ""}`;
+  if (c.kind === "limit_changed") return `${scope} ${niceLimit(c.from, unit, window)} -> ${niceLimit(c.to, unit, window)}`;
+  if (c.kind === "model_changed") return `${scope} ${c.from} -> ${c.to}${c.value != null ? ` (${niceLimit(c.value, unit, window)})` : ""}`;
+  if (c.kind === "price_changed") return `${scope} $${c.from} -> $${c.to} / mo`;
+  if (c.kind === "limit_added") return c.to == null ? `${scope} plan added (usage unpublished)` : `${scope} ${niceLimit(c.to, unit, window)}`;
+  return `${scope} ${niceLimit(null, unit, window)} removed`;
 };
 
 // ── Drift leaderboard ────────────────────────────────────────────────────────────────────────
