@@ -440,7 +440,7 @@ for (const c of out.changes) {
 }
 // Events (incl auto): explicit direction by kind. pricing_change/new_plan stay context (direction not
 // guaranteed numeric here, and a real price move is already captured from the snapshot diff above).
-const EVENT_DIR = { limit_boost: 1, promo: 1, limit_cut: -1, removal: -1 };
+const EVENT_DIR = { limit_boost: 1, promo: 1, restoration: 1, limit_cut: -1, removal: -1 };
 for (const e of events) {
   const when = e.starts_on || "";
   if (when < driftCutoff) continue;
