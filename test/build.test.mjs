@@ -294,6 +294,39 @@ test("passes through measured spend fields and validates token breakdowns", () =
   }
 });
 
+test("publishes model availability events and leaves them neutral in Drift", () => {
+  const root = setupRoot({
+    snapshots: [snap("2026-01-01", [entry({ provider: "Anthropic", plan: "Pro" })])],
+    events: { schema: 1, events: [{
+      id: "sonnet", provider: "Anthropic", product: "Claude", applies_to: ["Free", "Pro"],
+      title: "Sonnet 5 access", kind: "model_availability", model: "Claude Sonnet 5", access: "included",
+      starts_on: "2026-07-01", ends_on: null, permanent: true, confidence: "official",
+      quote: "Sonnet 5 is the default model for Free and Pro plans.", source: "https://example.com/sonnet",
+    }] },
+  });
+  try {
+    runBuild(root);
+    const data = readData(root);
+    assert.equal(data.events[0].kind, "model_availability");
+    const drift = data.drift.find((d) => d.provider === "Anthropic");
+    assert.equal(drift.up, 0);
+    assert.equal(drift.down, 0);
+  } finally { cleanup(root); }
+});
+
+test("build fails when a model availability event omits model or access", () => {
+  const root = setupRoot({
+    snapshots: [snap("2026-01-01", [entry({ plan: "Basic" })])],
+    events: { schema: 1, events: [{
+      id: "bad-model", provider: "TestCo", title: "bad", kind: "model_availability", applies_to: ["Pro"],
+      starts_on: "2026-01-01", ends_on: null, confidence: "official", quote: "a sufficiently long quote here.", source: "https://example.com",
+    }] },
+  });
+  try {
+    assert.throws(() => runBuild(root), /requires exactly one non-empty model or models/);
+  } finally { cleanup(root); }
+});
+
 test("build fails when a measured breakdown does not sum to realized tokens", () => {
   const bad = snap("2026-01-01", [
     entry({

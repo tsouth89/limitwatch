@@ -175,15 +175,27 @@ collapsed.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 // Time-bounded events (promos / temporary boosts). Validated and passed through; the site computes
 // active/upcoming/ended from `today` so they expire on their own. Optional file.
 const EVENT_REQUIRED = ["id", "provider", "title", "kind", "starts_on", "confidence", "quote", "source"];
+const MODEL_ACCESS = ["included", "limited", "metered"];
+function validateEvent(e, file) {
+  for (const k of EVENT_REQUIRED) if (e[k] == null) throw new Error(`${file}: ${e.id ?? "?"} missing ${k}`);
+  if (!TIERS.includes(e.confidence)) throw new Error(`${file}: ${e.id} bad confidence "${e.confidence}"`);
+  if (e.consumer_impact != null && !["favorable", "unfavorable"].includes(e.consumer_impact)) throw new Error(`${file}: ${e.id} bad consumer_impact "${e.consumer_impact}" (favorable|unfavorable)`);
+  if (e.ends_on && e.ends_on < e.starts_on) throw new Error(`${file}: ${e.id} ends_on before starts_on`);
+  if (e.kind === "model_availability") {
+    const hasModel = typeof e.model === "string" && e.model.trim().length > 0;
+    const hasModels = Array.isArray(e.models) && e.models.length > 0 && e.models.every((m) => typeof m === "string" && m.trim().length > 0);
+    if (hasModel === hasModels) throw new Error(`${file}: ${e.id} requires exactly one non-empty model or models`);
+    if (!MODEL_ACCESS.includes(e.access)) throw new Error(`${file}: ${e.id} bad access "${e.access}" (included|limited|metered)`);
+    if (!Array.isArray(e.applies_to) || !e.applies_to.length) throw new Error(`${file}: ${e.id} requires named applies_to plan/surface`);
+    if (!Object.prototype.hasOwnProperty.call(e, "ends_on")) throw new Error(`${file}: ${e.id} missing ends_on (use null for no end date)`);
+  }
+}
 let events = [];
 try {
   const ev = JSON.parse(readFileSync(join(root, "data", "events.json"), "utf8"));
   if (!Array.isArray(ev.events)) throw new Error("events.json: events not array");
   for (const e of ev.events) {
-    for (const k of EVENT_REQUIRED) if (e[k] == null) throw new Error(`events.json: ${e.id ?? "?"} missing ${k}`);
-    if (!TIERS.includes(e.confidence)) throw new Error(`events.json: ${e.id} bad confidence "${e.confidence}"`);
-    if (e.consumer_impact != null && !["favorable", "unfavorable"].includes(e.consumer_impact)) throw new Error(`events.json: ${e.id} bad consumer_impact "${e.consumer_impact}" (favorable|unfavorable)`);
-    if (e.ends_on && e.ends_on < e.starts_on) throw new Error(`events.json: ${e.id} ends_on before starts_on`);
+    validateEvent(e, "events.json");
     if (e.starts_on > today) dataWarnings.push(`events.json: ${e.id} starts_on ${e.starts_on} is after ${today}`);
   }
   events = ev.events;
@@ -200,9 +212,7 @@ try {
     const manualIds = new Set(events.map((e) => e.id));
     const manualSrc = new Set(events.map((e) => e.source));
     for (const e of ae.events) {
-      for (const k of EVENT_REQUIRED) if (e[k] == null) throw new Error(`auto-events.json: ${e.id ?? "?"} missing ${k}`);
-      if (!TIERS.includes(e.confidence)) throw new Error(`auto-events.json: ${e.id} bad confidence "${e.confidence}"`);
-      if (e.ends_on && e.ends_on < e.starts_on) throw new Error(`auto-events.json: ${e.id} ends_on before starts_on`);
+      validateEvent(e, "auto-events.json");
       if (manualIds.has(e.id) || manualSrc.has(e.source)) continue;   // a hand-curated event supersedes
       events.push({ ...e, auto: true });
     }
@@ -441,7 +451,7 @@ for (const c of out.changes) {
 }
 // Events (incl auto): explicit direction by kind. pricing_change/new_plan stay context (direction not
 // guaranteed numeric here, and a real price move is already captured from the snapshot diff above).
-const EVENT_DIR = { limit_boost: 1, promo: 1, restoration: 1, limit_cut: -1, removal: -1 };
+const EVENT_DIR = { limit_boost: 1, promo: 1, restoration: 1, limit_cut: -1, removal: -1, model_availability: 0 };
 for (const e of events) {
   const when = e.starts_on || "";
   if (when < driftCutoff) continue;

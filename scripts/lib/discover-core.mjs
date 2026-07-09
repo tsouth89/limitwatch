@@ -15,6 +15,18 @@ export const tag = (block, name) => decode(block.match(new RegExp(`<${name}[^>]*
 // Strip an HTML page down to readable text (drop script/style, tags -> spaces, decode entities).
 export const stripHtml = (html) => decode(html.replace(/<(script|style)[\s\S]*?<\/\1>/gi, " ").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
 
+export const MODEL_AVAILABILITY_GUIDANCE =
+  "A model announcement qualifies as model_availability only when it explicitly changes access for named consumer/prosumer plans (Free, Plus, Pro, Max, Team, Enterprise, etc.) or a tracked subscriber surface (ChatGPT, Claude, Claude Code, Cursor, Cowork, etc.). Exclude generic API-only launches, developer-platform releases, capability/context-window announcements, benchmarks, and model news without a named subscriber access change.";
+
+export const classifyModelAvailabilityText = (text) => {
+  const s = String(text ?? "");
+  const hasModel = /\b(model|available|access|default|included|selectable)\b/i.test(s);
+  const hasPlan = /\b(free|plus|pro|pro\+|max|team|enterprise|business|ultra|subscriber|subscription)\b/i.test(s);
+  const hasSurface = /\b(chatgpt|claude(?:\.ai)?|claude code|cursor|cowork|gemini)\b/i.test(s);
+  const apiOnly = /\b(api|sdk|developer platform|benchmark|benchmarks)\b/i.test(s) && !hasPlan && !hasSurface;
+  return hasModel && (hasPlan || hasSurface) && !apiOnly ? "model_availability" : null;
+};
+
 // Normalize for verbatim matching: lowercase, collapse every non-alphanumeric run to one space.
 export const normForMatch = (s) => (s ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 

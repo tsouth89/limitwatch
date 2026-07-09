@@ -151,7 +151,7 @@ future-dated one reveals itself on its start date.
       "surface": "Claude Code",      // optional, same meaning as snapshot surface
       "applies_to": ["Pro", "Max 5x", "Max 20x"],
       "title": "Claude Code weekly limit +50%",
-      "kind": "limit_boost",         // limit_boost | limit_cut | promo | …
+      "kind": "limit_boost",         // limit_boost | limit_cut | model_availability | promo | …
       "factor": 1.5,                 // 1.5 ⇒ +50%, 2 ⇒ 2×
       "window": "week",
       "starts_on": "2026-05-13",
@@ -169,6 +169,18 @@ future-dated one reveals itself on its start date.
 Required: `id`, `provider`, `title`, `kind`, `starts_on`, `confidence`, `quote`, `source`. Same rule
 as everything else: **record the published wording verbatim and cite a source**; if you can't verify
 the window/end-date, don't publish the event.
+
+### `model_availability` events
+
+Use `kind: "model_availability"` for a sourced change to model access on a named subscriber plan or
+tracked subscriber surface. These events are neutral in Drift: they describe what a subscription
+includes without claiming that the plan became quantitatively more or less generous.
+
+They require `model` (a non-empty string) **or** `models` (a non-empty string array), exactly one of
+those fields; `access` must be `included`, `limited`, or `metered`; `applies_to` must name at least
+one plan or surface; and `ends_on` must be present (use `null` for standing access). The usual
+`source`, `quote`, `starts_on`, and provenance fields remain required. Generic API-only launches,
+benchmarks, and capability announcements without named subscriber access do not qualify.
 
 **`consumer_impact`** (optional, `"favorable"` | `"unfavorable"`) — an explicit human-judged direction
 for the **drift verdict** only. Use it for structural changes that genuinely help or hurt subscribers

@@ -4,7 +4,7 @@
 // covers the no-dep RSS/Atom parser. node:test + node:assert, no external deps.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { quoteInSource, normForMatch, parseFeed, stripHtml } from "../scripts/lib/discover-core.mjs";
+import { quoteInSource, normForMatch, parseFeed, stripHtml, classifyModelAvailabilityText } from "../scripts/lib/discover-core.mjs";
 
 test("quoteInSource: accepts a verbatim sentence present in the source", () => {
   const page = "Today we are announcing that Claude Pro users get 5x more usage starting next week.";
@@ -65,4 +65,9 @@ test("parseFeed: handles Atom <entry> with <link href> and <id>", () => {
 test("stripHtml: drops script/style and collapses to readable text", () => {
   const html = "<div>Pro <b>now</b> 5x<script>evil()</script> usage</div>";
   assert.equal(stripHtml(html), "Pro now 5x usage");
+});
+
+test("classifyModelAvailabilityText: accepts named subscriber model access and rejects API benchmarks", () => {
+  assert.equal(classifyModelAvailabilityText("Claude Sonnet 5 is now the default model for Free and Pro plans"), "model_availability");
+  assert.equal(classifyModelAvailabilityText("GPT-5.6 benchmark results and API pricing"), null);
 });
