@@ -58,6 +58,30 @@
     {
       "provider": "OpenAI",
       "product": "ChatGPT",
+      "plan": "Pro ($100)",
+      "price_usd": 100,
+      "period": "month",
+      "includes_code": true,
+      "limits": [
+        {
+          "value": 5,
+          "unit": "multiplier",
+          "window": null,
+          "model": null,
+          "kind": "primary",
+          "baseline": "Plus"
+        }
+      ],
+      "confidence": "official",
+      "quote": "Everything in Plus and: 5x or 20x more usage. Maximum Codex tasks.",
+      "source": "https://openai.com/chatgpt/pricing/",
+      "as_of": "2026-07-09",
+      "verified_on": "2026-07-09",
+      "notes": "Distinct $100/month Pro tier. The official pricing page includes Codex and describes a 5x-or-20x usage range; this record is the 5x tier. No fixed message cap is published."
+    },
+    {
+      "provider": "OpenAI",
+      "product": "ChatGPT",
       "plan": "Go",
       "price_usd": 8,
       "period": "month",

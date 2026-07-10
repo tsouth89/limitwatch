@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T23:16:44.100Z",
+  "generated_at": "2026-07-10T20:58:20.531Z",
   "snapshot_count": 7,
   "date_range": [
     "2026-01-15",
@@ -213,6 +213,14 @@
       "date": "2026-07-01",
       "kind": "limit_removed",
       "key": "Anthropic|Claude|Pro|Agent SDK|usd_credit|month|"
+    },
+    {
+      "date": "2026-07-01",
+      "kind": "limit_added",
+      "key": "OpenAI|ChatGPT|Pro ($100)||multiplier||",
+      "to": 5,
+      "unit": "multiplier",
+      "source": "https://openai.com/chatgpt/pricing/"
     },
     {
       "date": "2026-06-08",
@@ -939,6 +947,12 @@
       "up": 0,
       "down": 0,
       "signals": [
+        {
+          "text": "OpenAI Pro ($100) 5x usage",
+          "source": "https://openai.com/chatgpt/pricing/",
+          "date": "2026-07-01",
+          "dir": 0
+        },
         {
           "text": "OpenAI Go GPT-5.4 Thinking -> GPT-5.5 Thinking (10 messages / 5h)",
           "source": "https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt",
@@ -2956,6 +2970,30 @@
           "as_of": "2026-06-07",
           "verified_on": "2026-06-29",
           "notes": "\"Unlimited\" subject to abuse guardrails; no published hard cap. GPT-5.5 Pro (research-grade) included. Cloudflare-gated page; verified_on 2026-06-29 = last automated hash-check confirmation (see Plus entry)."
+        },
+        {
+          "provider": "OpenAI",
+          "product": "ChatGPT",
+          "plan": "Pro ($100)",
+          "price_usd": 100,
+          "period": "month",
+          "includes_code": true,
+          "limits": [
+            {
+              "value": 5,
+              "unit": "multiplier",
+              "window": null,
+              "model": null,
+              "kind": "primary",
+              "baseline": "Plus"
+            }
+          ],
+          "confidence": "official",
+          "quote": "Everything in Plus and: 5x or 20x more usage. Maximum Codex tasks.",
+          "source": "https://openai.com/chatgpt/pricing/",
+          "as_of": "2026-07-09",
+          "verified_on": "2026-07-09",
+          "notes": "Distinct $100/month Pro tier. The official pricing page includes Codex and describes a 5x-or-20x usage range; this record is the 5x tier. No fixed message cap is published."
         },
         {
           "provider": "OpenAI",
