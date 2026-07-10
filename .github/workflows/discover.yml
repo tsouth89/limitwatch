@@ -1,8 +1,8 @@
 name: news-discovery
 
-# Polls provider news/changelog feeds (data/feeds.json) for NEW announcements and opens an issue
-# when something appears — and, if the ANTHROPIC_API_KEY secret is set, filters to just the
-# limit/pricing-relevant items and drafts events.json stubs. Runs in the cloud, not on a home PC.
+# Polls provider news/changelog feeds (data/feeds.json) for NEW announcements and maintains one
+# rolling triage issue only when something needs human attention. If the ANTHROPIC_API_KEY secret
+# is set, classifier-confirmed irrelevant items stay quiet; relevant items can draft event stubs.
 # It proposes only; a human reviews the issue and edits data/events.json. Complements
 # weekly-source-watch (which diffs known pricing pages rather than discovering new posts).
 
@@ -32,18 +32,21 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: node scripts/discover.mjs
 
-      - name: Open issue if new items found
+      - name: Add actionable discovery to the triage queue
         if: hashFiles('data/_discover-summary.md') != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create \
-            --title "News discovery: new provider item(s) ($(date -u +%Y-%m-%d))" \
-            --body-file data/_discover-summary.md \
-            --label "discovery" || \
-          gh issue create \
-            --title "News discovery: new provider item(s) ($(date -u +%Y-%m-%d))" \
-            --body-file data/_discover-summary.md
+          if grep -q '<!-- limitwatch: relevant=0 -->' data/_discover-summary.md; then
+            echo "Classifier found no consumer-plan limit or pricing news. No issue needed."
+            exit 0
+          fi
+          queue="$(gh issue list --label discovery --state open --limit 100 --json number,title --jq '.[] | select(.title == "News discovery triage queue") | .number' | head -n1)"
+          if [ -n "$queue" ]; then
+            gh issue comment "$queue" --body-file data/_discover-summary.md
+          else
+            gh issue create --title "News discovery triage queue" --body-file data/_discover-summary.md --label "discovery"
+          fi
 
       - name: Commit advanced discovery state + radar
         run: |

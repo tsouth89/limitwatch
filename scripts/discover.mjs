@@ -117,7 +117,10 @@ if (relevant) {
 }
 for (const it of fresh) lines.push(`- [${it.provider}] [${it.title}](${it.link}) ${it.date ? `· ${it.date}` : ""}`);
 if (relevant) lines.push("", "</details>");
-writeFileSync(summaryPath, lines.join("\n"));
+// The workflow uses this machine-readable marker to avoid filing an issue when the classifier
+// found no consumer-plan limit or pricing news. Keep raw-list alerts when no classifier is set.
+const relevanceStatus = relevant == null ? "unknown" : String(relevant.length);
+writeFileSync(summaryPath, `<!-- limitwatch: relevant=${relevanceStatus} -->\n${lines.join("\n")}`);
 console.log(`Wrote ${summaryPath}${relevant ? ` (${relevant.length} relevant)` : " (no LLM filter — raw list)"}`);
 
 // Append the LLM-flagged items to the site's news radar (data/news.json) so relevant news shows

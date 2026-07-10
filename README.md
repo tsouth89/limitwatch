@@ -80,10 +80,12 @@ snapshots — human stays in the loop. Use `--http-only` to skip the browser sou
 
 ### Automation
 
-- **Weekly, in CI:** `.github/workflows/watch.yml` runs the HTTP-only subset every Monday
-  (13:17 UTC) and opens an issue if any page's text moved. Works even when your PC is off.
-- **Full coverage, local:** `scripts/watch-and-report.ps1` (scheduled task) runs all sources
-  incl. the headed-browser OpenAI pages.
+- **Weekly, in CI:** `.github/workflows/watch.yml` runs every Monday at 13:17 UTC, including
+  headed Patchright + Xvfb for the bot-protected sources. It maintains one rolling source-watch
+  triage issue when text moves. A residential proxy is optional for pages Cloudflare still blocks.
+- **Weekly, on this PC:** the `LimitWatch Weekly Watch` scheduled task runs
+  `scripts/watch-and-report.ps1` every Monday at 10:00 AM local time while you are signed in.
+  This is the independent headed-browser fallback for OpenAI or other pages that reject cloud runs.
 
 ## Discover new announcements
 
@@ -108,10 +110,11 @@ and the build drops any radar item whose link already became a published event, 
 their own instead of piling up. New feeds are seeded into `data/discover-state.json` so adding a
 source doesn't flood the radar with its back-catalog.
 
-**In CI, off your PC:** `.github/workflows/discover.yml` runs this daily and opens an issue when
-something new appears. Add the `ANTHROPIC_API_KEY` repo secret to turn on relevance filtering;
-without it the issue still lists raw items. Feeds are plain HTTP, so no headed browser is needed —
-the Cloudflare-protected pages stay on the diff-based `watch` path.
+**In CI, off your PC:** `.github/workflows/discover.yml` runs this daily. Add the
+`ANTHROPIC_API_KEY` repo secret to turn on relevance filtering; with it, irrelevant items do not
+create work and relevant leads are added to one rolling triage issue. Without it, the queue still
+gets the raw items for manual review. Feeds are plain HTTP, so no headed browser is needed — the
+Cloudflare-protected pages stay on the diff-based `watch` path.
 
 ## Capture measured usage (subscription caps)
 
