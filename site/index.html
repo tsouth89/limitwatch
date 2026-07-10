@@ -30,21 +30,20 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #eef3f3;
+      --bg: #f4f5f8;
       --paper: #ffffff;
-      --paper-soft: #f5faf9;
+      --paper-soft: #f7f8fb;
       --glass: rgba(255, 255, 255, .82);
-      --ink: #11201d;
-      --muted: #4d625d;
-      --muted-2: #79908a;
-      --line: #d7e2df;
-      --line-soft: #e6eeec;
-      --hover: #eaf3f1;
-      /* Accent kept on --blue/--blue-soft names to avoid churn; values are now teal/emerald. */
-      --blue: #0d9488;
-      --blue-ink: #0f766e;
-      --blue-strong: #0b7d72;
-      --blue-soft: #d4efea;
+      --ink: #121722;
+      --muted: #596273;
+      --muted-2: #818b9b;
+      --line: #dbe0e8;
+      --line-soft: #e9edf3;
+      --hover: #edf3ff;
+      --blue: #216dff;
+      --blue-ink: #1758d6;
+      --blue-strong: #1556d9;
+      --blue-soft: #e4edff;
       --green: #047857;
       --amber: #a66000;
       --violet: #6d4ac9;
@@ -62,27 +61,27 @@
       --info-soft: #e7e8fd;
       --info-line: #c6caf6;
       --neutral-soft: #eef2f5;
-      --shadow: 0 16px 40px rgba(15, 40, 36, .07);
-      --shadow-sm: 0 2px 8px rgba(15, 40, 36, .05);
-      --decor-1: #cdeee8;
-      --decor-2: #f6e6d8;
+      --shadow: 0 18px 48px rgba(24, 38, 68, .07);
+      --shadow-sm: 0 2px 8px rgba(24, 38, 68, .05);
+      --decor-1: #dce8ff;
+      --decor-2: #eee8df;
     }
     :root[data-theme="dark"] {
       color-scheme: dark;
-      --bg: #0a1413;
-      --paper: #111d1b;
-      --paper-soft: #15211f;
-      --glass: rgba(17, 29, 27, .82);
-      --ink: #e6efec;
-      --muted: #9bb0ab;
-      --muted-2: #6c817b;
-      --line: #233532;
-      --line-soft: #1b2926;
-      --hover: #182724;
-      --blue: #2dd4bf;
-      --blue-ink: #5eead4;
-      --blue-strong: #14b8a6;
-      --blue-soft: #103330;
+      --bg: #090d14;
+      --paper: #111722;
+      --paper-soft: #161e2b;
+      --glass: rgba(17, 23, 34, .82);
+      --ink: #edf1f8;
+      --muted: #aab5c7;
+      --muted-2: #748197;
+      --line: #283346;
+      --line-soft: #1b2534;
+      --hover: #17243a;
+      --blue: #4b87ff;
+      --blue-ink: #79a7ff;
+      --blue-strong: #2d70ff;
+      --blue-soft: #142d5a;
       --pos-line: #1c4d3d;
       --neg-line: #5a241d;
       --amber-soft: #2e240f;
@@ -91,7 +90,7 @@
       --info: #818cf8;
       --info-soft: #1d2150;
       --info-line: #353a78;
-      --neutral-soft: #1c2926;
+      --neutral-soft: #1c2533;
       --green: #34d399;
       --amber: #fbbf24;
       --violet: #a78bfa;
@@ -102,8 +101,8 @@
       --neg-soft: #3a1714;
       --shadow: 0 18px 50px rgba(0, 0, 0, .45);
       --shadow-sm: 0 2px 10px rgba(0, 0, 0, .3);
-      --decor-1: #0e2e2a;
-      --decor-2: #2a211a;
+      --decor-1: #0d1f42;
+      --decor-2: #211b2a;
     }
     * { box-sizing: border-box; }
     body { margin: 0; font: 15px/1.55 system-ui, sans-serif; background: var(--bg); color: var(--ink); }
@@ -156,21 +155,6 @@
     .dlt.flat { color: var(--muted); background: var(--neutral-soft); }
     .dlt.new { color: var(--blue-ink); background: var(--blue-soft); }
     @media (max-width: 620px) { .trow { grid-template-columns: 1fr auto; } .trow .spark { grid-column: 1 / -1; width: 100%; } }
-    /* Dev/status bar */
-    .devbar { background: linear-gradient(90deg, var(--blue-soft), var(--paper-soft)); border-bottom: 1px solid var(--line-soft); font-size: 13px; }
-    .devbar .inner { max-width: 1080px; margin: 0 auto; padding: .4rem 1.1rem; display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; }
-    .devbar .pulse { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: pulse 2.2s infinite; flex: none; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(22,163,74,.5); } 70% { box-shadow: 0 0 0 7px rgba(22,163,74,0); } 100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); } }
-    .devbar .dtext { color: var(--ink); font-weight: 600; }
-    .devbar .dtext b { font-weight: 800; }
-    .devbar .roadmap-toggle { margin-left: auto; background: var(--paper); border: 1px solid var(--line); color: var(--blue-ink); font: inherit; font-weight: 700; font-size: 12.5px; padding: .2rem .6rem; border-radius: 999px; cursor: pointer; }
-    .devbar .roadmap-toggle:hover { background: var(--blue-soft); }
-    .roadmap-panel { max-width: 1080px; margin: 0 auto; padding: 0 1.1rem; overflow: hidden; max-height: 0; transition: max-height .2s ease; }
-    .roadmap-panel.open { max-height: 320px; padding-bottom: .7rem; }
-    .roadmap-panel ul { margin: .3rem 0 0; padding-left: 1.1rem; columns: 2; column-gap: 1.6rem; }
-    .roadmap-panel li { font-size: 12.5px; color: var(--muted); margin-bottom: .25rem; break-inside: avoid; }
-    .roadmap-panel li b { color: var(--ink); font-weight: 700; }
-    @media (max-width: 620px) { .roadmap-panel ul { columns: 1; } }
     /* Events + highlights */
     .event { display: flex; gap: .7rem; align-items: flex-start; padding: .65rem 0; border-bottom: 1px solid var(--line-soft); }
     .event:last-child { border-bottom: 0; }
@@ -208,9 +192,10 @@
     #search { flex: 1 1 250px; background: var(--paper); border: 1px solid var(--line); border-radius: 7px; color: var(--ink); padding: .48rem .65rem; font: inherit; }
     #search:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(33,87,214,.12); }
     .chips { display: flex; flex-wrap: wrap; gap: .35rem; }
-    .chip { cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: .18rem .68rem; font-size: 12px; color: var(--muted); background: var(--paper); user-select: none; }
+    .chip { cursor: pointer; border: 1px solid var(--line); border-radius: 999px; padding: .18rem .68rem; font: inherit; font-size: 12px; line-height: 1.35; color: var(--muted); background: var(--paper); user-select: none; }
     .chip:hover { border-color: var(--muted-2); color: var(--ink); }
     .chip.active { background: var(--blue-soft); color: var(--blue-ink); border-color: color-mix(in srgb, var(--blue) 40%, transparent); }
+    .chip:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
     .pgroup { margin: 0; }
     .pgroup > summary { list-style: none; cursor: pointer; font-size: 1.04rem; font-weight: 700; margin: 1.35rem 0 .35rem; padding: .35rem .15rem .35rem 1.25rem; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; position: relative; transition: color .12s; }
     .pgroup > summary::-webkit-details-marker { display: none; }
@@ -354,19 +339,22 @@
     .bl-note { font-size: 13px; color: var(--muted); margin: .9rem 0 0; }
 
     /* "Find your plan" picker */
-    .picker-controls { display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; margin: .4rem 0 1.1rem; }
+    .picker-controls { display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; margin: .4rem 0 1.1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); }
     .pgrp { display: flex; flex-direction: column; gap: .4rem; }
     .pgrp .plabel { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-2); font-weight: 800; }
-    .pk-row { display: flex; align-items: center; gap: .8rem; padding: .65rem .2rem; border-bottom: 1px solid var(--line-soft); }
+    .pk-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+    .pk-row { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: .8rem; padding: 1rem; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
     .pk-row:last-child { border-bottom: 0; }
-    .pk-rank { flex: none; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--blue-soft); color: var(--blue-ink); font-weight: 800; font-size: 13px; }
+    .pk-rank { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--blue); border-radius: 50%; background: transparent; color: var(--blue-ink); font-weight: 800; font-size: 13px; }
     .pk-body { flex: 1; }
     .pk-name { font-weight: 700; }
-    .pk-meta { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: .1rem; }
-    .pk-verdict { background: var(--blue-soft); border: 1px solid var(--blue-soft); border-radius: 12px; padding: .85rem 1rem; margin: 0 0 1rem; font-size: 15px; line-height: 1.5; }
+    .pk-meta { font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; margin-top: .25rem; }
+    .pk-basis { display: block; color: var(--muted-2); font-size: 11px; letter-spacing: .03em; margin-top: .45rem; text-transform: uppercase; }
+    .pk-verdict { background: var(--paper-soft); border-left: 3px solid var(--blue); border-radius: 0; padding: .85rem 1rem; margin: 0 0 1rem; font-size: 15px; line-height: 1.5; }
     .pk-verdict strong { color: var(--blue-ink); }
     .pk-verdict .pkwarn { color: var(--neg); font-weight: 600; }
     .pk-verdict .pkgood { color: var(--pos); font-weight: 600; }
+    @media (max-width: 760px) { .pk-results { grid-template-columns: 1fr; } }
 
     /* Provider logo */
     .pmark { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; font-size: 13px; font-weight: 800; vertical-align: -6px; margin-right: .45rem; background: var(--paper); border: 1px solid var(--line); overflow: hidden; }
@@ -446,6 +434,85 @@
       .ltable td[data-label]::before { content: attr(data-label); display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .05em; font-weight: 800; }
       .vrow { grid-template-columns: 1fr; gap: .15rem; padding: .35rem 0; }
     }
+    /* Decision-first editorial layer: preserve the data views, but give visitors a clear route in. */
+    body::before { background: radial-gradient(circle at 18% -12%, var(--decor-1) 0, transparent 32%), radial-gradient(circle at 88% 4%, var(--decor-2) 0, transparent 28%); }
+    main { display: flex; flex-direction: column; gap: 1.35rem; }
+    main > .card { margin: 0; }
+    .topnav .inner { max-width: 1120px; }
+    .brand { gap: .68rem; font-size: 1.08rem; letter-spacing: -.02em; }
+    .brand::before { content: ""; width: 10px; height: 10px; border: 2px solid var(--blue); border-radius: 50%; box-shadow: 7px 0 0 -3px var(--blue), 0 7px 0 -3px var(--blue); }
+    .brand img { display: none; }
+    header.hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr); gap: 1.5rem 2rem; padding-top: 2.55rem; padding-bottom: 1rem; align-items: end; }
+    .hero h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.7rem, 4.6vw, 4.2rem); font-weight: 400; line-height: .98; letter-spacing: -.045em; max-width: 14ch; }
+    .hero h1 .kicker { font-family: system-ui, sans-serif; color: var(--blue); font-size: 11px; font-weight: 800; letter-spacing: .12em; margin-bottom: .85rem; }
+    .hero .tag { font-size: 1.08rem; max-width: 48ch; margin: 1.15rem 0 0; }
+    header.hero .notice { grid-column: 1 / -1; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: 1.3rem; }
+    .hero-actions a { border: 1px solid var(--line); border-radius: 999px; color: var(--ink); padding: .46rem .82rem; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .hero-actions a:first-child { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .hero-actions a:hover { border-color: var(--blue); color: var(--blue-ink); }
+    .hero-actions a:first-child:hover { color: #fff; background: var(--blue-strong); }
+    .stats { display: none; }
+    #picker { order: 1; border-top: 3px solid var(--blue); padding: 1.65rem; }
+    #limits { order: 2; }
+    #measured { order: 3; }
+    #whatsnew { order: 4; }
+    #hub, #bottomLine, #drift, #resets, #compare, #trends, #changelog, #trust { display: none !important; }
+    #picker .section-head h2, #limits .section-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; font-weight: 400; letter-spacing: -.025em; }
+    .card { border-radius: 4px; box-shadow: none; }
+    .section-head { border-bottom: 1px solid var(--line); padding-bottom: .9rem; margin-bottom: 1rem; }
+    .controls { margin-inline: -.2rem; }
+    .ltable thead th { background: transparent; }
+    .ltable tbody tr { transition: background .12s ease, color .12s ease; }
+    .ltable tbody tr:hover td { background: var(--hover); }
+    .measured-pill { border-radius: 4px; }
+    /* Product layer: the landing experience explains the evidence before asking visitors to parse data. */
+    header.hero { grid-template-columns: minmax(0, 1.1fr) minmax(290px, .72fr); gap: 2.5rem; padding-top: 3.25rem; padding-bottom: 2.3rem; align-items: center; }
+    .hero h1 { font-size: clamp(3.25rem, 5.3vw, 5.1rem); max-width: 11.5ch; }
+    .hero .tag { max-width: 43ch; }
+    .hero-proof { position: relative; overflow: hidden; border: 1px solid var(--line); border-top: 3px solid var(--blue); background: linear-gradient(145deg, var(--paper-soft), var(--paper)); padding: 1.15rem 1.2rem 1.05rem; }
+    .hero-proof::after { content: ""; position: absolute; width: 180px; height: 180px; right: -92px; top: -98px; border: 1px solid var(--blue-soft); border-radius: 50%; box-shadow: 0 0 0 28px rgba(75,135,255,.035), 0 0 0 56px rgba(75,135,255,.025); pointer-events: none; }
+    .proof-label { position: relative; z-index: 1; margin: 0 0 .75rem; color: var(--blue); font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .proof-path { position: relative; z-index: 1; display: grid; grid-template-columns: 24px 1fr auto; gap: .72rem; align-items: start; color: var(--ink); text-decoration: none; padding: .78rem 0; border-top: 1px solid var(--line); }
+    .proof-path:first-of-type { border-top: 0; }
+    .proof-path .num { color: var(--blue); font-size: 11px; font-weight: 850; letter-spacing: .04em; padding-top: .08rem; }
+    .proof-path strong { display: block; font-size: 14px; letter-spacing: -.01em; }
+    .proof-path small { display: block; color: var(--muted); font-size: 12px; line-height: 1.35; margin-top: .12rem; }
+    .proof-path .arrow { color: var(--blue); font-size: 17px; line-height: 1; }
+    .proof-path:hover strong, .proof-path:hover .arrow { color: var(--blue-ink); }
+    .proof-note { position: relative; z-index: 1; color: var(--muted-2); font-size: 11.5px; line-height: 1.4; margin: .75rem 0 0; }
+    #picker { background: linear-gradient(150deg, var(--paper) 0%, var(--paper) 66%, var(--paper-soft) 100%); border-top: 0; position: relative; overflow: hidden; }
+    #picker::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: linear-gradient(var(--blue), #8cb1ff); }
+    #picker .section-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+    #picker .section-head::after { content: "01 / Match your work"; color: var(--muted-2); font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; padding-bottom: .35rem; }
+    .picker-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; border: 0; padding: .9rem; margin: 0 0 1.15rem; background: var(--paper-soft); }
+    .pgrp { gap: .55rem; }
+    .pgrp + .pgrp { padding-left: 1rem; border-left: 1px solid var(--line); }
+    .pk-verdict { border-left-width: 4px; background: rgba(75,135,255,.07); }
+    .pk-results { gap: .55rem; border: 0; background: transparent; }
+    .pk-row { border: 1px solid var(--line); background: var(--paper); min-height: 100%; }
+    .pk-row:first-child { border-color: var(--blue); background: linear-gradient(145deg, rgba(75,135,255,.09), var(--paper)); }
+    .pk-actions { display: flex; align-items: center; justify-content: space-between; gap: .55rem; margin-top: .42rem; }
+    .pk-actions .pk-basis { margin: 0; }
+    .pk-source { color: var(--blue); font-size: 11.5px; font-weight: 750; white-space: nowrap; text-decoration: none; }
+    .pk-source:hover { color: var(--blue-ink); text-decoration: underline; }
+    #limits, #measured, #whatsnew { position: relative; padding-top: 1.8rem; }
+    #limits::before, #measured::before, #whatsnew::before { position: absolute; top: 1.1rem; right: 1.5rem; color: var(--muted-2); font-size: 10px; font-weight: 850; letter-spacing: .1em; }
+    #limits::before { content: "02 / PROVIDER RECORD"; }
+    #measured::before { content: "03 / OBSERVED EVIDENCE"; }
+    #whatsnew::before { content: "04 / CHANGE RECORD"; }
+    #limits .section-head h2, #measured .section-head h2, #whatsnew .section-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.8rem, 3vw, 2.45rem); font-weight: 400; letter-spacing: -.035em; }
+    #limits .section-head, #measured .section-head, #whatsnew .section-head { padding-right: 13rem; }
+    @media (max-width: 720px) {
+      header.hero { grid-template-columns: 1fr; padding-top: 2.3rem; gap: 1.6rem; }
+      .hero h1 { font-size: 2.65rem; max-width: 13ch; }
+      #picker .section-head { display: block; }
+      #picker .section-head::after { display: none; }
+      .picker-controls { grid-template-columns: 1fr; }
+      .pgrp + .pgrp { padding: 1rem 0 0; border-left: 0; border-top: 1px solid var(--line); }
+      #limits .section-head, #measured .section-head, #whatsnew .section-head { padding-right: 0; }
+      #limits::before, #measured::before, #whatsnew::before { position: static; display: block; margin: 0 0 .45rem; }
+    }
   </style>
   <script>
     // Set theme before paint to avoid a flash. Stored choice wins; otherwise follow the OS.
@@ -457,36 +524,14 @@
   </script>
 </head>
 <body>
-  <div class="devbar" id="devbar">
-    <div class="inner">
-      <span class="pulse"></span>
-      <span class="dtext" id="devbarText">Live · actively updated</span>
-      <button class="roadmap-toggle" id="roadmapToggle" aria-expanded="false" aria-controls="roadmapPanel">Roadmap ▾</button>
-    </div>
-    <div class="roadmap-panel" id="roadmapPanel">
-      <ul>
-        <li><b>Metered usage capture</b>: read provider rate-limit headers and usage meters (anthropic-ratelimit-*, x-ratelimit-remaining) to measure real budgets without draining accounts</li>
-        <li><b>Deeper history</b> — more backfilled dates to turn jumps into trends</li>
-        <li><b>Crowdsourced receipts</b> — submit your own measured usage</li>
-        <li><b>Email change alerts</b> — RSS feed is live now (see Changelog); an email digest is next</li>
-        <li><b>More providers</b> — broader coverage as pages are verified</li>
-        <li><b>Per-limit drift sparklines</b> — the Drift leaderboard is live; sparklines on individual limits next</li>
-      </ul>
-    </div>
-  </div>
   <nav class="topnav">
     <div class="inner">
       <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
       <div class="navlinks" id="navlinks">
-        <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">What's new</a>
-        <a href="#drift" data-section="drift" id="navDrift" style="display:none">Drift</a>
-        <a href="#limits" data-section="limits">Limits</a>
-        <a href="#resets" data-section="resets" id="navResets" style="display:none">Resets</a>
-        <a href="#compare" data-section="compare">Compare</a>
-        <a href="#measured" data-section="measured" id="navMeasured" style="display:none">Measured</a>
-        <a href="#trends" data-section="trends" id="navTrends" style="display:none">History</a>
-        <a href="#changelog" data-section="changelog">Changelog</a>
-        <a href="#trust" data-section="trust">Trust</a>
+        <a href="#picker" data-section="picker">Plans</a>
+        <a href="#limits" data-section="limits" id="navLimits">Official facts</a>
+        <a href="#measured" data-section="measured" id="navMeasured" style="display:none">Usage receipts</a>
+        <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">News</a>
       </div>
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle light / dark">
         <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -495,9 +540,19 @@
     </div>
   </nav>
   <header class="hero" id="top">
-    <h1><span class="kicker">AI usage limits, with receipts</span>LimitWatch</h1>
-    <p class="tag">What AI subscriptions actually let you use: compared, source-linked, and tracked as limits quietly change.</p>
-    <div class="stats" id="stats"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">23</div><div class="l">plans</div></div><div class="stat"><div class="n">16</div><div class="l">changes logged</div></div><div class="stat"><div class="n">7</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-07-01</div><div class="l">data as of</div></div><!-- BUILD:stats:end --></div>
+    <div>
+      <h1><span class="kicker">AI plan limits, with evidence</span>Plans, without the guesswork.</h1>
+      <p class="tag">Start with what providers publish. Then use observed account readings to understand what that can look like in practice.</p>
+      <div class="hero-actions"><a href="#picker">Get suggestions</a><a href="#limits">Published facts</a><a href="#measured">Observed usage</a></div>
+    </div>
+    <aside class="hero-proof" aria-label="How LimitWatch organizes its evidence">
+      <p class="proof-label">Three ways to decide</p>
+      <a class="proof-path" href="#picker"><span class="num">01</span><span><strong>Match your work</strong><small>Get a short starting list by use case and budget.</small></span><span class="arrow">→</span></a>
+      <a class="proof-path" href="#limits"><span class="num">02</span><span><strong>Check provider facts</strong><small>See source-linked prices, terms, and published limits.</small></span><span class="arrow">→</span></a>
+      <a class="proof-path" href="#measured"><span class="num">03</span><span><strong>Inspect real usage</strong><small>Read observed account activity, never presented as a promise.</small></span><span class="arrow">→</span></a>
+      <p class="proof-note">Estimates stay separate from official facts. That distinction is the point.</p>
+    </aside>
+    <div class="stats" id="stats" aria-hidden="true"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">24</div><div class="l">plans</div></div><div class="stat"><div class="n">17</div><div class="l">changes logged</div></div><div class="stat"><div class="n">7</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-07-01</div><div class="l">data as of</div></div><!-- BUILD:stats:end --></div>
     <div class="notice" id="dataNotice"></div>
   </header>
   <main>
@@ -538,41 +593,41 @@
     <div class="card" id="picker">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Find your plan</p>
-          <h2>Which plan should you get?</h2>
-          <p class="meta">Tell me what you use AI for and your budget. I'll point you at the best value for it, factoring in whether each provider's limits are trending up or down.</p>
+          <p class="eyebrow">Plan finder</p>
+          <h2>Suggested plans for your work</h2>
+          <p class="meta">Choose how you work and what you want to spend. We’ll give you three comparable places to start.</p>
         </div>
       </div>
       <div class="picker-controls">
         <div class="pgrp">
           <span class="plabel">Mostly for</span>
           <div class="chips" id="pkUse">
-            <span class="chip active" data-use="general">Chat / general</span>
-            <span class="chip" data-use="coding">Coding</span>
-            <span class="chip" data-use="research">Research</span>
+            <button class="chip active" type="button" data-use="general" aria-pressed="true">Chat / general</button>
+            <button class="chip" type="button" data-use="coding" aria-pressed="false">Coding</button>
+            <button class="chip" type="button" data-use="research" aria-pressed="false">Research</button>
           </div>
         </div>
         <div class="pgrp">
           <span class="plabel">Budget / mo</span>
           <div class="chips" id="pkBudget">
-            <span class="chip active" data-max="20">≤ $20</span>
-            <span class="chip" data-max="50">≤ $50</span>
-            <span class="chip" data-max="100">≤ $100</span>
-            <span class="chip" data-max="0">Any</span>
+            <button class="chip active" type="button" data-max="20" aria-pressed="true">≤ $20</button>
+            <button class="chip" type="button" data-max="50" aria-pressed="false">≤ $50</button>
+            <button class="chip" type="button" data-max="100" aria-pressed="false">≤ $100</button>
+            <button class="chip" type="button" data-max="0" aria-pressed="false">Any</button>
           </div>
         </div>
       </div>
       <div id="pkVerdict"></div>
-      <div id="pkResults"></div>
+      <div class="pk-results" id="pkResults"></div>
       <p class="meta" id="pkNote"></p>
     </div>
 
     <div class="card" id="whatsnew" style="display:none">
       <div class="section-head">
         <div>
-          <p class="eyebrow">What's new</p>
-          <h2>Live events &amp; highlights</h2>
-          <p class="meta">Temporary promos/throttles with countdowns, plus the big stuff: model upgrades, price moves, new plans. The exhaustive per-limit log lives in <a href="#changelog">Changelog</a>.</p>
+          <p class="eyebrow">News</p>
+          <h2>What changed, and what matters</h2>
+          <p class="meta">New plans, price shifts, limit changes, and active promos—kept concise so you can decide what to investigate next.</p>
         </div>
       </div>
       <div id="eventsBody"></div>
@@ -596,21 +651,21 @@
     </div>
 
     <div class="card" id="limits">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Provider sources</p>
+          <h2>Published limits and plan details</h2>
+          <p class="meta">One row per plan, in the provider's native unit, with the supporting source and date. <em>not published</em> means the provider gives no public number for that cap.</p>
+        </div>
+      </div>
       <div class="controls">
         <input id="search" type="search" placeholder="Search provider, plan, or model…" aria-label="Search plans" />
         <div class="chips" id="groupBy">
-          <span class="chip active" data-group="flat">Sortable list</span>
-          <span class="chip" data-group="provider">By provider</span>
-          <span class="chip" data-group="price">By price</span>
+          <button class="chip active" type="button" data-group="flat" aria-pressed="true">Sortable list</button>
+          <button class="chip" type="button" data-group="provider" aria-pressed="false">By provider</button>
+          <button class="chip" type="button" data-group="price" aria-pressed="false">By price</button>
         </div>
         <div class="chips" id="provChips"></div>
-      </div>
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Current snapshot</p>
-          <h2>Latest published limits</h2>
-          <p class="meta">One row per plan, native units as published. Group by provider or by price tier. We do not invent message counts where providers only give token budgets or multipliers. <em>not published</em> means the provider discloses no number for that cap. <a href="#compare">Best value per $ -></a></p>
-        </div>
       </div>
       <details class="howto">
         <summary>How to read this</summary>
@@ -624,10 +679,10 @@
           <div><strong>Sources</strong> — values with a dotted underline are quotes: hover to read the exact source sentence, click to pin it. Every row also links its <code>src</code>.</div>
           <div><strong>Units</strong> — <code>messages</code>, <code>tokens</code>, and <code>requests</code> are absolute caps. <code>5× Pro</code> is a relative multiplier with no published absolute. <code>$20 usage</code> is a monthly dollar credit, not a throughput cap.</div>
           <div><strong>Windows</strong> — <code>/3h</code> <code>/4h</code> <code>/5h</code> <code>/day</code> <code>/wk</code> <code>/mo</code> is the refresh period.</div>
-          <div><strong>Measured value</strong>: a teal <span class="measured-pill" style="margin:0">≈ $X real value →</span> pill means we paired a real in-app usage reading with the API-rate cost to reach it. It is a measured floor, so the true value is higher. <a href="#measured">See all receipts</a>.</div>
+          <div><strong>Measured value</strong>: a blue <span class="measured-pill" style="margin:0">≈ $X real value →</span> pill means we paired a real in-app usage reading with the API-rate cost to reach it. It is a measured floor, so the true value is higher. <a href="#measured">See all receipts</a>.</div>
         </div>
       </details>
-      <div id="latest"><!-- BUILD:latest:start --><div class="table-scroll"><table class="ltable"><colgroup><col style="width:30%"><col style="width:9%"><col style="width:37%"><col style="width:12%"><col style="width:12%"></colgroup><thead><tr><th>Plan</th><th class="num">Price</th><th>Limits</th><th>Confidence</th><th>Source</th></tr></thead><tbody><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Plus</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$4.99</td><td data-label="Limits"><span>2x Free</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="OpenAI"><img src="/icons/openai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">O</span></span><span class="pname">OpenAI</span> <strong>Go</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$8</td><td data-label="Limits"><span>160 messages/3h <span class="meta">(GPT-5.5)</span></span><br><span>10 messages/5h <span class="meta">(GPT-5.5 Thinking)</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a> <span class="meta">2026-06-29</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$10</td><td data-label="Limits"><span>300 requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Business</strong></td><td class="num" data-label="Price / mo">$19</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Pro</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$19.99</td><td data-label="Limits"><span>4x Free</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Anthropic"><img src="/icons/anthropic.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">A</span></span><span class="pname">Anthropic</span> <strong>Pro</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>5x Free</span><br><span>45 messages/5h</span> <span class="meta">· estimate</span><a class="measured-pill" href="#measured" title="Measured from real usage (a floor, from Claude Code only, so real value is higher)">≈ $46 to $71 real value / 5h+ →</a></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://support.claude.com/en/articles/8325606-what-is-the-pro-plan">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Cursor"><img src="/icons/cursor.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">C</span></span><span class="pname">Cursor</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>$20 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://cursor.com/docs/account/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="OpenAI"><img src="/icons/openai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">O</span></span><span class="pname">OpenAI</span> <strong>Plus</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>160 messages/3h <span class="meta">(GPT-5.5)</span></span><br><span>3,000 messages/wk <span class="meta">(GPT-5.5 Thinking)</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a> <span class="meta">2026-06-29</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Perplexity"><img src="/icons/perplexity.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">P</span></span><span class="pname">Perplexity</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>500 requests/day <span class="meta">(Deep Research)</span></span></td><td data-label="Confidence"><span class="badge community">community</span></td><td data-label="Source"><a href="https://www.finout.io/blog/perplexity-pricing-in-2026">src</a> <span class="meta">2026-06-07</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Replit"><img src="/icons/replit.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">R</span></span><span class="pname">Replit</span> <strong>Core</strong></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>$25 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://replit.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="xAI"><img src="/icons/xai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">x</span></span><span class="pname">xAI</span> <strong>SuperGrok</strong></td><td class="num" data-label="Price / mo">$30</td><td data-label="Limits"><span>1,000 messages/day</span><br><span>125 messages/4h</span></td><td data-label="Confidence"><span class="badge community">community</span></td><td data-label="Source"><a href="https://jingrey.com/tools/current-supergrok-usage-limits/">src</a> <span class="meta">2026-06-07</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Enterprise</strong></td><td class="num" data-label="Price / mo">$39</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Pro+</strong></td><td class="num" data-label="Price / mo">$39</td><td data-label="Limits"><span>1,500 requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Cursor"><img src="/icons/cursor.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">C</span></span><span class="pname">Cursor</span> <strong>Pro+</strong></td><td class="num" data-label="Price / mo">$60</td><td data-label="Limits"><span>$70 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://cursor.com/docs/account/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Replit"><img src="/icons/replit.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">R</span></span><span class="pname">Replit</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$95</td><td data-label="Limits"><span>$100 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://replit.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Ultra (5x)</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$99.99</td><td data-label="Limits"><span>5x AI Pro</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Anthropic"><img src="/icons/anthropic.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">A</span></span><span class="pname">Anthropic</span> <strong>Max 5x</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$100</td><td data-label="Limits"><span>5x Pro</span><br><span>225 messages/5h</span> <span class="meta">· estimate</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://claude.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Ultra (20x)</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$199.99</td><td data-label="Limits"><span>20x AI Pro</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Anthropic"><img src="/icons/anthropic.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">A</span></span><span class="pname">Anthropic</span> <strong>Max 20x</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span>20x Pro</span><br><span>900 messages/5h</span> <span class="meta">· estimate</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://claude.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Cursor"><img src="/icons/cursor.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">C</span></span><span class="pname">Cursor</span> <strong>Ultra</strong></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span>$400 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://cursor.com/docs/account/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="OpenAI"><img src="/icons/openai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">O</span></span><span class="pname">OpenAI</span> <strong>Pro</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· messages</span> <span class="meta">(GPT-5.5)</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a> <span class="meta">2026-06-29</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Perplexity"><img src="/icons/perplexity.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">P</span></span><span class="pname">Perplexity</span> <strong>Max</strong></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· requests/day</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://suprmind.ai/hub/perplexity/pricing/">src</a> <span class="meta">2026-06-07</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="xAI"><img src="/icons/xai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">x</span></span><span class="pname">xAI</span> <strong>SuperGrok Heavy</strong></td><td class="num" data-label="Price / mo">$300</td><td data-label="Limits"><span>5,000 messages/day</span><br><span>250 messages/4h</span></td><td data-label="Confidence"><span class="badge community">community</span></td><td data-label="Source"><a href="https://jingrey.com/tools/current-supergrok-usage-limits/">src</a> <span class="meta">2026-06-07</span></td></tr></tbody></table></div><!-- BUILD:latest:end --></div>
+      <div id="latest"><!-- BUILD:latest:start --><div class="table-scroll"><table class="ltable"><colgroup><col style="width:30%"><col style="width:9%"><col style="width:37%"><col style="width:12%"><col style="width:12%"></colgroup><thead><tr><th>Plan</th><th class="num">Price</th><th>Limits</th><th>Confidence</th><th>Source</th></tr></thead><tbody><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Plus</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$4.99</td><td data-label="Limits"><span>2x Free</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="OpenAI"><img src="/icons/openai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">O</span></span><span class="pname">OpenAI</span> <strong>Go</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$8</td><td data-label="Limits"><span>160 messages/3h <span class="meta">(GPT-5.5)</span></span><br><span>10 messages/5h <span class="meta">(GPT-5.5 Thinking)</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a> <span class="meta">2026-06-29</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$10</td><td data-label="Limits"><span>300 requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Business</strong></td><td class="num" data-label="Price / mo">$19</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Pro</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$19.99</td><td data-label="Limits"><span>4x Free</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Anthropic"><img src="/icons/anthropic.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">A</span></span><span class="pname">Anthropic</span> <strong>Pro</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>5x Free</span><br><span>45 messages/5h</span> <span class="meta">· estimate</span><a class="measured-pill" href="#measured" title="Measured from real usage (a floor, from Claude Code only, so real value is higher)">≈ $46 to $71 real value / 5h+ →</a></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://support.claude.com/en/articles/8325606-what-is-the-pro-plan">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Cursor"><img src="/icons/cursor.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">C</span></span><span class="pname">Cursor</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>$20 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://cursor.com/docs/account/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="OpenAI"><img src="/icons/openai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">O</span></span><span class="pname">OpenAI</span> <strong>Plus</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>160 messages/3h <span class="meta">(GPT-5.5)</span></span><br><span>3,000 messages/wk <span class="meta">(GPT-5.5 Thinking)</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a> <span class="meta">2026-06-29</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Perplexity"><img src="/icons/perplexity.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">P</span></span><span class="pname">Perplexity</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>500 requests/day <span class="meta">(Deep Research)</span></span></td><td data-label="Confidence"><span class="badge community">community</span></td><td data-label="Source"><a href="https://www.finout.io/blog/perplexity-pricing-in-2026">src</a> <span class="meta">2026-06-07</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Replit"><img src="/icons/replit.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">R</span></span><span class="pname">Replit</span> <strong>Core</strong></td><td class="num" data-label="Price / mo">$20</td><td data-label="Limits"><span>$25 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://replit.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="xAI"><img src="/icons/xai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">x</span></span><span class="pname">xAI</span> <strong>SuperGrok</strong></td><td class="num" data-label="Price / mo">$30</td><td data-label="Limits"><span>1,000 messages/day</span><br><span>125 messages/4h</span></td><td data-label="Confidence"><span class="badge community">community</span></td><td data-label="Source"><a href="https://jingrey.com/tools/current-supergrok-usage-limits/">src</a> <span class="meta">2026-06-07</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Enterprise</strong></td><td class="num" data-label="Price / mo">$39</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/about-github-copilot/plans-for-github-copilot">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="GitHub Copilot"><img src="/icons/github.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">GitHub Copilot</span> <strong>Pro+</strong></td><td class="num" data-label="Price / mo">$39</td><td data-label="Limits"><span>1,500 requests/mo</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://docs.github.com/en/copilot/managing-copilot/monitoring-usage-and-entitlements/about-premium-requests">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Cursor"><img src="/icons/cursor.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">C</span></span><span class="pname">Cursor</span> <strong>Pro+</strong></td><td class="num" data-label="Price / mo">$60</td><td data-label="Limits"><span>$70 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://cursor.com/docs/account/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Replit"><img src="/icons/replit.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">R</span></span><span class="pname">Replit</span> <strong>Pro</strong></td><td class="num" data-label="Price / mo">$95</td><td data-label="Limits"><span>$100 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://replit.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Ultra (5x)</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$99.99</td><td data-label="Limits"><span>5x AI Pro</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Anthropic"><img src="/icons/anthropic.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">A</span></span><span class="pname">Anthropic</span> <strong>Max 5x</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$100</td><td data-label="Limits"><span>5x Pro</span><br><span>225 messages/5h</span> <span class="meta">· estimate</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://claude.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="OpenAI"><img src="/icons/openai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">O</span></span><span class="pname">OpenAI</span> <strong>Pro ($100)</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$100</td><td data-label="Limits"><span>5x Plus</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://openai.com/chatgpt/pricing/">src</a> <span class="meta">2026-07-09</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Google"><img src="/icons/google.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">G</span></span><span class="pname">Google</span> <strong>AI Ultra (20x)</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$199.99</td><td data-label="Limits"><span>20x AI Pro</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://gemini.google/subscriptions/">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Anthropic"><img src="/icons/anthropic.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">A</span></span><span class="pname">Anthropic</span> <strong>Max 20x</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span>20x Pro</span><br><span>900 messages/5h</span> <span class="meta">· estimate</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://claude.com/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Cursor"><img src="/icons/cursor.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">C</span></span><span class="pname">Cursor</span> <strong>Ultra</strong></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span>$400 usage <span class="meta">/ mo</span></span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://cursor.com/docs/account/pricing">src</a> <span class="meta">2026-07-01</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="OpenAI"><img src="/icons/openai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">O</span></span><span class="pname">OpenAI</span> <strong>Pro</strong> <span class="changed-chip">updated</span></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· messages</span> <span class="meta">(GPT-5.5)</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a> <span class="meta">2026-06-29</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="Perplexity"><img src="/icons/perplexity.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">P</span></span><span class="pname">Perplexity</span> <strong>Max</strong></td><td class="num" data-label="Price / mo">$200</td><td data-label="Limits"><span class="undisclosed">not published</span> <span class="meta">· requests/day</span></td><td data-label="Confidence"><span class="badge official">official</span></td><td data-label="Source"><a href="https://suprmind.ai/hub/perplexity/pricing/">src</a> <span class="meta">2026-06-07</span></td></tr><tr><td class="cardtitle"><span class="pmark" title="xAI"><img src="/icons/xai.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span class="fallback">x</span></span><span class="pname">xAI</span> <strong>SuperGrok Heavy</strong></td><td class="num" data-label="Price / mo">$300</td><td data-label="Limits"><span>5,000 messages/day</span><br><span>250 messages/4h</span></td><td data-label="Confidence"><span class="badge community">community</span></td><td data-label="Source"><a href="https://jingrey.com/tools/current-supergrok-usage-limits/">src</a> <span class="meta">2026-06-07</span></td></tr></tbody></table></div><!-- BUILD:latest:end --></div>
     </div>
 
     <div class="card" id="resets" style="display:none">
@@ -687,9 +742,9 @@
     <div class="card" id="measured" style="display:none">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Real measured usage</p>
-          <h2>What plans actually delivered <span class="meta" style="font-weight:400">(observed, not caps)</span></h2>
-          <p class="meta">Real readings, not published numbers: what a subscription let you do before it throttled, and what a maxed account actually consumed. The only way to see caps that no API exposes. <span class="badge crowdsourced">crowdsourced</span></p>
+          <p class="eyebrow">Measured evidence</p>
+          <h2>What plans delivered in practice <span class="meta" style="font-weight:400">(observed, not caps)</span></h2>
+          <p class="meta">Observed readings from real accounts. They show how accounts behaved in practice, not a provider promise. <span class="badge crowdsourced">crowdsourced</span></p>
         </div>
         <a class="submit-btn" href="https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml" target="_blank" rel="noopener">Submit a reading →</a>
       </div>
@@ -763,7 +818,7 @@
         </label>
         <span id="alertMsg" class="meta"></span>
       </form>
-      <div class="cllist" id="changelogList"><!-- BUILD:changelog:start --><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Max 20x Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Max 5x Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Pro Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-06-08</span> <span class="hk price">price</span> <span class="cltxt">Google AI Plus $7.99 -&gt; $4.99 / mo</span> <a href="https://support.google.com/googleone/answer/16882689">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk price">price</span> <span class="cltxt">Google AI Ultra (20x) $249.99 -&gt; $199.99 / mo</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Ultra (20x) ?x usage -&gt; 20x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk added">new</span> <span class="cltxt">Google AI Ultra (5x) 5x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Pro ?x usage -&gt; 4x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Plus ?x usage -&gt; 2x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.4 Thinking -&gt; GPT-5.5 Thinking (10 messages / 5h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.3 -&gt; GPT-5.5 (160 messages / 3h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Pro GPT-5.3 -&gt; GPT-5.5</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><!-- BUILD:changelog:end --></div>
+      <div class="cllist" id="changelogList"><!-- BUILD:changelog:start --><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Max 20x Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Max 5x Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Pro Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk added">new</span> <span class="cltxt">OpenAI Pro ($100) 5x usage</span> <a href="https://openai.com/chatgpt/pricing/">src</a></div><div class="clrow"><span class="num">2026-06-08</span> <span class="hk price">price</span> <span class="cltxt">Google AI Plus $7.99 -&gt; $4.99 / mo</span> <a href="https://support.google.com/googleone/answer/16882689">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk price">price</span> <span class="cltxt">Google AI Ultra (20x) $249.99 -&gt; $199.99 / mo</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Ultra (20x) ?x usage -&gt; 20x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk added">new</span> <span class="cltxt">Google AI Ultra (5x) 5x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Pro ?x usage -&gt; 4x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Plus ?x usage -&gt; 2x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.4 Thinking -&gt; GPT-5.5 Thinking (10 messages / 5h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.3 -&gt; GPT-5.5 (160 messages / 3h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><!-- BUILD:changelog:end --></div>
       <button class="morebtn" id="changelogMore" type="button" style="display:none"></button>
     </div>
 
@@ -1141,8 +1196,8 @@
       const chipsEl = document.getElementById("provChips");
       const renderChips = () => {
         chipsEl.innerHTML =
-          `<span class="chip ${active.size ? "" : "active"}" data-all>All</span>` +
-          providers.map((p) => `<span class="chip ${active.has(p) ? "active" : ""}" data-prov="${p}">${provName(p)}</span>`).join("");
+          `<button class="chip ${active.size ? "" : "active"}" type="button" data-all aria-pressed="${active.size ? "false" : "true"}">All</button>` +
+          providers.map((p) => `<button class="chip ${active.has(p) ? "active" : ""}" type="button" data-prov="${p}" aria-pressed="${active.has(p) ? "true" : "false"}">${provName(p)}</button>`).join("");
       };
       chipsEl.addEventListener("click", (ev) => {
         const c = ev.target.closest(".chip");
@@ -1154,7 +1209,7 @@
       document.getElementById("groupBy").addEventListener("click", (ev) => {
         const c = ev.target.closest(".chip"); if (!c) return;
         groupMode = c.dataset.group;
-        [...ev.currentTarget.children].forEach((ch) => ch.classList.toggle("active", ch === c));
+        [...ev.currentTarget.children].forEach((ch) => { const selected = ch === c; ch.classList.toggle("active", selected); ch.setAttribute("aria-pressed", String(selected)); });
         track("group_by", { mode: groupMode });
         renderLatest(); syncUrl();
       });
@@ -1191,7 +1246,7 @@
         const g = params.get("g");
         if (g === "provider" || g === "price") {
           groupMode = g;
-          document.querySelectorAll("#groupBy .chip").forEach((ch) => ch.classList.toggle("active", ch.dataset.group === g));
+          document.querySelectorAll("#groupBy .chip").forEach((ch) => { const selected = ch.dataset.group === g; ch.classList.toggle("active", selected); ch.setAttribute("aria-pressed", String(selected)); });
         }
       })();
       renderChips();
@@ -1322,7 +1377,7 @@
         for (const e of latest.entries) {
           if (isFutureDate(e.effective_on)) continue;
           const name = `${provName(e.provider)} ${e.plan}` + (e.surface ? ` <span class="meta">· ${e.surface}</span>` : "");
-          const base = { prov: e.provider, name, price: e.price_usd };
+          const base = { prov: e.provider, name, price: e.price_usd, source: e.source };
           if (e.measured) { measured.push({ ...base, tokPerDay: e.measured.realized_tokens_month / 30 }); continue; }
           for (const l of e.limits) {
             if (l.value == null) continue;
@@ -1415,21 +1470,25 @@
           const clean = (s) => s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
           const alts = elig.slice(1, 3).map((x) => clean(x.name));
           verdictEl.className = "pk-verdict";
-          verdictEl.innerHTML = `For <strong>${uc.label}</strong> on ${budgetLabel(pkMax)}, start with <strong>${clean(top.name)}</strong> at $${top.price}/mo. ` +
-            `Best estimated value of the options that fit${driftClause(top.prov)}.` +
-            (alts.length ? ` Close alternatives: ${alts.join(", ")}.` : "");
+          verdictEl.innerHTML = `<strong>Best starting point:</strong> for ${uc.label} on ${budgetLabel(pkMax)}, compare <strong>${clean(top.name)}</strong> at $${top.price}/mo first. ` +
+            `It has the highest comparable published activity among the plans that fit${driftClause(top.prov)}.` +
+            (alts.length ? ` Also consider: ${alts.join(", ")}.` : "");
           resEl.innerHTML = elig.slice(0, 3).map((x, i) => {
-            const best = i === 0 ? ` <span class="bestpill">Top pick</span>` : "";
+            const best = i === 0 ? ` <span class="bestpill">Starting point</span>` : "";
             const msgDay = fmt(Math.round(x.tokPerDay / uc.tpm));
+            const basis = x.kind === "credit-est" ? "Included usage credit" : x.kind === "tokens" ? "Published token cap" : "Published message cap";
+            const interaction = use === "coding" ? "coding interactions" : use === "research" ? "research interactions" : "chat interactions";
+            const source = x.source ? `<a class="pk-source" href="${safeUrl(x.source)}" target="_blank" rel="nofollow noopener">Provider source ↗</a>` : "";
             return `<div class="pk-row"><div class="pk-rank">${i + 1}</div>` +
               `<div class="pk-body"><div class="pk-name">${provMark(x.prov)}${x.name}${best}</div>` +
-              `<div class="pk-meta">$${x.price}/mo · ~${fmt(Math.round(x.tokPerDay))} tokens/day (≈ ${msgDay} msg/day) · <strong>${fmt(Math.round(x.perDollar))}</strong> tokens/day/$</div></div></div>`;
+              `<div class="pk-meta"><strong>$${x.price}/mo</strong> · ≈ ${msgDay} ${interaction}/day</div>` +
+              `<div class="pk-actions"><span class="pk-basis">${basis} · comparable estimate</span>${source}</div></div></div>`;
           }).join("");
-          noteEl.innerHTML = `Guided estimate, not a hard ranking: plans sell different units (messages, tokens, $-credits), normalized to ~${uc.tpm} tokens/interaction for ${uc.label}. Multiplier-only plans ("5× Pro") can't be scored. Data as of ${dataDate}. Method in the <a href="#compare">cross-provider estimate</a>.`;
+          noteEl.innerHTML = `Comparison, not a cap: plans sell different units (messages, tokens, $-credits), normalized to ~${uc.tpm} tokens/interaction. Multiplier-only plans remain unranked. Data as of ${dataDate}.`;
         };
         const pick = (el, set) => el.addEventListener("click", (ev) => {
           const c = ev.target.closest(".chip"); if (!c) return;
-          [...el.children].forEach((ch) => ch.classList.toggle("active", ch === c));
+          [...el.children].forEach((ch) => { const selected = ch === c; ch.classList.toggle("active", selected); ch.setAttribute("aria-pressed", String(selected)); });
           set(c); render();
         });
         pick(useEl, (c) => { use = c.dataset.use; track("rec_use", { use }); });
@@ -1520,12 +1579,12 @@
               : `<span class="num">1 reading</span>`;
             return `<div class="rsumrow">
               <div class="rsumlabel">${provMark(prov)} <strong>${plan}</strong> <span class="meta">· ${shortWin(window)}</span></div>
-              <div class="rsumval"><span class="lead">~${rangeTxt}</span> <span class="meta">/ ${shortWin(window)} API-equiv${isFloor ? ` <span class="badge community">floor</span>` : ""}</span></div>
+              <div class="rsumval"><span class="lead">~${rangeTxt}</span> <span class="meta">/ ${shortWin(window)} activity/value proxy${isFloor ? ` <span class="badge community">floor</span>` : ""}</span></div>
               <div class="rsummeta meta">${shape} · latest ${fmt(rs[0].observed)}%</div>
             </div>`;
           }).join("");
           document.getElementById("reportsSummary").innerHTML =
-            `<p class="meta" style="margin:.2rem 0 .6rem"><strong>Implied per-window budget</strong> — each reading's measured burn extrapolated to a full window (burn ÷ %). Floors are lower bounds (Claude Code only). Two close readings that agree suggest a token-based cap.</p>` + rows;
+            `<p class="meta" style="margin:.2rem 0 .6rem"><strong>Activity/value proxy per window</strong> — measured activity valued at public API rates, then extrapolated to a full window (burn ÷ %). It is not the subscription limit. Floors are lower bounds (Claude Code only).</p>` + rows;
         })();
 
         const obs = (r) =>
@@ -1533,8 +1592,9 @@
           r.metric === "tokens" ? (r.observed >= 1e6 ? `${(r.observed / 1e6).toFixed(1)}M tokens` : `${fmt(r.observed)} tokens`) :
           `${fmt(r.observed)} ${r.metric}`;
         const esc2 = (s) => (s ?? "").replace(/"/g, "&quot;");
-        // API-equivalent value: what the session's tokens would cost at the model's API rate. When
-        // the reading is a % of a window, extrapolate to the full-window value (the moat number).
+        // Activity/value proxy: what the session's tokens would cost at the model's public API rate.
+        // When the reading is a % of a window, extrapolate to the full-window value; never treat it
+        // as the subscription limit.
         // A "floor" reading is a soft lower bound (Claude Code burn only, weak per-account attribution),
         // not a measured ceiling. Badge it so the extrapolated $/window isn't read as a hard number.
         const floor = (r) => r.value_basis === "floor"
@@ -1670,29 +1730,7 @@
           </div>`;
         }).join("");
         trends.style.display = "";
-        document.getElementById("navTrends").style.display = "";
-      })();
-
-      // ---- Dev/status bar ----
-      (() => {
-        const refreshed = (db.generated_at || "").slice(0, 10);
-        const last = db.snapshots.at(-1)?.date;
-        const live = (db.events ?? []).filter((e) => e.starts_on <= todayIso && (!e.ends_on || e.ends_on >= todayIso)).length;
-        // The site auto-rebuilds daily (CI discovery + deploy), so "refreshed" is today's build date and
-        // reflects that the radar/news are current; "latest snapshot" is the last full pricing capture,
-        // which moves less often. Two distinct, non-contradictory dates.
-        const bits = ["<b>Live</b>"];
-        if (refreshed) bits.push(`refreshed ${refreshed}`);
-        if (last) bits.push(`latest snapshot ${last}`);
-        bits.push(`${db.changes.length} changes tracked`);
-        if (live) bits.push(`<b>${live} live event${live > 1 ? "s" : ""}</b>`);
-        document.getElementById("devbarText").innerHTML = bits.join(" · ");
-        const rt = document.getElementById("roadmapToggle");
-        rt.addEventListener("click", () => {
-          const open = document.getElementById("roadmapPanel").classList.toggle("open");
-          rt.setAttribute("aria-expanded", open);
-          rt.textContent = open ? "Roadmap ▴" : "Roadmap ▾";
-        });
+          const navTrends = document.getElementById("navTrends"); if (navTrends) navTrends.style.display = "";
       })();
 
       // ---- What's new: live events + highlights ----
@@ -1795,7 +1833,7 @@
           </div>`;
         }).join("");
         document.getElementById("drift").style.display = "";
-        document.getElementById("navDrift").style.display = "";
+          const navDrift = document.getElementById("navDrift"); if (navDrift) navDrift.style.display = "";
       })();
 
       // ---- Reset windows: how each provider's caps refresh (data.json .resets, sourced mechanic) ----
@@ -1819,7 +1857,7 @@
           return `<div class="rstprov">${provMark(g.provider)} ${provName(g.provider)}</div>${rows}`;
         }).join("");
         document.getElementById("resets").style.display = "";
-        document.getElementById("navResets").style.display = "";
+          const navResets = document.getElementById("navResets"); if (navResets) navResets.style.display = "";
       })();
 
       // ---- Hub: answer-first summary pinned at the top (recent moves + generosity + measured value).
@@ -1956,11 +1994,10 @@
       })();
 
       // Highlight the nav link for whichever section is centered in the viewport.
-      // ---- Tabs: show ONE section at a time instead of an endless stack. The Bottom Line stays
-      // pinned above as a persistent summary; the nav switches the rest. ----
+      // ---- Tabs: show one evidence view at a time instead of an endless stack. ----
       const navMap = {};
       document.querySelectorAll(".navlinks a").forEach((a) => (navMap[a.dataset.section] = a));
-      const tabOrder = ["whatsnew", "drift", "limits", "resets", "compare", "measured", "trends", "changelog", "trust"];
+      const tabOrder = ["limits", "measured", "whatsnew"];
       const tabs = tabOrder
         .map((id) => ({ id, el: document.getElementById(id), nav: navMap[id] }))
         .filter((t) => t.el && t.nav && t.nav.style.display !== "none"); // only sections that have data
@@ -1981,7 +2018,7 @@
         const id = a.getAttribute("href").slice(1);
         if (tabSet.has(id)) { e.preventDefault(); showTab(id, true); }
       });
-      const initial = tabs.find((t) => t.id === location.hash.slice(1)) || tabs.find((t) => t.id === "whatsnew") || tabs.find((t) => t.id === "limits") || tabs[0];
+      const initial = tabs.find((t) => t.id === location.hash.slice(1)) || tabs.find((t) => t.id === "limits") || tabs[0];
       if (initial) showTab(initial.id, false);
     }).catch((err) => {
       // Static site, single data source: if data.json fails to load or parse, say so instead of
