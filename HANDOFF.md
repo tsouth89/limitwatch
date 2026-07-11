@@ -1,6 +1,6 @@
 # Handoff — LimitWatch
 
-_Last updated: 2026-06-08. Living doc; overwrite when state changes. For how the repo works see [README.md](README.md) and [data/schema.md](data/schema.md)._
+_Last updated: 2026-07-11. Living doc; overwrite when state changes. For how the repo works see [README.md](README.md) and [data/schema.md](data/schema.md)._
 
 ## What this is
 
@@ -37,20 +37,21 @@ Findings so far:
 - All measured rows are **floors**: Claude Code transcript burn only, excludes claude.ai web/desktop
   chat against the same cap.
 
-## Account handling (just changed — read before touching usage data)
+## Account handling (read before touching usage data)
 
-Two separate $20 Pro logins run on this machine (internally tagged `personal` / `work`). That tag is
+**Maintainer stack (2026-07-11):** 2× Claude Max ($100), ChatGPT Plus ($20), Cursor ($20). No ChatGPT Pro.
+
+Two Claude Max logins on this machine (internally tagged `personal` / `work`). That tag is
 **internal bookkeeping only**:
 - `data/usage-reports.json` keeps `account` + raw scoping (for attribution).
 - `scripts/build.mjs` **strips `account`** from shipped `site/data.json`.
-- On-page rollup groups by `provider|plan|window` (NOT account) → both logins' readings of the same
-  plan merge into one implied-budget range.
-- `note`/`evidence` text must stay generic: "$20 Pro plan", "a second login on the same machine". No
-  login labels, no internal project names (cssi, folloback, etc).
-- Reset anchors live in `data/accounts.json`: personal = Wed 17:00 EDT, **work = Mon 23:00 EDT**.
-
-Verified post-change: `site/data.json` has 0 work/personal/account strings; rendered measured section
-shows 0 leaks, 8 verbatim rows, one `Pro · wk ~$197–$391` rollup row.
+- On-page rollup groups by `provider|plan|window` (NOT account) → both logins' Max readings merge into
+  one implied-budget range.
+- `note`/`evidence` text must stay generic: "Max plan", "a second login on the same machine". No
+  login labels, no internal project names.
+- `data/accounts.json`: both `plan: Max`; personal `match: "personal"`; work `exclude: "personal"`;
+  resets personal = Wed 17:00 EDT, work = Mon 23:00 EDT (re-verify on Max panels if the day/hour moved).
+- Park a login with `active: false` — `burn-log` skips it; `--account` still works for one-offs.
 
 ## How to capture the next reading
 
@@ -66,8 +67,9 @@ generic wording, `npm run build`, commit, push. Pricing lives once in `scripts/l
 
 ## Open threads / next
 
-- **More mid-range weekly points** (not just near-100%) would confirm the linear-cap hypothesis —
-  the flatter the $/% line, the more token-based.
-- **Work weekly reset newly anchored** (Mon 23:00 EDT) but only one anchored work point so far; a
-  second work reading would let the anchor-independent delta method cross-check it.
+- **More mid-range weekly Max points** (not just near-100%) would confirm the linear-cap hypothesis —
+  the flatter the $/% line, the more token-based (SOU-73).
+- **Second Max account weekly reading** for cross-check once both logins are burning under the restored
+  personal/work project proxy (SOU-74). Re-verify weekly reset day/hour on each Max panel if unsure.
+- Non-Claude measured: Cursor $20 / ChatGPT Plus when a reading is handy (SOU-86).
 - Standing rule: **commit + push after each change** (per user). Site auto-deploys on push to `main`.

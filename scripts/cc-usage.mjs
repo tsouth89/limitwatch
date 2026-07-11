@@ -12,6 +12,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { aggregate, lastWeeklyReset } from "./lib/usage-core.mjs";
+import { findAccount } from "./lib/accounts.mjs";
 
 const args = process.argv.slice(2);
 const flag = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : undefined; };
@@ -29,11 +30,12 @@ const acctLabel = flag("--account");
 if (acctLabel) {
   const root = join(dirname(fileURLToPath(import.meta.url)), "..");
   const cfg = JSON.parse(readFileSync(join(root, "data", "accounts.json"), "utf8"));
-  const acc = cfg.accounts.find((a) => a.label === acctLabel);
+  const acc = findAccount(cfg, acctLabel);
   if (!acc) { console.error(`--account "${acctLabel}" not in data/accounts.json (have: ${cfg.accounts.map((a) => a.label).join(", ")})`); process.exit(1); }
+  if (acc.parked) console.error(`warning: account "${acctLabel}" is parked (active:false) in accounts.json`);
   match = acc.match; exclude = acc.exclude; acctPlan = acc.plan;
   if (!since && acc.weekly_reset) since = lastWeeklyReset(acc.weekly_reset, now);
-  // no reset configured (e.g. work): fall through to --since/--days handling below.
+  // no reset configured: fall through to --since/--days handling below.
 }
 
 const until = flag("--until") ? new Date(flag("--until")) : now;
