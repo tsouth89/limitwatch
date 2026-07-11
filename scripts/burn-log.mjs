@@ -12,6 +12,7 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { aggregate, lastWeeklyReset, PRICES_AS_OF } from "./lib/usage-core.mjs";
+import { isActiveAccount } from "./lib/accounts.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const cfgPath = join(root, "data", "accounts.json");
@@ -21,7 +22,7 @@ const now = new Date();
 const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
 const slim = (a) => ({ usd: a.api_equiv_usd, turns: a.turns, tokens: a.tokens });
 
-const accounts = cfg.accounts.filter((acc) => acc.active !== false).map((acc) => {
+const accounts = cfg.accounts.filter(isActiveAccount).map((acc) => {
   const scope = { match: acc.match, exclude: acc.exclude };
   const last24h = aggregate({ since: new Date(now.getTime() - 864e5), until: now, ...scope });
   let week = null;
