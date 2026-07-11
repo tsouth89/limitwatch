@@ -190,6 +190,15 @@ To turn it on, set three env vars in the Cloudflare Pages project (Settings → 
 - `RECEIPT_FROM` — a **verified** Resend sender. `limitwatch.dev` is verified, so use
   `LimitWatch <receipts@limitwatch.dev>`.
 
+Abuse controls (always on when the function can send mail):
+
+- Per-IP rate limit (5 / hour) before Resend is called. Uses the `SUBS` KV binding when present,
+  otherwise the Cache API.
+- Honeypot field on the form (unchanged).
+- Optional Cloudflare Turnstile: set Pages secret `TURNSTILE_SECRET_KEY`, then add
+  `<meta name="cf-turnstile-sitekey" content="YOUR_SITE_KEY">` in `site/index.html`. When the
+  secret is set, missing/invalid tokens are rejected (403).
+
 ## Email change alerts (double opt-in)
 
 The "Get changes by email" form on the Changelog card lets visitors subscribe to a digest that fires
@@ -212,6 +221,12 @@ Setup (one time):
 3. GitHub repo secret `NOTIFY_SECRET` = the same value, so the daily workflow can authenticate.
 
 Until the KV binding + env vars are set, the form degrades to pointing at the RSS feed.
+
+Abuse controls on `/api/subscribe` (when configured):
+
+- Honeypot field (unchanged).
+- Per-IP (5 / hour) and per-email (3 / hour) rate limits in `SUBS` KV before confirm mail sends.
+- Optional Turnstile — same `TURNSTILE_SECRET_KEY` + site-key meta as the receipt form.
 
 ## Record schema
 

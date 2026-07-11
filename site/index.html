@@ -795,6 +795,7 @@
             <label class="rcheck"><input type="checkbox" name="limit_hit"> I actually hit the cap at this reading</label>
             <label>What you did, and the exact wording on screen<textarea name="note" rows="3" required placeholder="ran agentic coding ~3h; screen said '72% of weekly limit used'"></textarea></label>
             <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+            <div class="cf-turnstile" data-size="invisible" aria-hidden="true"></div>
             <label class="rcheck"><input type="checkbox" name="confirm" required> This is a real reading I observed, recorded as shown.</label>
             <div class="ractions"><button type="submit">Submit reading</button> <span id="rmsg" class="meta"></span></div>
           </form>
@@ -826,6 +827,7 @@
           <span class="alert-row">
             <input name="email" type="email" placeholder="you@example.com" required>
             <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+            <div class="cf-turnstile" data-size="invisible" aria-hidden="true"></div>
             <button type="submit">Notify me</button>
           </span>
         </label>
@@ -1952,6 +1954,47 @@
         }
       })();
 
+      // ---- Optional Turnstile (site key via <meta name="cf-turnstile-sitekey" content="...">).
+      // Rate limits still protect /api/* when Turnstile isn't configured.
+      const turnstileSitekey = document.querySelector('meta[name="cf-turnstile-sitekey"]')?.content?.trim() || "";
+      const turnstileWidgets = new WeakMap();
+      const waitForTurnstile = () => new Promise((resolve) => {
+        if (!turnstileSitekey) return resolve(false);
+        if (window.turnstile) return resolve(true);
+        let n = 0;
+        const t = setInterval(() => {
+          if (window.turnstile || ++n > 50) { clearInterval(t); resolve(!!window.turnstile); }
+        }, 100);
+      });
+      const turnstileToken = async (form) => {
+        if (!(await waitForTurnstile())) return undefined;
+        const el = form.querySelector(".cf-turnstile");
+        if (!el) return undefined;
+        return new Promise((resolve) => {
+          try {
+            let id = turnstileWidgets.get(form);
+            const done = (token) => resolve(token || undefined);
+            if (id == null) {
+              id = window.turnstile.render(el, {
+                sitekey: turnstileSitekey,
+                size: "invisible",
+                callback: done,
+                "error-callback": () => done(undefined),
+                "expired-callback": () => done(undefined),
+              });
+              turnstileWidgets.set(form, id);
+            }
+            window.turnstile.execute(id);
+          } catch { resolve(undefined); }
+        });
+      };
+      if (turnstileSitekey) {
+        const s = document.createElement("script");
+        s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        s.async = true;
+        document.head.appendChild(s);
+      }
+
       // ---- Crowdsourced reading form: POST to the /api/receipt Cloudflare Function, which emails the
       // maintainer a ready-to-verify stub. Degrades gracefully to the GitHub issue if the endpoint
       // isn't configured/reachable, so the form is never a dead end. ----
@@ -1967,10 +2010,14 @@
           if (!form.checkValidity()) { form.reportValidity(); return; }
           const data = Object.fromEntries(new FormData(form).entries());
           data.limit_hit = form.limit_hit.checked;
-          const btn = form.querySelector("button");
+          const token = await turnstileToken(form);
+          if (token) data.turnstileToken = token;
+          const btn = form.querySelector("button[type='submit']");
           btn.disabled = true; msg.textContent = "Sending…";
           try {
             const res = await fetch("/api/receipt", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
+            if (res.status === 429) { msg.textContent = "Too many submissions — try again in an hour."; return; }
+            if (res.status === 403) { msg.textContent = "Challenge failed — refresh and try again."; return; }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             msg.textContent = "Thanks! A maintainer will verify and publish it.";
             form.reset();
@@ -1991,10 +2038,15 @@
           if (form.website.value) return;                 // honeypot
           if (!form.checkValidity()) { form.reportValidity(); return; }
           const email = form.email.value.trim();
-          const btn = form.querySelector("button");
+          const payload = { email };
+          const token = await turnstileToken(form);
+          if (token) payload.turnstileToken = token;
+          const btn = form.querySelector("button[type='submit']");
           btn.disabled = true; msg.textContent = "Sending…";
           try {
-            const res = await fetch("/api/subscribe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email }) });
+            const res = await fetch("/api/subscribe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+            if (res.status === 429) { msg.textContent = "Too many tries — wait an hour and try again."; return; }
+            if (res.status === 403) { msg.textContent = "Challenge failed — refresh and try again."; return; }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const j = await res.json().catch(() => ({}));
             msg.textContent = j.already ? "You're already subscribed." : "Almost there — check your email to confirm.";
