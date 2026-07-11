@@ -20,6 +20,79 @@ export const validEmail = (e) =>
 // Two UUIDs concatenated → a long opaque token used for confirm + unsubscribe links.
 export const newToken = () => (crypto.randomUUID() + crypto.randomUUID()).replace(/-/g, "");
 
+export function clientIp(request) {
+  return (
+    request.headers.get("CF-Connecting-IP") ||
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "unknown"
+  );
+}
+
+// Fixed-window counter. Prefers KV; falls back to the Cache API so receipt can limit without SUBS.
+export async function allowRequest(store, key, { limit = 5, windowSeconds = 3600 } = {}) {
+  if (!store) return false;
+  const now = Date.now();
+  const k = `rl:${key}`;
+
+  if (typeof store.get === "function" && typeof store.put === "function") {
+    // KV binding
+    let state = await store.get(k, "json");
+    if (!state || !state.reset || state.reset <= now) {
+      state = { n: 1, reset: now + windowSeconds * 1000 };
+      await store.put(k, JSON.stringify(state), { expirationTtl: Math.max(60, windowSeconds + 60) });
+      return true;
+    }
+    if (state.n >= limit) return false;
+    state.n += 1;
+    const ttl = Math.max(60, Math.ceil((state.reset - now) / 1000));
+    await store.put(k, JSON.stringify(state), { expirationTtl: ttl });
+    return true;
+  }
+
+  // Cache API fallback (caches.default)
+  const cacheKey = new Request(`https://limitwatch.internal/rate-limit/${encodeURIComponent(key)}`);
+  const hit = await store.match(cacheKey);
+  let state = null;
+  if (hit) {
+    try { state = await hit.json(); } catch { state = null; }
+  }
+  if (!state || !state.reset || state.reset <= now) {
+    state = { n: 1, reset: now + windowSeconds * 1000 };
+  } else if (state.n >= limit) {
+    return false;
+  } else {
+    state.n += 1;
+  }
+  const ttl = Math.max(60, Math.ceil((state.reset - now) / 1000));
+  await store.put(
+    cacheKey,
+    new Response(JSON.stringify(state), {
+      headers: { "content-type": "application/json", "cache-control": `max-age=${ttl}` },
+    })
+  );
+  return true;
+}
+
+// Optional Turnstile: when TURNSTILE_SECRET_KEY is set, require a valid token before sending email.
+export async function verifyTurnstile(env, token, ip) {
+  if (!env.TURNSTILE_SECRET_KEY) return { ok: true, skipped: true };
+  if (!token || typeof token !== "string") return { ok: false };
+  try {
+    const body = new URLSearchParams();
+    body.set("secret", env.TURNSTILE_SECRET_KEY);
+    body.set("response", token);
+    if (ip && ip !== "unknown") body.set("remoteip", ip);
+    const r = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body,
+    });
+    const j = await r.json().catch(() => ({}));
+    return { ok: !!j.success };
+  } catch {
+    return { ok: false };
+  }
+}
+
 export async function sendEmail(env, to, subject, text, html) {
   try {
     const r = await fetch("https://api.resend.com/emails", {

@@ -9,9 +9,11 @@
 //   RESEND_API_KEY  (secret)  your Resend API key
 //   RECEIPT_TO      (var)     where leads are emailed, e.g. you@example.com
 //   RECEIPT_FROM    (var)     a verified Resend sender, e.g. "LimitWatch <receipts@limitwatch.dev>"
+// Optional abuse controls (see README):
+//   SUBS KV binding           preferred rate-limit store (shared with email alerts)
+//   TURNSTILE_SECRET_KEY      when set, requires a valid Turnstile token
 
-const json = (obj, status = 200) =>
-  new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json" } });
+import { json, clientIp, allowRequest, verifyTurnstile } from "./_lib.js";
 
 export async function onRequestPost({ request, env }) {
   let d;
@@ -37,6 +39,15 @@ export async function onRequestPost({ request, env }) {
   if (!env.RESEND_API_KEY || !env.RECEIPT_TO || !env.RECEIPT_FROM) {
     // Not configured yet — tell the client to fall back to the GitHub issue.
     return json({ error: "not configured" }, 503);
+  }
+
+  const ip = clientIp(request);
+  const ts = await verifyTurnstile(env, d.turnstileToken, ip);
+  if (!ts.ok) return json({ error: "challenge failed" }, 403);
+
+  const store = env.SUBS || caches.default;
+  if (!(await allowRequest(store, `receipt:ip:${ip}`, { limit: 5, windowSeconds: 3600 }))) {
+    return json({ error: "rate limited" }, 429);
   }
 
   // A stub shaped like a data/usage-reports.json entry, so the maintainer can paste-and-verify.

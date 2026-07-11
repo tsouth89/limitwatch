@@ -3,7 +3,7 @@
 // the alert list until they click the confirm link, so you can't sign someone else up.
 //
 // Needs the SUBS KV binding plus RESEND_API_KEY and ALERT_FROM env vars (see README).
-import { json, validEmail, newToken, sendEmail } from "./_lib.js";
+import { json, validEmail, newToken, sendEmail, clientIp, allowRequest, verifyTurnstile } from "./_lib.js";
 
 export async function onRequestPost({ request, env }) {
   if (!env.SUBS || !env.RESEND_API_KEY || !env.ALERT_FROM) return json({ error: "not configured" }, 503);
@@ -13,6 +13,18 @@ export async function onRequestPost({ request, env }) {
   if (d.website) return json({ ok: true });                       // honeypot: pretend success, drop
   const email = String(d.email || "").trim().toLowerCase();
   if (!validEmail(email)) return json({ error: "invalid email" }, 400);
+
+  const ip = clientIp(request);
+  const ts = await verifyTurnstile(env, d.turnstileToken, ip);
+  if (!ts.ok) return json({ error: "challenge failed" }, 403);
+
+  // Cap outbound confirm emails per IP and per address.
+  if (!(await allowRequest(env.SUBS, `sub:ip:${ip}`, { limit: 5, windowSeconds: 3600 }))) {
+    return json({ error: "rate limited" }, 429);
+  }
+  if (!(await allowRequest(env.SUBS, `sub:email:${email}`, { limit: 3, windowSeconds: 3600 }))) {
+    return json({ error: "rate limited" }, 429);
+  }
 
   const existing = await env.SUBS.get(`sub:${email}`, "json");
   if (existing && existing.status === "confirmed") return json({ ok: true, already: true });
