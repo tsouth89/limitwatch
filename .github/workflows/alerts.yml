@@ -23,4 +23,7 @@ jobs:
           code=$(curl -s -o /tmp/out.txt -w "%{http_code}" -X POST https://limitwatch.dev/api/notify \
             -H "x-notify-secret: $NOTIFY_SECRET")
           echo "HTTP $code"; cat /tmp/out.txt
-          [ "$code" = "200" ] || echo "notify did not return 200"
+          if [ "$code" != "200" ]; then
+            echo "::error::notify did not return 200 (got $code)"
+            exit 1
+          fi
