@@ -21,7 +21,7 @@ const now = new Date();
 const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
 const slim = (a) => ({ usd: a.api_equiv_usd, turns: a.turns, tokens: a.tokens });
 
-const accounts = cfg.accounts.map((acc) => {
+const accounts = cfg.accounts.filter((acc) => acc.active !== false).map((acc) => {
   const scope = { match: acc.match, exclude: acc.exclude };
   const last24h = aggregate({ since: new Date(now.getTime() - 864e5), until: now, ...scope });
   let week = null;

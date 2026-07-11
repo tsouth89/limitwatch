@@ -31,9 +31,10 @@ if (acctLabel) {
   const cfg = JSON.parse(readFileSync(join(root, "data", "accounts.json"), "utf8"));
   const acc = cfg.accounts.find((a) => a.label === acctLabel);
   if (!acc) { console.error(`--account "${acctLabel}" not in data/accounts.json (have: ${cfg.accounts.map((a) => a.label).join(", ")})`); process.exit(1); }
+  if (acc.active === false) console.error(`warning: account "${acctLabel}" is parked (active:false) in accounts.json`);
   match = acc.match; exclude = acc.exclude; acctPlan = acc.plan;
   if (!since && acc.weekly_reset) since = lastWeeklyReset(acc.weekly_reset, now);
-  // no reset configured (e.g. work): fall through to --since/--days handling below.
+  // no reset configured: fall through to --since/--days handling below.
 }
 
 const until = flag("--until") ? new Date(flag("--until")) : now;
