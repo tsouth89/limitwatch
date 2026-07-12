@@ -11,8 +11,8 @@ site. Message-cap tables stay as reference/SEO. Static site on Cloudflare Pages,
 
 ## Where we are
 
-Live and deploying from `main`. Product pivot (2026-07-11): hero leads with API-equivalent value by
-price band; `npm run checkin` is the maintainer capture path.
+Live and deploying from `main`. **2026-07-11 homepage redesign:** dense comparison table
+(coding agents only) — measured / published / honesty badges. Editorial long-scroll UI removed.
 
 ## Measured-usage state (the active workstream)
 
