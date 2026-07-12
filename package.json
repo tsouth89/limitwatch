@@ -1,7 +1,7 @@
 {
   "name": "ai-limit-tracker",
   "version": "0.1.0",
-  "description": "Tracks AI subscription plans, prices, and usage limits over time, with source-linked provenance.",
+  "description": "Tracks AI coding-agent subscription value (API-equivalent tokens) and limit drift over time, with source-linked provenance.",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -12,6 +12,7 @@
     "codex-usage": "node scripts/codex-usage.mjs",
     "codex-checkin": "node scripts/codex-usage.mjs --snapshot",
     "usage": "node scripts/cc-usage.mjs",
+    "checkin": "node scripts/checkin.mjs",
     "burn-log": "node scripts/burn-log.mjs",
     "test": "node --test \"test/**/*.test.mjs\""
   },

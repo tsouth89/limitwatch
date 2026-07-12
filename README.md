@@ -1,12 +1,13 @@
 # LimitWatch (ai-limit-tracker)
 
-Tracks AI model subscription **plans, prices, and usage limits over time**.
+Tracks AI model subscription **plans, prices, and usage limits over time** — with a coding-agent focus:
+what a $20 / $100 / $200 sub buys in **API-equivalent token value**, measured from real burn.
 
-Snapshot pricing pages exist everywhere. Nobody charts how limits *drift*. This repo
-keeps dated snapshots so we can show "Claude Pro was 45 msg/5hr in Jan, X in June" and
-compare $/value across Claude, Codex/ChatGPT, Gemini, etc.
+Snapshot pricing pages exist everywhere. Nobody charts how limits *drift*, or what opaque caps are
+worth at API rates. This repo keeps dated snapshots and usage receipts so we can show both.
 
-The history is the moat. Snapshots are copyable; a 6-month time series is not.
+The history + measured floors are the moat. Sticker tables are copyable; a 6-month time series and
+real (%, burn) pairs are not.
 
 ## How it works
 
@@ -19,12 +20,10 @@ The history is the moat. Snapshots are copyable; a 6-month time series is not.
    plan's 160 msgs/3h budget moving GPT-5.3 → GPT-5.5) is collapsed into a single `model_changed`.
 3. `data/events.json` (optional) — time-bounded promos/boosts/throttles (spans, not point-in-time
    facts). Passed through to `site/data.json`; the page computes active/upcoming/ended from today.
-4. `site/index.html` — static page. Renders a slim "Live" status bar with a roadmap, a **What's new**
-   card (live events with countdowns + headline changes), a **Drift** leaderboard (per-provider
-   "getting more/less generous" verdict derived from logged changes + events), the latest limits, a
-   **Resets** reference (how each cap refreshes — `data/reset-windows.json`), value-per-dollar bars,
-   a cross-provider token estimate, real measured receipts, a **price-history sparkline per plan**
-   (every plan in 2+ snapshots), and the derived changelog. All numbers link back to their source.
+4. `site/index.html` — static page. Leads with **API value by price band** ($20 / $100 / $200) for
+   coding agents, then measured receipts, value/$, drift, and the published-limits table as reference.
+   Also: What's new (events + radar), resets, price-history sparklines, changelog + email/RSS. All
+   numbers link back to their source.
 
 No backend. Hosted as a static site on Cloudflare Pages.
 
@@ -120,7 +119,29 @@ Cloudflare-protected pages stay on the diff-based `watch` path.
 
 The 5-hour and weekly subscription caps (Claude.ai/Claude Code, ChatGPT) are **not exposed by any
 API** — only an in-product `%` indicator. The moat is pairing that reading with how much you actually
-burned to reach it. `scripts/cc-usage.mjs` reads every Claude Code session transcript
+burned to reach it.
+
+### One-command check-in (preferred)
+
+When you glance at any agent’s usage UI, run:
+
+```
+npm run checkin
+# or non-interactive:
+npm run checkin -- --claude-account personal --claude-5h 47 --claude-week 83
+npm run checkin -- --codex-5h-left 58 --codex-week-left 93
+npm run checkin -- --cursor path/to/usage-events.csv --cursor-api-pool 20 --cursor-period "May 10 - Jun 08, 2026"
+npm run checkin -- --claude-account personal --claude-week 83 --write   # append stubs with observed %
+```
+
+`scripts/checkin.mjs` wraps the existing collectors (Claude transcripts, Codex local rollouts, optional
+Cursor CSV), prints a one-line API-equiv summary per window, and emits ready-to-append
+`usage-reports.json` stubs. Prefer **cap-hit** and mid-window points over daily noise. No separate
+token-tracker repo — this stays in LimitWatch as maintainer tooling.
+
+### Lower-level collectors
+
+`scripts/cc-usage.mjs` reads every Claude Code session transcript
 (`~/.claude/projects/**/*.jsonl`) across all projects, dedupes assistant turns by `message.id`, and
 sums exact per-turn tokens priced at API list rates per model.
 
@@ -132,17 +153,15 @@ npm run usage -- --account personal --report           # emit a usage-reports.js
 npm run usage -- --since <reset-iso> --json            # machine-readable totals
 ```
 
-**No scheduler needed.** Transcripts are durable on disk (Claude Code keeps `cleanupPeriodDays`,
+**No continuous daemon needed.** Transcripts are durable on disk (Claude Code keeps `cleanupPeriodDays`,
 default 30), so burn for any past window is reconstructable after the fact — you don't have to log
 continuously. The valuable data point is the **(observed %, burn) pair**, and the % is always a manual
-read, so just run the one-command capture when you glance at the in-app indicator. `scripts/burn-log.*`
-(continuous per-account logging) remains available for a dense curve but is optional; for weekly cadence
-the on-demand path loses nothing.
+read. `scripts/burn-log.*` remains available for a dense Claude burn curve but is optional.
 
-Workflow: when you read the in-app weekly `%`, run with `--since <reset moment>`, then append a
-`data/usage-reports.json` entry pairing `observed: <pct>` with the measured token/$ floor (see the
-weekly row already there). Captures at several `%` across one window show whether the cap is
-token- or dollar-weighted: flat $/% ⇒ token cap, bending ⇒ $-weighted.
+Workflow: when you read the in-app weekly `%`, run check-in (or `usage` with `--since <reset moment>`),
+then append a `data/usage-reports.json` entry pairing `observed: <pct>` with the measured token/$ floor.
+Captures at several `%` across one window show whether the cap is token- or dollar-weighted:
+flat $/% ⇒ token cap, bending ⇒ $-weighted.
 
 **It is a floor, not the whole story.** Transcripts cover Claude Code only — Claude.ai web/desktop
 chat hits the same cap but isn't logged locally. Prices live in the `PRICES` table in the script;

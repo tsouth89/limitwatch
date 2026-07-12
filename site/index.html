@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Claude, ChatGPT and Gemini Plan Limits Tracker | LimitWatch</title>
-  <meta name="description" content="Track message limits and prices for Claude, ChatGPT, Gemini, Grok, Perplexity, and more. Source-linked snapshots tracked over time. Compare plans side by side." />
+  <title>Coding Agent API Value: $20 / $100 Plans | LimitWatch</title>
+  <meta name="description" content="What Claude, Cursor, and ChatGPT coding subscriptions actually buy in API-equivalent tokens. Measured floors from real burn, plus source-linked limit history." />
   <link rel="canonical" href="https://limitwatch.dev/" />
   <meta name="robots" content="index, follow" />
   <meta property="og:site_name" content="LimitWatch" />
@@ -12,8 +12,8 @@
   <link rel="alternate" type="application/rss+xml" title="LimitWatch changes" href="https://limitwatch.dev/changes.xml" />
   <!-- BUILD:jsonld:start --><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"LimitWatch","url":"https://limitwatch.dev/"}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"LimitWatch: AI subscription limits over time","description":"Source-linked, dated snapshots of AI subscription plans, prices, and usage limits across providers (Claude, ChatGPT, Gemini, Grok, Perplexity, Cursor, Copilot, Replit), tracking how limits drift over time.","url":"https://limitwatch.dev/","keywords":["AI subscription limits","Claude","ChatGPT","Gemini","rate limits","usage caps","pricing"],"creator":{"@type":"Organization","name":"SouthForge AI"},"license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"dateModified":"2026-07-01"}</script><!-- BUILD:jsonld:end -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Claude, ChatGPT and Gemini Plan Limits Tracker | LimitWatch" />
-  <meta property="og:description" content="Track message limits and prices for Claude, ChatGPT, Gemini, Grok, Perplexity, and more. Source-linked snapshots tracked over time. Compare plans side by side." />
+  <meta property="og:title" content="Coding Agent API Value: $20 / $100 Plans | LimitWatch" />
+  <meta property="og:description" content="What Claude, Cursor, and ChatGPT coding subscriptions actually buy in API-equivalent tokens. Measured floors from real burn, plus source-linked limit history." />
   <meta property="og:url" content="https://limitwatch.dev/" />
   <meta property="og:image" content="https://limitwatch.dev/og.png" />
   <meta property="og:image:alt" content="LimitWatch - AI subscription limits tracker" />
@@ -21,8 +21,8 @@
   <meta property="og:image:height" content="630" />
   <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Claude, ChatGPT and Gemini Plan Limits Tracker | LimitWatch" />
-  <meta name="twitter:description" content="Track message limits and prices for Claude, ChatGPT, Gemini, Grok, Perplexity, and more. Source-linked snapshots tracked over time. Compare plans side by side." />
+  <meta name="twitter:title" content="Coding Agent API Value: $20 / $100 Plans | LimitWatch" />
+  <meta name="twitter:description" content="What Claude, Cursor, and ChatGPT coding subscriptions actually buy in API-equivalent tokens. Measured floors from real burn, plus source-linked limit history." />
   <meta name="twitter:image" content="https://limitwatch.dev/og.png" />
   <meta name="twitter:image:alt" content="LimitWatch - AI subscription limits tracker" />
   <link rel="preconnect" href="https://static.cloudflareinsights.com" />
@@ -453,19 +453,20 @@
     .hero-actions a:hover { border-color: var(--blue); color: var(--blue-ink); }
     .hero-actions a:first-child:hover { color: #fff; background: var(--blue-strong); }
     .stats { display: none; }
-    #picker { order: 1; border-top: 3px solid var(--blue); padding: 1.65rem; }
-    #limits { order: 2; }
-    #measured { order: 3; }
+    /* Coding-agent value first — published plan tables are reference, not the product. */
+    #value { order: 1; border-top: 3px solid var(--blue); padding: 1.65rem; }
+    #measured { order: 2; }
+    #compare { order: 3; }
     #whatsnew { order: 4; }
-    /* History moat after decision path — keep hub/bottomLine hidden (superseded by decision-first). */
     #hub, #bottomLine { display: none !important; }
     #drift { order: 5; }
-    #resets { order: 6; }
-    #compare { order: 7; }
-    #trends { order: 8; }
-    #changelog { order: 9; }
-    #trust { order: 10; }
-    #picker .section-head h2, #limits .section-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; font-weight: 400; letter-spacing: -.025em; }
+    #picker { order: 6; }
+    #limits { order: 7; }
+    #resets { order: 8; }
+    #trends { order: 9; }
+    #changelog { order: 10; }
+    #trust { order: 11; }
+    #value .section-head h2, #measured .section-head h2, #compare .section-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; font-weight: 400; letter-spacing: -.025em; }
     .card { border-radius: 4px; box-shadow: none; }
     .section-head { border-bottom: 1px solid var(--line); padding-bottom: .9rem; margin-bottom: 1rem; }
     .controls { margin-inline: -.2rem; }
@@ -488,10 +489,20 @@
     .proof-path .arrow { color: var(--blue); font-size: 17px; line-height: 1; }
     .proof-path:hover strong, .proof-path:hover .arrow { color: var(--blue-ink); }
     .proof-note { position: relative; z-index: 1; color: var(--muted-2); font-size: 11.5px; line-height: 1.4; margin: .75rem 0 0; }
-    #picker { background: linear-gradient(150deg, var(--paper) 0%, var(--paper) 66%, var(--paper-soft) 100%); border-top: 0; position: relative; overflow: hidden; }
-    #picker::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: linear-gradient(var(--blue), #8cb1ff); }
-    #picker .section-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
-    #picker .section-head::after { content: "01 / Match your work"; color: var(--muted-2); font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; padding-bottom: .35rem; }
+    #value { background: linear-gradient(150deg, var(--paper) 0%, var(--paper) 66%, var(--paper-soft) 100%); border-top: 0; position: relative; overflow: hidden; }
+    #value::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 5px; background: linear-gradient(var(--blue), #8cb1ff); }
+    #value .section-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+    #value .section-head::after { content: "01 / API value by price"; color: var(--muted-2); font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; padding-bottom: .35rem; }
+    .band-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; margin-top: .35rem; }
+    .band-card { border: 1px solid var(--line); background: var(--paper); padding: 1rem 1.05rem 1.05rem; min-height: 100%; }
+    .band-card h3 { margin: 0 0 .35rem; font-size: 1.05rem; letter-spacing: -.02em; }
+    .band-card .band-tag { color: var(--muted); font-size: 12.5px; margin: 0 0 .85rem; line-height: 1.4; }
+    .band-row { display: grid; gap: .15rem; padding: .55rem 0; border-top: 1px solid var(--line-soft); font-size: 13.5px; }
+    .band-row:first-of-type { border-top: 0; padding-top: 0; }
+    .band-row .bn { font-weight: 750; }
+    .band-row .bv { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--blue-ink); }
+    .band-row .bv.need { color: var(--muted); font-weight: 650; font-style: italic; }
+    .band-row .bm { color: var(--muted); font-size: 12px; line-height: 1.35; }
     .picker-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; border: 0; padding: .9rem; margin: 0 0 1.15rem; background: var(--paper-soft); }
     .pgrp { gap: .55rem; }
     .pgrp + .pgrp { padding-left: 1rem; border-left: 1px solid var(--line); }
@@ -503,25 +514,27 @@
     .pk-actions .pk-basis { margin: 0; }
     .pk-source { color: var(--blue); font-size: 11.5px; font-weight: 750; white-space: nowrap; text-decoration: none; }
     .pk-source:hover { color: var(--blue-ink); text-decoration: underline; }
-    #limits, #measured, #whatsnew, #drift, #resets, #compare, #trends, #changelog, #trust { position: relative; padding-top: 1.8rem; }
-    #limits::before, #measured::before, #whatsnew::before, #drift::before, #changelog::before { position: absolute; top: 1.1rem; right: 1.5rem; color: var(--muted-2); font-size: 10px; font-weight: 850; letter-spacing: .1em; }
-    #limits::before { content: "02 / PROVIDER RECORD"; }
-    #measured::before { content: "03 / OBSERVED EVIDENCE"; }
-    #whatsnew::before { content: "04 / CHANGE RECORD"; }
-    #drift::before { content: "05 / DRIFT"; }
-    #changelog::before { content: "06 / HISTORY"; }
-    #limits .section-head h2, #measured .section-head h2, #whatsnew .section-head h2, #drift .section-head h2, #changelog .section-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.8rem, 3vw, 2.45rem); font-weight: 400; letter-spacing: -.035em; }
-    #limits .section-head, #measured .section-head, #whatsnew .section-head, #drift .section-head, #changelog .section-head { padding-right: 13rem; }
+    #value, #limits, #measured, #whatsnew, #drift, #resets, #compare, #trends, #changelog, #trust, #picker { position: relative; padding-top: 1.8rem; }
+    #measured::before, #compare::before, #whatsnew::before, #drift::before, #limits::before, #changelog::before { position: absolute; top: 1.1rem; right: 1.5rem; color: var(--muted-2); font-size: 10px; font-weight: 850; letter-spacing: .1em; }
+    #measured::before { content: "02 / OBSERVED EVIDENCE"; }
+    #compare::before { content: "03 / VALUE PER $"; }
+    #whatsnew::before { content: "CHANGE RECORD"; }
+    #drift::before { content: "DRIFT"; }
+    #limits::before { content: "REFERENCE"; }
+    #changelog::before { content: "FEED"; }
+    #value .section-head h2, #limits .section-head h2, #measured .section-head h2, #whatsnew .section-head h2, #drift .section-head h2, #changelog .section-head h2, #compare .section-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.8rem, 3vw, 2.45rem); font-weight: 400; letter-spacing: -.035em; }
+    #value .section-head, #limits .section-head, #measured .section-head, #whatsnew .section-head, #drift .section-head, #changelog .section-head, #compare .section-head { padding-right: 13rem; }
     @media (max-width: 720px) {
       header.hero { grid-template-columns: 1fr; padding-top: 2.3rem; gap: 1.6rem; }
       .hero h1 { font-size: 2.65rem; max-width: 13ch; }
-      #picker .section-head { display: block; }
-      #picker .section-head::after { display: none; }
+      #value .section-head { display: block; }
+      #value .section-head::after { display: none; }
+      .band-grid { grid-template-columns: 1fr; }
       .picker-controls { grid-template-columns: 1fr; }
       .pgrp + .pgrp { padding: 1rem 0 0; border-left: 0; border-top: 1px solid var(--line); }
-      #limits .section-head, #measured .section-head, #whatsnew .section-head, #drift .section-head, #changelog .section-head { padding-right: 0; }
-      #limits::before, #measured::before, #whatsnew::before, #drift::before, #changelog::before { display: none; }
-      #limits::before, #measured::before, #whatsnew::before { position: static; display: block; margin: 0 0 .45rem; }
+      #value .section-head, #limits .section-head, #measured .section-head, #whatsnew .section-head, #drift .section-head, #changelog .section-head, #compare .section-head { padding-right: 0; }
+      #measured::before, #compare::before, #whatsnew::before, #drift::before, #limits::before, #changelog::before { display: none; }
+      #measured::before, #compare::before, #whatsnew::before { position: static; display: block; margin: 0 0 .45rem; }
     }
   </style>
   <script>
@@ -538,10 +551,11 @@
     <div class="inner">
       <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
       <div class="navlinks" id="navlinks">
-        <a href="#picker" data-section="picker">Plans</a>
-        <a href="#limits" data-section="limits" id="navLimits">Official facts</a>
+        <a href="#value" data-section="value">API value</a>
         <a href="#measured" data-section="measured" id="navMeasured" style="display:none">Usage receipts</a>
+        <a href="#compare" data-section="compare">Compare</a>
         <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">News</a>
+        <a href="#limits" data-section="limits" id="navLimits">Published facts</a>
         <a href="#changelog" data-section="changelog" id="navHistory">History</a>
         <a href="#drift" data-section="drift" id="navDrift" style="display:none">Drift</a>
       </div>
@@ -553,22 +567,33 @@
   </nav>
   <header class="hero" id="top">
     <div>
-      <h1><span class="kicker">AI plan limits, with evidence</span>Plans, without the guesswork.</h1>
-      <p class="tag">Start with what providers publish. Then use observed account readings to understand what that can look like in practice.</p>
-      <div class="hero-actions"><a href="#picker">Get suggestions</a><a href="#limits">Published facts</a><a href="#measured">Observed usage</a><a href="#changelog">Limit history</a></div>
+      <h1><span class="kicker">Coding-agent subscriptions, decoded</span>What your $20 actually buys.</h1>
+      <p class="tag">Message caps are marketing. LimitWatch measures API-equivalent token value from real coding-agent burn — then tracks when those limits drift.</p>
+      <div class="hero-actions"><a href="#value">See by price band</a><a href="#measured">Usage receipts</a><a href="#compare">Compare value</a><a href="#changelog">Limit history</a></div>
     </div>
     <aside class="hero-proof" aria-label="How LimitWatch organizes its evidence">
-      <p class="proof-label">Four ways to decide</p>
-      <a class="proof-path" href="#picker"><span class="num">01</span><span><strong>Match your work</strong><small>Get a short starting list by use case and budget.</small></span><span class="arrow">→</span></a>
-      <a class="proof-path" href="#limits"><span class="num">02</span><span><strong>Check provider facts</strong><small>See source-linked prices, terms, and published limits.</small></span><span class="arrow">→</span></a>
-      <a class="proof-path" href="#measured"><span class="num">03</span><span><strong>Inspect real usage</strong><small>Read observed account activity, never presented as a promise.</small></span><span class="arrow">→</span></a>
-      <a class="proof-path" href="#changelog"><span class="num">04</span><span><strong>Track the drift</strong><small>See when published limits and prices quietly moved.</small></span><span class="arrow">→</span></a>
-      <p class="proof-note">Estimates stay separate from official facts. History is the moat.</p>
+      <p class="proof-label">Three ways in</p>
+      <a class="proof-path" href="#value"><span class="num">01</span><span><strong>API value by price</strong><small>$20 / $100 / $200 bands — measured floors, not sticker claims.</small></span><span class="arrow">→</span></a>
+      <a class="proof-path" href="#measured"><span class="num">02</span><span><strong>Inspect real usage</strong><small>In-app % paired with local token burn. Floors, never promises.</small></span><span class="arrow">→</span></a>
+      <a class="proof-path" href="#changelog"><span class="num">03</span><span><strong>Track the drift</strong><small>When published limits and prices quietly moved.</small></span><span class="arrow">→</span></a>
+      <p class="proof-note">Estimates stay separate from official facts. Measured API $ is the product.</p>
     </aside>
     <div class="stats" id="stats" aria-hidden="true"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">24</div><div class="l">plans</div></div><div class="stat"><div class="n">17</div><div class="l">changes logged</div></div><div class="stat"><div class="n">7</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-07-01</div><div class="l">data as of</div></div><!-- BUILD:stats:end --></div>
     <div class="notice" id="dataNotice"></div>
   </header>
   <main>
+    <div class="card" id="value">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">For coding agents</p>
+          <h2>What $20 / $100 / $200 buys in API dollars</h2>
+          <p class="meta">Measured floors from real Claude Code / Cursor / Codex burn, priced at list API rates. Empty slots mean we need a reading — honest scarcity beats a fake comparison.</p>
+        </div>
+      </div>
+      <div class="band-grid" id="valueBands"></div>
+      <p class="meta" id="valueNote" style="margin-top:1rem"></p>
+    </div>
+
     <div class="card" id="hub" style="display:none">
       <div class="section-head">
         <div>
@@ -606,17 +631,17 @@
     <div class="card" id="picker">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Plan finder</p>
+          <p class="eyebrow">Optional · plan finder</p>
           <h2>Suggested plans for your work</h2>
-          <p class="meta">Choose how you work and what you want to spend. We’ll give you three comparable places to start.</p>
+          <p class="meta">Still useful for a shortlist — but the API-value bands above are the main comparison for coding agents.</p>
         </div>
       </div>
       <div class="picker-controls">
         <div class="pgrp">
           <span class="plabel">Mostly for</span>
           <div class="chips" id="pkUse">
-            <button class="chip active" type="button" data-use="general" aria-pressed="true">Chat / general</button>
-            <button class="chip" type="button" data-use="coding" aria-pressed="false">Coding</button>
+            <button class="chip" type="button" data-use="general" aria-pressed="false">Chat / general</button>
+            <button class="chip active" type="button" data-use="coding" aria-pressed="true">Coding</button>
             <button class="chip" type="button" data-use="research" aria-pressed="false">Research</button>
           </div>
         </div>
@@ -666,9 +691,9 @@
     <div class="card" id="limits">
       <div class="section-head">
         <div>
-          <p class="eyebrow">Provider sources</p>
+          <p class="eyebrow">Reference · provider sources</p>
           <h2>Published limits and plan details</h2>
-          <p class="meta">One row per plan, in the provider's native unit, with the supporting source and date. <em>not published</em> means the provider gives no public number for that cap.</p>
+          <p class="meta">Source-linked sticker facts for SEO and verification. Coding-agent value lives in <a href="#value">API value by price</a> and <a href="#measured">usage receipts</a> — this table is the provenance record.</p>
         </div>
       </div>
       <div class="controls">
@@ -1080,6 +1105,85 @@
 
       // ---- Latest limits: one row per plan, grouped by provider or price, with search + filter ----
       const shortWin = (w) => w == null ? "" : ({ week: "wk", month: "mo" }[w] ?? w);
+
+      // Measured API-$ rollup (same math as Measured section + pills).
+      const measuredByPlan = {};
+      {
+        const winRank = { "5h": 0, day: 1, week: 2, month: 3 };
+        const reps = (db.usage_reports ?? []).filter((r) => r.metric === "percent" && r.api_equiv_usd != null && r.observed);
+        const g = {};
+        for (const r of reps) ((g[`${r.provider}|${r.plan}`] ??= {})[r.window] ??= []).push(r);
+        for (const [key, wins] of Object.entries(g)) {
+          const win = Object.keys(wins).sort((a, b) => (winRank[a] ?? 9) - (winRank[b] ?? 9))[0];
+          const implied = wins[win].map((r) => r.api_equiv_usd / (r.observed / 100));
+          measuredByPlan[key] = { win, lo: Math.round(Math.min(...implied)), hi: Math.round(Math.max(...implied)), floor: wins[win].some((r) => r.value_basis === "floor") };
+        }
+      }
+      // Exact key first; else prefix ("Max" → cheapest "Max 5x", not also "Max 20x").
+      const measuredFor = (e) => {
+        if (e.surface) return null;
+        const exact = measuredByPlan[`${e.provider}|${e.plan}`];
+        if (exact) return exact;
+        const prefixHits = Object.entries(measuredByPlan)
+          .filter(([k]) => {
+            const [prov, plan] = k.split("|");
+            return prov === e.provider && e.plan.startsWith(plan + " ");
+          })
+          .map(([k, v]) => ({ plan: k.split("|")[1], v }));
+        if (!prefixHits.length) return null;
+        const candidates = latest.entries.filter((x) =>
+          !x.surface && x.provider === e.provider && prefixHits.some((h) => x.plan === h.plan || x.plan.startsWith(h.plan + " ")));
+        const best = [...candidates].sort((a, b) => a.price_usd - b.price_usd || a.plan.localeCompare(b.plan))[0];
+        return best && best.plan === e.plan ? prefixHits[0].v : null;
+      };
+
+      // Coding-agent price bands — the product hero. Prefer includes_code + major coding tools.
+      (() => {
+        const escB = (s) => (s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : Number(n).toLocaleString("en-US");
+        const CODING_PROV = new Set(["Anthropic", "OpenAI", "Cursor", "GitHub", "Replit"]);
+        const isCoding = (e) => !e.surface && CODING_PROV.has(e.provider);
+        const BANDS = [
+          { id: "20", label: "$20 / mo", tag: "Pro-tier coding agents", lo: 15, hi: 29 },
+          { id: "100", label: "$60–$100 / mo", tag: "Power tiers", lo: 50, hi: 120 },
+          { id: "200", label: "$200+ / mo", tag: "Heavy / Ultra", lo: 150, hi: Infinity },
+        ];
+        const plans = latest.entries.filter(isCoding).sort((a, b) => a.price_usd - b.price_usd || a.plan.localeCompare(b.plan));
+        let have = 0, need = 0;
+        const bandHtml = BANDS.map((band) => {
+          const rows = plans.filter((e) => e.price_usd >= band.lo && e.price_usd <= band.hi);
+          const body = rows.length ? rows.map((e) => {
+            const m = measuredFor(e);
+            const credit = e.measured;
+            let valueHtml, meta;
+            if (m) {
+              have++;
+              const range = m.lo === m.hi ? `~$${m.lo}` : `~$${m.lo}–$${m.hi}`;
+              valueHtml = `<span class="bv">${range} API-equiv / ${shortWin(m.win) || m.win}${m.floor ? "+" : ""}</span>`;
+              meta = "Measured from in-app % × local burn at list API rates.";
+            } else if (credit?.realized_tokens_month) {
+              have++;
+              valueHtml = `<span class="bv">${mtok(credit.realized_tokens_month)} tokens / mo</span>`;
+              meta = credit.api_pool_usd_stated != null
+                ? `Observed included usage · stated pool $${credit.api_pool_usd_stated}.`
+                : "Observed included-token receipt for a credit plan.";
+            } else {
+              need++;
+              valueHtml = `<span class="bv need">Needs a reading</span>`;
+              meta = e.limits?.some((l) => l.unit === "usd_credit")
+                ? `Published credit: $${e.limits.find((l) => l.unit === "usd_credit").value}/mo — no measured receipt yet.`
+                : "Published sticker only — no measured API-equivalent yet.";
+            }
+            return `<div class="band-row"><div class="bn">${escB(provName(e.provider))} ${escB(e.plan)} <span class="meta">$${e.price_usd}</span></div>${valueHtml}<div class="bm">${escB(meta)}</div></div>`;
+          }).join("") : `<p class="meta">No coding-agent plans in this band yet.</p>`;
+          return `<div class="band-card"><h3>${band.label}</h3><p class="band-tag">${band.tag}</p>${body}</div>`;
+        }).join("");
+        document.getElementById("valueBands").innerHTML = bandHtml;
+        document.getElementById("valueNote").innerHTML =
+          `${have} measured · ${need} still need a reading. Floors from Claude Code / Cursor CSV / Codex logs — not provider promises. ` +
+          `<a href="#measured">All receipts</a> · <a href="#limits">Published sticker facts</a>.`;
+      })();
+
       // One plan's limits collapsed into a single cell. Each limit carries its own tooltip
       // (quote), an optional basis tag (e.g. "estimate"), and its own source link when it
       // differs from the plan's primary source (e.g. an archived first-party page).
@@ -1118,24 +1222,9 @@
       };
 
       const COLS = `<colgroup><col style="width:30%"><col style="width:9%"><col style="width:37%"><col style="width:12%"><col style="width:12%"></colgroup>`;
-      // Measured value per plan: ties an opaque sticker (e.g. "5x Free") to real measured API-dollar
-      // value, right in the main table. Keyed by provider|plan; only the subscription row (no surface)
-      // matches, and an ambiguous reading (e.g. plain "Max") never pins to a specific tier. Same
-      // rollup as the Measured section: implied budget = api_equiv_usd / (observed%/100).
-      const measuredByPlan = {};
-      {
-        const winRank = { "5h": 0, day: 1, week: 2, month: 3 };
-        const reps = (db.usage_reports ?? []).filter((r) => r.metric === "percent" && r.api_equiv_usd != null && r.observed);
-        const g = {};
-        for (const r of reps) ((g[`${r.provider}|${r.plan}`] ??= {})[r.window] ??= []).push(r);
-        for (const [key, wins] of Object.entries(g)) {
-          const win = Object.keys(wins).sort((a, b) => (winRank[a] ?? 9) - (winRank[b] ?? 9))[0];
-          const implied = wins[win].map((r) => r.api_equiv_usd / (r.observed / 100));
-          measuredByPlan[key] = { win, lo: Math.round(Math.min(...implied)), hi: Math.round(Math.max(...implied)), floor: wins[win].some((r) => r.value_basis === "floor") };
-        }
-      }
+      // measuredByPlan built above (value bands + pills share one rollup).
       const measuredPill = (e) => {
-        const m = !e.surface && measuredByPlan[`${e.provider}|${e.plan}`];
+        const m = measuredFor(e);
         if (!m) return "";
         const range = m.lo === m.hi ? `$${m.lo}` : `$${m.lo} to $${m.hi}`;
         const tip = esc(`Measured from real usage${m.floor ? " (a floor, from Claude Code only, so real value is higher)" : ""}`);
@@ -1462,7 +1551,7 @@
           if (l === "mixed") return `, though ${provName(prov)}'s recent changes are mixed`;
           return "";
         };
-        let use = "general", pkMax = 20;
+        let use = "coding", pkMax = 20;
         const dataDate = freshestDate(db);
         const render = () => {
           const uc = USECASE[use];
