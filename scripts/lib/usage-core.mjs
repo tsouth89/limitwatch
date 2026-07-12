@@ -6,7 +6,7 @@
 // instance (not per project). A weekly/5h cap is per-account, so summing every project over-counts
 // when more than one login ran on the machine. The only proxy is the project (cwd): scope with
 // `match` / `exclude` on the project-dir name. Treat any scoped figure as a soft bound.
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 
@@ -39,6 +39,8 @@ export function costUsd(usage, model) {
 export const projRoot = join(homedir(), ".claude", "projects");
 
 export function walk(dir) {
+  // Fresh CI/dev machines have no Claude transcripts — treat missing root as empty, not fatal.
+  if (!existsSync(dir)) return [];
   let out = [];
   for (const e of readdirSync(dir, { withFileTypes: true })) {
     const p = join(dir, e.name);
