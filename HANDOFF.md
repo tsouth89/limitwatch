@@ -66,6 +66,7 @@ Review stubs (scrub login labels), `npm run build`, commit, push. Pricing for Cl
 - **More mid-range weekly Max points** (not just near-100%) would confirm the linear-cap hypothesis
   (SOU-73).
 - **Second Max account weekly reading** for cross-check (SOU-74). Re-verify weekly reset day/hour.
-- Non-Claude measured: Cursor $20 refresh + ChatGPT Plus/Codex (%, burn) pairs so the $20 hero band
-  is not Claude-only (SOU-86).
+- Non-Claude measured: Cursor Pro mid-cycle 2026-07-11 logged (API 34% / Included CSV tokens, Free
+  excluded). Still want a **full-month** Cursor Pro max-out + ChatGPT/Codex (%, burn) pairs (SOU-86).
+- Crowdsource: `#contribute` form requires screenshot; optional CSV. Verify leads before publishing.
 - Standing rule: **commit + push after each change** (per user). Site auto-deploys on push to `main`.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T00:55:51.619Z",
+  "generated_at": "2026-07-12T01:03:07.258Z",
   "snapshot_count": 7,
   "date_range": [
     "2026-01-15",
@@ -740,6 +740,22 @@
       "api_equiv_usd": 2206.7,
       "api_equiv_basis": "Anthropic API list rates per model. Value comparison, not the cap mechanic.",
       "evidence": "cc-usage.mjs --since 2026-06-13T01:00:00Z (Friday-night reset anchor, approximate). All projects, deduped by message.id."
+    },
+    {
+      "provider": "Cursor",
+      "plan": "Pro",
+      "surface": "cursor.com dashboard + usage CSV",
+      "window": "month",
+      "captured_at": "2026-07-11T21:00:00Z",
+      "metric": "percent",
+      "observed": 34,
+      "limit_hit": false,
+      "model": null,
+      "note": "Cursor Pro $20 mid-cycle reading. Dashboard Included in Pro: Total 52%, Auto+Composer 58%, API 34% (screen: 'Your plan includes at least $20 of API usage'). usage-events-2026-07-12.csv covers 2026-07-06..2026-07-12 only (partial cycle): 220,605,706 Included tokens (88,781,362 API-model + 131,824,344 Auto/Composer). Free rows totaling 199,261,701 tokens were EXCLUDED — promo/free usage is not part of this Included receipt. Not a full-month maxed receipt; keeps the Apr–May full-month measured block on the Pro snapshot as the completed-cycle reference.",
+      "reporter": "self",
+      "evidence": "data/evidence/cursor-pro-2026-07-11-dashboard.png + data/evidence/cursor-pro-usage-events-2026-07-12.csv",
+      "api_equiv_usd": null,
+      "api_equiv_basis": "Credit-plan pool is already dollar-denominated ($20 stated). Mid-cycle API % restates pool fill; no separate API-list burn priced here. Token totals from Included CSV rows only."
     }
   ],
   "radar": [

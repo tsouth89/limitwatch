@@ -197,10 +197,12 @@ Pricing and aggregation live once in `scripts/lib/usage-core.mjs` (shared with `
 
 ## Crowdsourced readings (on-site form)
 
-The "Share your own reading" form in the Measured section posts to a Cloudflare Pages Function
-(`functions/api/receipt.js`) that emails a ready-to-verify `usage-reports.json` stub via Resend.
-Nothing is auto-published; a human still verifies every reading. If the function isn't configured or
-is unreachable, the form falls back to the GitHub issue template, so it's never a dead end.
+The **Submit a reading** card (hero → `#contribute`) posts to a Cloudflare Pages Function
+(`functions/api/receipt.js`) that emails a ready-to-verify `usage-reports.json` stub via Resend,
+**with the screenshot attached**. A screenshot of the usage screen is **required** (max 1.5&nbsp;MB);
+an optional Cursor usage CSV helps exclude Free/promo rows. Nothing is auto-published; a human still
+verifies every reading. If the function isn't configured or is unreachable, the form falls back to
+the GitHub issue template (also requires screenshot evidence).
 
 To turn it on, set three env vars in the Cloudflare Pages project (Settings → Environment variables):
 

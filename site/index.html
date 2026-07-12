@@ -455,17 +455,18 @@
     .stats { display: none; }
     /* Coding-agent value first — published plan tables are reference, not the product. */
     #value { order: 1; border-top: 3px solid var(--blue); padding: 1.65rem; }
-    #measured { order: 2; }
-    #compare { order: 3; }
-    #whatsnew { order: 4; }
+    #contribute { order: 2; }
+    #measured { order: 3; }
+    #compare { order: 4; }
+    #whatsnew { order: 5; }
     #hub, #bottomLine { display: none !important; }
-    #drift { order: 5; }
-    #picker { order: 6; }
-    #limits { order: 7; }
-    #resets { order: 8; }
-    #trends { order: 9; }
-    #changelog { order: 10; }
-    #trust { order: 11; }
+    #drift { order: 6; }
+    #picker { order: 7; }
+    #limits { order: 8; }
+    #resets { order: 9; }
+    #trends { order: 10; }
+    #changelog { order: 11; }
+    #trust { order: 12; }
     #value .section-head h2, #measured .section-head h2, #compare .section-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; font-weight: 400; letter-spacing: -.025em; }
     .card { border-radius: 4px; box-shadow: none; }
     .section-head { border-bottom: 1px solid var(--line); padding-bottom: .9rem; margin-bottom: 1rem; }
@@ -503,6 +504,10 @@
     .band-row .bv { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--blue-ink); }
     .band-row .bv.need { color: var(--muted); font-weight: 650; font-style: italic; }
     .band-row .bm { color: var(--muted); font-size: 12px; line-height: 1.35; }
+    #contribute { border-top: 3px solid var(--blue); }
+    #contribute .proof-req { margin: .35rem 0 0; font-size: 12.5px; color: var(--muted); }
+    #contribute .proof-req strong { color: var(--ink); }
+    .rform input[type="file"] { padding: .35rem 0; font-size: 13px; }
     .picker-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; border: 0; padding: .9rem; margin: 0 0 1.15rem; background: var(--paper-soft); }
     .pgrp { gap: .55rem; }
     .pgrp + .pgrp { padding-left: 1rem; border-left: 1px solid var(--line); }
@@ -552,6 +557,7 @@
       <a class="brand" href="#top"><img src="favicon.svg" alt="" /> LimitWatch</a>
       <div class="navlinks" id="navlinks">
         <a href="#value" data-section="value">API value</a>
+        <a href="#contribute" data-section="contribute">Submit</a>
         <a href="#measured" data-section="measured" id="navMeasured" style="display:none">Usage receipts</a>
         <a href="#compare" data-section="compare">Compare</a>
         <a href="#whatsnew" data-section="whatsnew" id="navWhatsnew" style="display:none">News</a>
@@ -569,7 +575,7 @@
     <div>
       <h1><span class="kicker">Coding-agent subscriptions, decoded</span>What your $20 actually buys.</h1>
       <p class="tag">Message caps are marketing. LimitWatch measures API-equivalent token value from real coding-agent burn — then tracks when those limits drift.</p>
-      <div class="hero-actions"><a href="#value">See by price band</a><a href="#measured">Usage receipts</a><a href="#compare">Compare value</a><a href="#changelog">Limit history</a></div>
+      <div class="hero-actions"><a href="#value">See by price band</a><a href="#contribute">Submit a reading</a><a href="#measured">Usage receipts</a><a href="#changelog">Limit history</a></div>
     </div>
     <aside class="hero-proof" aria-label="How LimitWatch organizes its evidence">
       <p class="proof-label">Three ways in</p>
@@ -592,6 +598,40 @@
       </div>
       <div class="band-grid" id="valueBands"></div>
       <p class="meta" id="valueNote" style="margin-top:1rem"></p>
+    </div>
+
+    <div class="card" id="contribute">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Crowdsource</p>
+          <h2>Submit a reading</h2>
+          <p class="meta">Help fill the empty price-band slots. Record exactly what your usage screen showed — a maintainer verifies before anything is published.</p>
+        </div>
+      </div>
+      <form id="receiptForm" class="rform" enctype="multipart/form-data" novalidate>
+        <div class="rgrid">
+          <label>Provider<select name="provider" required><option value="">Pick one</option><option>Anthropic</option><option>OpenAI</option><option>Cursor</option><option>Google</option><option>GitHub Copilot</option><option>Replit</option><option>xAI</option><option>Perplexity</option><option>Other</option></select></label>
+          <label>Plan<input name="plan" placeholder="Pro" required></label>
+          <label>Where you saw it<select name="surface"><option value="">Optional</option><option>Claude Code</option><option>claude.ai</option><option>Cursor dashboard</option><option>Codex / ChatGPT</option><option>desktop app</option><option>other</option></select></label>
+          <label>Cap window<select name="window" required><option value="">Pick one</option><option value="5h">5-hour</option><option value="day">daily</option><option value="week">weekly</option><option value="month">monthly</option></select></label>
+          <label>The reading is<select name="metric" required><option value="percent">a percent used</option><option value="messages">messages sent</option><option value="tokens">tokens</option></select></label>
+          <label>Value<input name="observed" type="number" step="any" placeholder="72" required></label>
+        </div>
+        <label class="rcheck"><input type="checkbox" name="limit_hit"> I actually hit the cap at this reading</label>
+        <label>What you did, and the exact wording on screen<textarea name="note" rows="3" required placeholder="Coding agent session; screen said '34% of API used' / '58% Auto + Composer'"></textarea></label>
+        <label>Screenshot of the usage screen (required)
+          <input name="proof" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required>
+          <span class="proof-req"><strong>Required for verification.</strong> Crop to the usage panel if you like. Max 1.5&nbsp;MB · png/jpeg/webp.</span>
+        </label>
+        <label>Optional: usage CSV export (Cursor etc.)
+          <input name="csv" type="file" accept=".csv,text/csv">
+          <span class="proof-req">Helps us exclude Free/promo rows from Included totals.</span>
+        </label>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+        <div class="cf-turnstile" data-size="invisible" aria-hidden="true"></div>
+        <label class="rcheck"><input type="checkbox" name="confirm" required> This is a real reading I observed, recorded as shown — and the screenshot matches it.</label>
+        <div class="ractions"><button type="submit">Submit reading</button> <span id="rmsg" class="meta"></span></div>
+      </form>
     </div>
 
     <div class="card" id="hub" style="display:none">
@@ -784,7 +824,7 @@
           <h2>What plans delivered in practice <span class="meta" style="font-weight:400">(observed, not caps)</span></h2>
           <p class="meta">Observed readings from real accounts. They show how accounts behaved in practice, not a provider promise. <span class="badge crowdsourced">crowdsourced</span></p>
         </div>
-        <a class="submit-btn" href="https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml" target="_blank" rel="noopener">Submit a reading →</a>
+        <a class="submit-btn" href="#contribute">Submit a reading →</a>
       </div>
 
       <div id="reportsSub" style="display:none">
@@ -805,26 +845,7 @@
         <div id="measuredBody"></div>
       </div>
       <div id="contributeSub" style="margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--line)">
-        <details class="contribute">
-          <summary><strong>Share your own reading</strong> <span class="meta" style="font-weight:400">— help measure the caps no API exposes</span></summary>
-          <p class="meta" style="margin:.6rem 0 .8rem">Saw a usage % or message count on your provider's screen? Add it. A maintainer verifies before it's published, so record exactly what you saw, never a guess.</p>
-          <form id="receiptForm" class="rform" novalidate>
-            <div class="rgrid">
-              <label>Provider<select name="provider" required><option value="">Pick one</option><option>Anthropic</option><option>OpenAI</option><option>Google</option><option>xAI</option><option>Perplexity</option><option>Cursor</option><option>GitHub Copilot</option><option>Replit</option><option>Other</option></select></label>
-              <label>Plan<input name="plan" placeholder="Pro" required></label>
-              <label>Where you saw it<select name="surface"><option value="">Optional</option><option>claude.ai</option><option>desktop app</option><option>Claude Code</option><option>chatgpt.com</option><option>other</option></select></label>
-              <label>Cap window<select name="window" required><option value="">Pick one</option><option value="5h">5-hour</option><option value="day">daily</option><option value="week">weekly</option><option value="month">monthly</option></select></label>
-              <label>The reading is<select name="metric" required><option value="percent">a percent used</option><option value="messages">messages sent</option><option value="tokens">tokens</option></select></label>
-              <label>Value<input name="observed" type="number" step="any" placeholder="72" required></label>
-            </div>
-            <label class="rcheck"><input type="checkbox" name="limit_hit"> I actually hit the cap at this reading</label>
-            <label>What you did, and the exact wording on screen<textarea name="note" rows="3" required placeholder="ran agentic coding ~3h; screen said '72% of weekly limit used'"></textarea></label>
-            <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
-            <div class="cf-turnstile" data-size="invisible" aria-hidden="true"></div>
-            <label class="rcheck"><input type="checkbox" name="confirm" required> This is a real reading I observed, recorded as shown.</label>
-            <div class="ractions"><button type="submit">Submit reading</button> <span id="rmsg" class="meta"></span></div>
-          </form>
-        </details>
+        <p class="meta" style="margin:0">Have a reading to share? Use the <a href="#contribute"><strong>Submit a reading</strong></a> form (screenshot required). Or <a href="https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml" target="_blank" rel="noopener">open a GitHub issue</a>.</p>
       </div>
     </div>
 
@@ -2084,33 +2105,41 @@
         document.head.appendChild(s);
       }
 
-      // ---- Crowdsourced reading form: POST to the /api/receipt Cloudflare Function, which emails the
-      // maintainer a ready-to-verify stub. Degrades gracefully to the GitHub issue if the endpoint
-      // isn't configured/reachable, so the form is never a dead end. ----
+      // ---- Crowdsourced reading form: multipart POST to /api/receipt (screenshot required).
+      // Falls back to the GitHub issue template if the endpoint isn't configured/reachable. ----
       (() => {
         const form = document.getElementById("receiptForm");
         if (!form) return;
         const msg = document.getElementById("rmsg");
         const ISSUE_URL = "https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml";
-        const fallback = () => { msg.innerHTML = `Couldn't submit right now — you can <a href="${ISSUE_URL}" target="_blank" rel="noopener">file it on GitHub</a> instead.`; };
+        const fallback = () => { msg.innerHTML = `Couldn't submit right now — you can <a href="${ISSUE_URL}" target="_blank" rel="noopener">file it on GitHub</a> instead (attach a screenshot there too).`; };
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
-          if (form.website.value) return;                 // honeypot tripped: silently drop
+          if (form.website.value) return;
           if (!form.checkValidity()) { form.reportValidity(); return; }
-          const data = Object.fromEntries(new FormData(form).entries());
-          data.limit_hit = form.limit_hit.checked;
+          const proof = form.proof?.files?.[0];
+          if (!proof) { msg.textContent = "Add a screenshot of the usage screen."; return; }
+          if (proof.size > 1_500_000) { msg.textContent = "Screenshot is too large (max 1.5MB)."; return; }
+          const fd = new FormData(form);
+          fd.set("limit_hit", form.limit_hit.checked ? "true" : "false");
+          fd.set("confirm", form.confirm.checked ? "true" : "false");
           const token = await turnstileToken(form);
-          if (token) data.turnstileToken = token;
+          if (token) fd.set("turnstileToken", token);
           const btn = form.querySelector("button[type='submit']");
           btn.disabled = true; msg.textContent = "Sending…";
           try {
-            const res = await fetch("/api/receipt", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(data) });
+            const res = await fetch("/api/receipt", { method: "POST", body: fd });
             if (res.status === 429) { msg.textContent = "Too many submissions — try again in an hour."; return; }
             if (res.status === 403) { msg.textContent = "Challenge failed — refresh and try again."; return; }
+            if (res.status === 400) {
+              const err = await res.json().catch(() => ({}));
+              msg.textContent = err.error === "screenshot required" ? "Screenshot required." : (err.error || "Check the form and try again.");
+              return;
+            }
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            msg.textContent = "Thanks! A maintainer will verify and publish it.";
+            msg.textContent = "Thanks! A maintainer will verify the screenshot and publish it.";
             form.reset();
-            track("receipt_submit", { provider: data.provider, window: data.window });
+            track("receipt_submit", { provider: fd.get("provider"), window: fd.get("window") });
           } catch (err) { fallback(); }
           finally { btn.disabled = false; }
         });
