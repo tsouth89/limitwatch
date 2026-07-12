@@ -149,6 +149,28 @@
     .cmp .meas.empty { color: var(--muted); font-weight: 400; font-style: italic; font-family: var(--font); }
     .cmp .meta { color: var(--muted); font-size: .8rem; display: block; margin-top: .2rem; font-family: var(--font); }
     .cmp td strong { font-weight: 650; }
+    .mdetails { margin-top: .4rem; font-family: var(--font); max-width: 42rem; }
+    .mdetails summary {
+      cursor: pointer; color: var(--accent); font-size: .8rem; font-weight: 550;
+      list-style: none; user-select: none;
+    }
+    .mdetails summary::-webkit-details-marker { display: none; }
+    .mdetails summary::before { content: "▸ "; font-size: .75em; }
+    .mdetails[open] summary::before { content: "▾ "; }
+    .mdetails summary:hover { text-decoration: underline; }
+    .mdetail-body {
+      margin-top: .4rem; padding: .6rem .7rem;
+      background: color-mix(in srgb, var(--bg) 70%, var(--paper));
+      border: 1px solid var(--line); border-radius: 6px;
+      font-size: .82rem; color: var(--muted); line-height: 1.5;
+    }
+    .mdetail-body p { margin: 0 0 .45rem; }
+    .mdetail-body p:last-child { margin-bottom: 0; }
+    .mdetail-body strong { color: var(--ink); font-weight: 600; }
+    .mdetail-points { margin: 0 0 .5rem; padding-left: 1.15rem; }
+    .mdetail-points li { margin: .22rem 0; }
+    .mdetail-points .num { font-family: var(--mono); font-size: .92em; color: var(--muted); }
+    .mdetail-note { color: var(--ink); }
     .pmark {
       display: inline-flex; width: 18px; height: 18px; border: 1px solid var(--line);
       border-radius: 4px; vertical-align: -4px; margin-right: .4rem; overflow: hidden; background: var(--paper);
@@ -425,12 +447,62 @@
       ? `<span class="pmark" title="${esc(provName(p))}"><img src="${PROVIDER_LOGOS[p]}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`
       : "";
     const shortWin = (w) => w == null ? "" : ({ week: "week", month: "month", day: "day", "5h": "5h" }[w] ?? w);
+    const trunc = (s, n) => {
+      const t = String(s ?? "").trim();
+      if (t.length <= n) return t;
+      return `${t.slice(0, n - 1).trimEnd()}…`;
+    };
     const unitLabel = (l) =>
       l.unit === "multiplier" ? `${fmt(l.value)}× ${l.baseline ?? "Pro"}` :
       l.unit === "usd_credit" ? `$${fmt(l.value)} usage` :
       l.value == null ? "not published" :
       `${fmt(l.value)} ${l.unit}`;
     const mtok = (n) => n >= 1e9 ? `${(n / 1e9).toFixed(2)}B` : n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : fmt(n);
+
+    const detailsFromReports = (m) => {
+      if (!m?.reports?.length) return "";
+      const all = m.reports;
+      const shown = all.slice(-5);
+      const older = all.length - shown.length;
+      const pts = shown.map((r) => {
+        const implied = Math.round(r.api_equiv_usd / (r.observed / 100));
+        const floor = r.value_basis === "floor" ? " · floor" : "";
+        const hit = r.limit_hit ? " · limit hit" : "";
+        const surface = r.surface ? ` · ${esc(r.surface)}` : "";
+        return `<li><span class="num">${esc(r.captured_at.slice(0, 10))}</span>: ${esc(String(r.observed))}% of ${esc(shortWin(r.window))} with $${Number(r.api_equiv_usd).toFixed(0)} API burn → ~$${implied} / ${esc(shortWin(r.window))}${floor}${hit}${surface}</li>`;
+      }).join("");
+      const latest = all[all.length - 1];
+      const lead = `Implied full-${esc(shortWin(m.win))} API-equivalent from ${all.length} reading${all.length === 1 ? "" : "s"}${m.floor ? ". Treated as a <strong>floor</strong> when local burn can miss other surfaces on the same cap." : "."}`;
+      const note = latest.note ? `<p class="mdetail-note">${esc(trunc(latest.note, 480))}</p>` : "";
+      const evidence = latest.evidence ? `<p><strong>Evidence:</strong> ${esc(latest.evidence)}</p>` : "";
+      const pricing = latest.api_equiv_basis ? `<p><strong>Pricing:</strong> ${esc(trunc(latest.api_equiv_basis, 300))}</p>` : "";
+      const olderLine = older > 0 ? `<p>${older} earlier reading${older === 1 ? "" : "s"} omitted.</p>` : "";
+      return `<details class="mdetails"><summary>How this was measured</summary><div class="mdetail-body"><p>${lead}</p><ul class="mdetail-points">${pts}</ul>${olderLine}${note}${evidence}${pricing}</div></details>`;
+    };
+
+    const detailsFromCredit = (credit) => {
+      if (!credit) return "";
+      const lines = [];
+      if (credit.period) lines.push(`<p><strong>Period:</strong> ${esc(credit.period)}</p>`);
+      if (credit.source) lines.push(`<p><strong>Source:</strong> ${esc(credit.source)}</p>`);
+      if (credit.confidence) lines.push(`<p><strong>Confidence:</strong> ${esc(credit.confidence)}</p>`);
+      const poolBits = [];
+      if (credit.api_pool_usd_stated != null) poolBits.push(`stated ≥$${fmt(credit.api_pool_usd_stated)}`);
+      if (credit.api_pool_usd_observed != null) poolBits.push(`observed ~$${fmt(credit.api_pool_usd_observed)}`);
+      if (poolBits.length) lines.push(`<p><strong>API pool:</strong> ${poolBits.join(" · ")}</p>`);
+      if (credit.realized_tokens_month != null) {
+        lines.push(`<p><strong>Included tokens:</strong> <span class="num">${esc(mtok(credit.realized_tokens_month))}</span> / month</p>`);
+      }
+      if (Array.isArray(credit.breakdown) && credit.breakdown.length) {
+        const items = credit.breakdown.map((b) =>
+          `<li>${esc(b.item)}: <span class="num">${esc(mtok(b.tokens))}</span> tokens${b.pct != null ? ` (${esc(String(b.pct))}%)` : ""}</li>`
+        ).join("");
+        lines.push(`<ul class="mdetail-points">${items}</ul>`);
+      }
+      if (credit.notes) lines.push(`<p class="mdetail-note">${esc(trunc(credit.notes, 520))}</p>`);
+      if (!lines.length) return "";
+      return `<details class="mdetails"><summary>How this was measured</summary><div class="mdetail-body">${lines.join("")}</div></details>`;
+    };
 
     const CODING = new Set(["Anthropic", "OpenAI", "Cursor", "GitHub", "Replit"]);
     const BANDS = {
@@ -459,13 +531,15 @@
         for (const r of reps) ((g[`${r.provider}|${r.plan}`] ??= {})[r.window] ??= []).push(r);
         for (const [key, wins] of Object.entries(g)) {
           const win = Object.keys(wins).sort((a, b) => (winRank[a] ?? 9) - (winRank[b] ?? 9))[0];
-          const implied = wins[win].map((r) => r.api_equiv_usd / (r.observed / 100));
+          const bucket = wins[win].slice().sort((a, b) => String(a.captured_at).localeCompare(String(b.captured_at)));
+          const implied = bucket.map((r) => r.api_equiv_usd / (r.observed / 100));
           measuredByPlan[key] = {
             win,
             lo: Math.round(Math.min(...implied)),
             hi: Math.round(Math.max(...implied)),
-            floor: wins[win].some((r) => r.value_basis === "floor"),
-            as_of: wins[win].map((r) => r.captured_at?.slice(0, 10)).filter(Boolean).sort().at(-1),
+            floor: bucket.some((r) => r.value_basis === "floor"),
+            as_of: bucket.map((r) => r.captured_at?.slice(0, 10)).filter(Boolean).sort().at(-1),
+            reports: bucket,
           };
         }
       }
@@ -519,20 +593,23 @@
           let measuredHtml = `<span class="meas empty">—</span>`;
           let measuredSort = 0;
           let asOf = e.verified_on || e.as_of;
+          let detailsHtml = "";
           if (m) {
             const range = m.lo === m.hi ? `~$${m.lo}` : `~$${m.lo}–$${m.hi}`;
             measuredHtml = `<span class="meas">${range} API-equiv / ${shortWin(m.win) || m.win}${m.floor ? "+" : ""}</span><span class="meta">From in-app % × token burn</span>`;
+            detailsHtml = detailsFromReports(m);
             measuredSort = 2;
             if (m.as_of) asOf = m.as_of;
           } else if (credit?.realized_tokens_month) {
             measuredHtml = `<span class="meas">${mtok(credit.realized_tokens_month)} tokens/mo</span><span class="meta">Included usage CSV${credit.api_pool_usd_stated != null ? ` · pool $${credit.api_pool_usd_stated}` : ""}</span>`;
+            detailsHtml = detailsFromCredit(credit);
             measuredSort = 2;
             asOf = credit.as_of || asOf;
           }
           const honesty = honestyOf(e, hasMeasured);
           if (!hasMeasured && honesty === "opaque") measuredSort = -1;
           else if (!hasMeasured) measuredSort = 0;
-          return { e, m, credit, measuredHtml, measuredSort, honesty, asOf };
+          return { e, m, credit, measuredHtml, detailsHtml, measuredSort, honesty, asOf };
         });
 
       let band = "all";
@@ -574,11 +651,16 @@
             return `<tr>
               <td>${provMark(e.provider)}<strong>${esc(provName(e.provider))}</strong> ${esc(e.plan)}<div class="price">$${e.price_usd}/mo</div></td>
               <td class="pub">${publishedCell(e)}</td>
-              <td>${r.measuredHtml}${!r.m && !r.credit ? ` <a class="meta" href="#contribute" style="display:inline">Submit</a>` : ""}</td>
+              <td>${r.measuredHtml}${r.detailsHtml || (!r.m && !r.credit ? ` <a class="meta" href="#contribute" style="display:inline">Submit</a>` : "")}</td>
               <td><span class="hb ${r.honesty}">${honestyLabel[r.honesty] || r.honesty}</span></td>
               <td class="num">${esc(r.asOf || "—")}</td>
             </tr>`;
           }).join("");
+          body.querySelectorAll("details.mdetails").forEach((el) => {
+            el.addEventListener("toggle", () => {
+              if (el.open) track("measure_details_open", {});
+            });
+          });
         }
         document.getElementById("cmpCount").textContent =
           `${shown.length} plan${shown.length === 1 ? "" : "s"} · measured first · opaque last`;
