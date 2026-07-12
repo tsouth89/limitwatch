@@ -19,159 +19,213 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Coding agent plan comparison | LimitWatch" />
   <meta name="twitter:description" content="Compare what Cursor, Claude, ChatGPT/Codex, and Copilot subscriptions actually buy — measured API value vs published stickers." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="preconnect" href="https://static.cloudflareinsights.com" />
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "7e190ac5ceca45179a6cc86d9507ed9c"}'></script>
   <style>
     :root {
       color-scheme: light;
-      --bg: #f6f6f4;
-      --paper: #fff;
-      --ink: #111;
-      --muted: #666;
-      --line: #ddd;
-      --accent: #0a7;
-      --warn: #a60;
-      --bad: #b33;
-      --ok: #070;
-      --chip: #eee;
-      --font: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+      --bg: #eef2f5;
+      --bg-glow: #e4edf2;
+      --paper: #ffffff;
+      --ink: #15202b;
+      --muted: #5a6b7a;
+      --line: #d5dee6;
+      --accent: #0b8f6e;
+      --warn: #9a5b14;
+      --bad: #b43a3a;
+      --ok: #1a7a3a;
+      --chip: #e8eef3;
+      --radius: 8px;
+      --font: "IBM Plex Sans", "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, monospace;
+      --shadow: 0 1px 0 rgba(21, 32, 43, .04), 0 8px 24px rgba(21, 32, 43, .05);
     }
     [data-theme="dark"] {
       color-scheme: dark;
-      --bg: #0d0d0d;
-      --paper: #141414;
-      --ink: #e8e8e8;
-      --muted: #888;
-      --line: #2a2a2a;
-      --accent: #2dd4a8;
+      --bg: #101418;
+      --bg-glow: #151c22;
+      --paper: #171d23;
+      --ink: #e8eef3;
+      --muted: #8b9aab;
+      --line: #2a343e;
+      --accent: #3dcca0;
       --warn: #e0a040;
-      --bad: #f66;
-      --ok: #6c6;
-      --chip: #1c1c1c;
+      --bad: #f07070;
+      --ok: #6dca8a;
+      --chip: #1e262e;
+      --shadow: 0 1px 0 rgba(0, 0, 0, .2), 0 10px 28px rgba(0, 0, 0, .28);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font: 13px/1.45 var(--font);
-      background: var(--bg);
+      font: 15px/1.55 var(--font);
       color: var(--ink);
+      background:
+        radial-gradient(1200px 480px at 12% -10%, var(--bg-glow), transparent 60%),
+        radial-gradient(900px 420px at 90% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
+        var(--bg);
+      -webkit-font-smoothing: antialiased;
     }
-    a { color: var(--accent); }
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
     a:hover { text-decoration: underline; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1rem 3rem; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.15rem 3.5rem; }
 
     .top {
-      display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
-      border-bottom: 1px solid var(--line); padding: .65rem 0; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .85rem; flex-wrap: wrap;
+      border-bottom: 1px solid var(--line); padding: 1rem 0 0.9rem; margin-bottom: 1.15rem;
     }
-    .brand { font-weight: 700; color: var(--ink); text-decoration: none; letter-spacing: -.02em; }
+    .brand {
+      font-weight: 700; font-size: 1.2rem; color: var(--ink); text-decoration: none;
+      letter-spacing: -.03em; line-height: 1;
+    }
     .brand:hover { text-decoration: none; color: var(--accent); }
-    .tagline { color: var(--muted); font-size: 12px; }
-    .nav { margin-left: auto; display: flex; gap: .85rem; flex-wrap: wrap; align-items: center; }
-    .nav a { color: var(--muted); text-decoration: none; font-size: 12px; }
+    .tagline { color: var(--muted); font-size: .92rem; }
+    .nav { margin-left: auto; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .nav a { color: var(--muted); text-decoration: none; font-size: .92rem; font-weight: 500; }
     .nav a:hover { color: var(--ink); }
     .theme-btn {
       background: var(--paper); border: 1px solid var(--line); color: var(--muted);
-      width: 28px; height: 28px; cursor: pointer; font: inherit; padding: 0;
+      width: 32px; height: 32px; border-radius: 999px; cursor: pointer; font: inherit; padding: 0;
     }
+    .theme-btn:hover { color: var(--ink); border-color: color-mix(in srgb, var(--ink) 25%, var(--line)); }
 
-    .lede { margin: 0 0 1rem; color: var(--muted); max-width: 72ch; }
+    .lede { margin: 0 0 1.15rem; color: var(--muted); max-width: 62ch; font-size: 1.05rem; line-height: 1.5; }
     .lede strong { color: var(--ink); font-weight: 650; }
 
     .filters {
-      display: flex; flex-wrap: wrap; gap: .45rem .55rem; align-items: center;
-      margin: 0 0 .75rem; padding: .55rem 0; border-bottom: 1px solid var(--line);
-      position: sticky; top: 0; z-index: 5; background: var(--bg);
+      display: flex; flex-wrap: wrap; gap: .5rem .55rem; align-items: center;
+      margin: 0 0 .9rem; padding: .65rem 0;
+      position: sticky; top: 0; z-index: 5;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
     .filters input[type="search"] {
-      flex: 1 1 160px; min-width: 140px; max-width: 260px;
+      flex: 1 1 180px; min-width: 150px; max-width: 280px;
       background: var(--paper); border: 1px solid var(--line); color: var(--ink);
-      font: inherit; padding: .28rem .45rem;
+      font: inherit; padding: .4rem .65rem; border-radius: 6px;
+    }
+    .filters input[type="search"]:focus,
+    .rform input:focus, .rform select:focus, .rform textarea:focus, .chip:focus-visible, .theme-btn:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+      outline-offset: 1px;
     }
     .chip {
       border: 1px solid var(--line); background: var(--paper); color: var(--muted);
-      font: inherit; font-size: 11px; padding: .2rem .45rem; cursor: pointer;
+      font: inherit; font-size: .82rem; font-weight: 500; padding: .28rem .6rem;
+      border-radius: 999px; cursor: pointer;
     }
-    .chip.active { border-color: var(--ink); color: var(--ink); background: var(--chip); }
-    .flabel { color: var(--muted); font-size: 11px; margin-right: .15rem; }
+    .chip:hover { color: var(--ink); }
+    .chip.active {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+      color: var(--ink); background: color-mix(in srgb, var(--accent) 12%, var(--paper));
+    }
+    .flabel { color: var(--muted); font-size: .8rem; font-weight: 600; margin-right: .1rem; }
 
-    .table-scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--paper); }
-    table.cmp { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-    .cmp th, .cmp td { text-align: left; padding: .5rem .55rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .table-scroll {
+      overflow-x: auto; border: 1px solid var(--line); background: var(--paper);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    table.cmp { width: 100%; border-collapse: collapse; font-size: .95rem; }
+    .cmp th, .cmp td { text-align: left; padding: .7rem .75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
     .cmp th {
-      font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted);
-      font-weight: 650; background: var(--bg); position: sticky; top: 0;
+      font-size: .78rem; letter-spacing: .02em; color: var(--muted);
+      font-weight: 600; background: color-mix(in srgb, var(--bg) 70%, var(--paper));
+      position: sticky; top: 0;
     }
     .cmp tr:last-child td { border-bottom: 0; }
-    .cmp tr:hover td { background: color-mix(in srgb, var(--accent) 6%, transparent); }
-    .cmp .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .cmp .price { color: var(--muted); font-size: 11px; }
+    .cmp tr:hover td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+    .cmp .num, .cmp .price, .cmp .meas {
+      font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .9em;
+    }
+    .cmp .num { white-space: nowrap; color: var(--muted); }
+    .cmp .price { color: var(--muted); font-size: .82rem; margin-top: .15rem; }
     .cmp .pub { color: var(--ink); }
     .cmp .pub .und { color: var(--bad); font-style: italic; }
-    .cmp .meas { color: var(--ok); font-weight: 650; }
-    .cmp .meas.empty { color: var(--muted); font-weight: 400; font-style: italic; }
-    .cmp .meta { color: var(--muted); font-size: 11px; display: block; margin-top: .15rem; }
+    .cmp .meas { color: var(--ok); font-weight: 600; }
+    .cmp .meas.empty { color: var(--muted); font-weight: 400; font-style: italic; font-family: var(--font); }
+    .cmp .meta { color: var(--muted); font-size: .8rem; display: block; margin-top: .2rem; font-family: var(--font); }
+    .cmp td strong { font-weight: 650; }
     .pmark {
-      display: inline-flex; width: 16px; height: 16px; border: 1px solid var(--line);
-      vertical-align: -3px; margin-right: .35rem; overflow: hidden; background: var(--paper);
+      display: inline-flex; width: 18px; height: 18px; border: 1px solid var(--line);
+      border-radius: 4px; vertical-align: -4px; margin-right: .4rem; overflow: hidden; background: var(--paper);
     }
     .pmark img { width: 100%; height: 100%; object-fit: contain; }
     .hb {
-      display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em;
-      text-transform: uppercase; padding: .1rem .35rem; border: 1px solid var(--line);
-      white-space: nowrap;
+      display: inline-block; font-size: .75rem; font-weight: 600;
+      padding: .18rem .45rem; border: 1px solid var(--line); border-radius: 999px;
+      white-space: nowrap; background: var(--paper);
     }
-    .hb.clear { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, var(--line)); }
-    .hb.measured { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
-    .hb.opaque { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 40%, var(--line)); }
-    .hb.needs { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
-    .empty { color: var(--muted); padding: 1rem; }
-    .count { color: var(--muted); font-size: 11px; margin: .4rem 0 1.25rem; }
+    .hb.clear { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 35%, var(--line)); background: color-mix(in srgb, var(--ok) 8%, var(--paper)); }
+    .hb.measured { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); background: color-mix(in srgb, var(--accent) 10%, var(--paper)); }
+    .hb.opaque { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 35%, var(--line)); background: color-mix(in srgb, var(--bad) 8%, var(--paper)); }
+    .hb.needs { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 35%, var(--line)); background: color-mix(in srgb, var(--warn) 8%, var(--paper)); }
+    .empty { color: var(--muted); padding: 1.25rem; }
+    .count { color: var(--muted); font-size: .85rem; margin: .55rem 0 1.4rem; }
 
-    section { margin: 1.75rem 0; }
+    section { margin: 2.1rem 0; }
     section h2 {
-      font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-      color: var(--muted); margin: 0 0 .55rem; border-bottom: 1px solid var(--line); padding-bottom: .35rem;
+      font-size: 1.05rem; font-weight: 650; letter-spacing: -.01em;
+      color: var(--ink); margin: 0 0 .7rem; border-bottom: 1px solid var(--line); padding-bottom: .45rem;
     }
-    .clrow { display: flex; gap: .5rem; align-items: baseline; padding: .35rem 0; border-bottom: 1px solid var(--line); font-size: 12px; }
-    .clrow .num { color: var(--muted); flex: none; font-variant-numeric: tabular-nums; }
-    .hk { font-size: 10px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); flex: none; }
+    .clrow {
+      display: flex; gap: .55rem; align-items: baseline; padding: .45rem 0;
+      border-bottom: 1px solid var(--line); font-size: .92rem;
+    }
+    .clrow .num {
+      color: var(--muted); flex: none; font-family: var(--mono);
+      font-variant-numeric: tabular-nums; font-size: .85em;
+    }
+    .hk {
+      font-size: .72rem; font-weight: 650; color: var(--muted); flex: none;
+      padding: .12rem .4rem; border-radius: 999px; border: 1px solid var(--line); background: var(--chip);
+    }
     .hk.price, .hk.limit { color: var(--warn); }
     .hk.removed { color: var(--bad); }
     .hk.added { color: var(--ok); }
 
-    .rform { display: flex; flex-direction: column; gap: .55rem; max-width: 640px; }
-    .rform label { display: flex; flex-direction: column; gap: .2rem; color: var(--muted); font-size: 11px; }
+    .rform { display: flex; flex-direction: column; gap: .7rem; max-width: 680px; }
+    .rform label { display: flex; flex-direction: column; gap: .28rem; color: var(--muted); font-size: .85rem; font-weight: 500; }
     .rform input, .rform select, .rform textarea {
-      font: inherit; font-size: 12.5px; padding: .35rem .45rem;
-      border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+      font: inherit; font-size: .95rem; padding: .45rem .6rem; border-radius: 6px;
+      border: 1px solid var(--line); background: var(--paper); color: var(--ink); font-weight: 400;
     }
-    .rform input[type="file"] { padding: .25rem 0; }
-    .rgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .55rem; }
-    .rcheck { flex-direction: row !important; align-items: center; gap: .4rem !important; color: var(--ink) !important; font-size: 12px !important; }
+    .rform input[type="file"] { padding: .3rem 0; }
+    .rgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .7rem; }
+    .rcheck { flex-direction: row !important; align-items: center; gap: .45rem !important; color: var(--ink) !important; font-size: .92rem !important; }
     .rcheck input { width: auto; }
     .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-    .ractions { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+    .ractions { display: flex; gap: .65rem; align-items: center; flex-wrap: wrap; }
     .rform button {
-      font: inherit; font-weight: 700; font-size: 12px; padding: .4rem .75rem;
-      border: 1px solid var(--ink); background: var(--ink); color: var(--bg); cursor: pointer;
+      font: inherit; font-weight: 650; font-size: .92rem; padding: .5rem .95rem;
+      border: 1px solid var(--ink); background: var(--ink); color: var(--paper);
+      border-radius: 6px; cursor: pointer;
     }
-    [data-theme="dark"] .rform button { color: #111; }
+    .rform button:hover { background: color-mix(in srgb, var(--ink) 88%, var(--accent)); }
     .rform button:disabled { opacity: .5; cursor: default; }
-    .proof-req { font-size: 10.5px; color: var(--muted); }
-    .alert-row { display: flex; gap: .4rem; flex-wrap: wrap; }
-    .alert-row input[type="email"] { min-width: 180px; }
+    .proof-req { font-size: .8rem; color: var(--muted); font-weight: 400; }
+    .alert-row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+    .alert-row input[type="email"] { min-width: 200px; }
+    .meta { color: var(--muted); font-size: .85rem; }
 
     footer {
-      margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--line);
-      color: var(--muted); font-size: 11px; display: flex; flex-wrap: wrap; gap: .35rem 1rem;
+      margin-top: 3rem; padding-top: 1.15rem; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: .85rem; display: flex; flex-wrap: wrap; gap: .4rem 1.1rem;
     }
-    footer .provlinks { flex-basis: 100%; line-height: 1.7; }
+    footer .provlinks { flex-basis: 100%; line-height: 1.75; }
     .sr-only {
       position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
       overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
     #stats { display: none; }
+    @media (max-width: 640px) {
+      body { font-size: 14.5px; }
+      .tagline { display: none; }
+      .cmp th, .cmp td { padding: .55rem .5rem; }
+    }
   </style>
   <script>
     (() => {
@@ -185,29 +239,29 @@
   <div class="wrap">
     <header class="top">
       <a class="brand" href="#table">LimitWatch</a>
-      <span class="tagline">coding-agent limits, compared</span>
+      <span class="tagline">Coding agent limits, compared</span>
       <nav class="nav">
-        <a href="#table">table</a>
-        <a href="#changes">changes</a>
-        <a href="#contribute">submit</a>
-        <a href="https://github.com/tsouth89/limitwatch" target="_blank" rel="noopener">github</a>
+        <a href="#table">Table</a>
+        <a href="#changes">Changes</a>
+        <a href="#contribute">Submit</a>
+        <a href="https://github.com/tsouth89/limitwatch" target="_blank" rel="noopener">GitHub</a>
         <button class="theme-btn" id="themeToggle" type="button" aria-label="Toggle theme" title="Theme">◐</button>
       </nav>
     </header>
 
-    <p class="lede"><strong>What coding-agent subs actually buy</strong> — measured API-$ / tokens when we have readings; published stickers otherwise. Opaque / unpublished limits are marked.</p>
+    <p class="lede"><strong>What coding-agent subscriptions actually buy</strong> — measured API-equivalent value when we have readings, published limits otherwise. Opaque or unpublished caps are called out.</p>
 
     <div id="stats" aria-hidden="true"><!-- BUILD:stats:start --><div class="stat"><div class="n">8</div><div class="l">providers</div></div><div class="stat"><div class="n">24</div><div class="l">plans</div></div><div class="stat"><div class="n">17</div><div class="l">changes logged</div></div><div class="stat"><div class="n">7</div><div class="l">snapshots</div></div><div class="stat"><div class="n">2026-07-01</div><div class="l">data as of</div></div><!-- BUILD:stats:end --></div>
 
     <div class="filters" id="filters">
-      <span class="flabel">$</span>
-      <button type="button" class="chip active" data-band="all">all</button>
+      <span class="flabel">Price</span>
+      <button type="button" class="chip active" data-band="all">All</button>
       <button type="button" class="chip" data-band="20">$20</button>
       <button type="button" class="chip" data-band="100">$60–100</button>
       <button type="button" class="chip" data-band="200">$200+</button>
-      <span class="flabel" style="margin-left:.4rem">prov</span>
+      <span class="flabel" style="margin-left:.35rem">Provider</span>
       <span id="provChips"></span>
-      <input id="search" type="search" placeholder="filter…" aria-label="Filter plans" />
+      <input id="search" type="search" placeholder="Search plans…" aria-label="Search plans" />
     </div>
 
     <section id="table">
@@ -235,22 +289,22 @@
       <h2>Recent changes</h2>
       <div id="changelogList"><!-- BUILD:changelog:start --><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Max 20x Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Max 5x Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk removed">removed</span> <span class="cltxt">Anthropic Pro Agent SDK $? credit / mo removed</span> </div><div class="clrow"><span class="num">2026-07-01</span> <span class="hk added">new</span> <span class="cltxt">OpenAI Pro ($100) 5x usage</span> <a href="https://openai.com/chatgpt/pricing/">src</a></div><div class="clrow"><span class="num">2026-06-08</span> <span class="hk price">price</span> <span class="cltxt">Google AI Plus $7.99 -&gt; $4.99 / mo</span> <a href="https://support.google.com/googleone/answer/16882689">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk price">price</span> <span class="cltxt">Google AI Ultra (20x) $249.99 -&gt; $199.99 / mo</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Ultra (20x) ?x usage -&gt; 20x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk added">new</span> <span class="cltxt">Google AI Ultra (5x) 5x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Pro ?x usage -&gt; 4x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-05-19</span> <span class="hk limit">limit</span> <span class="cltxt">Google AI Plus ?x usage -&gt; 2x usage</span> <a href="https://gemini.google/subscriptions/">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.4 Thinking -&gt; GPT-5.5 Thinking (10 messages / 5h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><div class="clrow"><span class="num">2026-04-23</span> <span class="hk model">model</span> <span class="cltxt">OpenAI Go GPT-5.3 -&gt; GPT-5.5 (160 messages / 3h)</span> <a href="https://help.openai.com/en/articles/11909943-gpt-5-in-chatgpt">src</a></div><!-- BUILD:changelog:end --></div>
       <form id="alertForm" class="rform" style="margin-top:.75rem">
-        <label>Email on limit changes
+        <label>Email me when limits change
           <span class="alert-row">
             <input name="email" type="email" placeholder="you@example.com" required>
             <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
             <div class="cf-turnstile" data-size="invisible" aria-hidden="true"></div>
-            <button type="submit">subscribe</button>
+            <button type="submit">Subscribe</button>
           </span>
         </label>
         <span id="alertMsg" class="meta"></span>
       </form>
-      <p class="count"><a href="/changes.xml">rss</a></p>
+      <p class="count"><a href="/changes.xml">RSS feed</a></p>
     </section>
 
     <section id="contribute">
       <h2>Submit a reading</h2>
-      <p class="lede" style="margin-bottom:.75rem">Screenshot of the usage screen required. Maintainer verifies before publish.</p>
+      <p class="lede" style="margin-bottom:.75rem">A screenshot of the usage screen is required. We verify before anything is published.</p>
       <form id="receiptForm" class="rform" enctype="multipart/form-data" novalidate>
         <div class="rgrid">
           <label>Provider
@@ -319,15 +373,15 @@
         </div>
         <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
         <div class="cf-turnstile" data-size="invisible" aria-hidden="true"></div>
-        <label class="rcheck"><input type="checkbox" name="confirm" required> Real reading — screenshot matches</label>
-        <div class="ractions"><button type="submit">submit</button> <span id="rmsg" class="meta"></span></div>
+        <label class="rcheck"><input type="checkbox" name="confirm" required> This is a real reading — the screenshot matches</label>
+        <div class="ractions"><button type="submit">Submit reading</button> <span id="rmsg" class="meta"></span></div>
       </form>
     </section>
 
     <footer>
-      <span>LimitWatch — open data</span>
-      <a href="https://github.com/tsouth89/limitwatch" target="_blank" rel="noopener">source</a>
-      <a href="https://github.com/sponsors/tsouth89" target="_blank" rel="noopener">sponsor</a>
+      <span>LimitWatch — open data on coding-agent limits</span>
+      <a href="https://github.com/tsouth89/limitwatch" target="_blank" rel="noopener">Source</a>
+      <a href="https://github.com/sponsors/tsouth89" target="_blank" rel="noopener">Sponsor</a>
       <span id="buildInfo"></span>
       <span class="provlinks">By provider: <!-- BUILD:providerlinks:start --><a href="/claude">Anthropic</a> · <a href="/cursor">Cursor</a> · <a href="/copilot">GitHub Copilot</a> · <a href="/gemini">Google</a> · <a href="/chatgpt">OpenAI</a> · <a href="/perplexity">Perplexity</a> · <a href="/replit">Replit</a> · <a href="/grok">xAI</a><!-- BUILD:providerlinks:end --></span>
       <span class="provlinks">Compare: <!-- BUILD:comparelinks:start --><a href="/claude-vs-chatgpt">Anthropic vs OpenAI</a> · <a href="/claude-vs-gemini">Anthropic vs Google</a> · <a href="/gemini-vs-chatgpt">Google vs OpenAI</a> · <a href="/cursor-vs-copilot">Cursor vs GitHub Copilot</a> · <a href="/chatgpt-vs-grok">OpenAI vs xAI</a> · <a href="/claude-vs-grok">Anthropic vs xAI</a><!-- BUILD:comparelinks:end --></span>
@@ -370,7 +424,7 @@
     const provMark = (p) => PROVIDER_LOGOS[p]
       ? `<span class="pmark" title="${esc(provName(p))}"><img src="${PROVIDER_LOGOS[p]}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`
       : "";
-    const shortWin = (w) => w == null ? "" : ({ week: "wk", month: "mo" }[w] ?? w);
+    const shortWin = (w) => w == null ? "" : ({ week: "week", month: "month", day: "day", "5h": "5h" }[w] ?? w);
     const unitLabel = (l) =>
       l.unit === "multiplier" ? `${fmt(l.value)}× ${l.baseline ?? "Pro"}` :
       l.unit === "usd_credit" ? `$${fmt(l.value)} usage` :
@@ -467,11 +521,11 @@
           let asOf = e.verified_on || e.as_of;
           if (m) {
             const range = m.lo === m.hi ? `~$${m.lo}` : `~$${m.lo}–$${m.hi}`;
-            measuredHtml = `<span class="meas">${range} API-equiv / ${shortWin(m.win) || m.win}${m.floor ? "+" : ""}</span><span class="meta">in-app % × burn</span>`;
+            measuredHtml = `<span class="meas">${range} API-equiv / ${shortWin(m.win) || m.win}${m.floor ? "+" : ""}</span><span class="meta">From in-app % × token burn</span>`;
             measuredSort = 2;
             if (m.as_of) asOf = m.as_of;
           } else if (credit?.realized_tokens_month) {
-            measuredHtml = `<span class="meas">${mtok(credit.realized_tokens_month)} tok/mo</span><span class="meta">Included CSV${credit.api_pool_usd_stated != null ? ` · pool $${credit.api_pool_usd_stated}` : ""}</span>`;
+            measuredHtml = `<span class="meas">${mtok(credit.realized_tokens_month)} tokens/mo</span><span class="meta">Included usage CSV${credit.api_pool_usd_stated != null ? ` · pool $${credit.api_pool_usd_stated}` : ""}</span>`;
             measuredSort = 2;
             asOf = credit.as_of || asOf;
           }
@@ -514,13 +568,14 @@
         if (!shown.length) {
           body.innerHTML = `<tr><td colspan="5" class="empty">No plans match.</td></tr>`;
         } else {
+          const honestyLabel = { measured: "Measured", opaque: "Opaque", needs: "Needs reading", clear: "Clear" };
           body.innerHTML = shown.map((r) => {
             const e = r.e;
             return `<tr>
               <td>${provMark(e.provider)}<strong>${esc(provName(e.provider))}</strong> ${esc(e.plan)}<div class="price">$${e.price_usd}/mo</div></td>
               <td class="pub">${publishedCell(e)}</td>
-              <td>${r.measuredHtml}${!r.m && !r.credit ? ` <a class="meta" href="#contribute" style="display:inline">submit</a>` : ""}</td>
-              <td><span class="hb ${r.honesty}">${r.honesty === "needs" ? "needs reading" : r.honesty}</span></td>
+              <td>${r.measuredHtml}${!r.m && !r.credit ? ` <a class="meta" href="#contribute" style="display:inline">Submit</a>` : ""}</td>
+              <td><span class="hb ${r.honesty}">${honestyLabel[r.honesty] || r.honesty}</span></td>
               <td class="num">${esc(r.asOf || "—")}</td>
             </tr>`;
           }).join("");
@@ -559,7 +614,7 @@
       const cl = document.getElementById("changelogList");
       if (cl && (db.changes ?? []).length) {
         const kindClass = { model_changed: "model", price_changed: "price", limit_changed: "limit", limit_added: "added", limit_removed: "removed" };
-        const kindText = { model_changed: "model", price_changed: "price", limit_changed: "limit", limit_added: "new", limit_removed: "removed" };
+        const kindText = { model_changed: "Model", price_changed: "Price", limit_changed: "Limit", limit_added: "New", limit_removed: "Removed" };
         const changeText = (c) => {
           const [prov, , plan] = (c.key || "").split("|");
           const label = `${provName(prov)} ${plan}`;
