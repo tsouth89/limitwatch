@@ -580,7 +580,7 @@
     <aside class="hero-proof" aria-label="How LimitWatch organizes its evidence">
       <p class="proof-label">Three ways in</p>
       <a class="proof-path" href="#value"><span class="num">01</span><span><strong>API value by price</strong><small>$20 / $100 / $200 bands — measured floors, not sticker claims.</small></span><span class="arrow">→</span></a>
-      <a class="proof-path" href="#measured"><span class="num">02</span><span><strong>Inspect real usage</strong><small>In-app % paired with local token burn. Floors, never promises.</small></span><span class="arrow">→</span></a>
+      <a class="proof-path" href="#contribute"><span class="num">02</span><span><strong>Add your reading</strong><small>Screenshot of your usage panel. Helps fill empty slots.</small></span><span class="arrow">→</span></a>
       <a class="proof-path" href="#changelog"><span class="num">03</span><span><strong>Track the drift</strong><small>When published limits and prices quietly moved.</small></span><span class="arrow">→</span></a>
       <p class="proof-note">Estimates stay separate from official facts. Measured API $ is the product.</p>
     </aside>
@@ -593,7 +593,7 @@
         <div>
           <p class="eyebrow">For coding agents</p>
           <h2>What $20 / $100 / $200 buys in API dollars</h2>
-          <p class="meta">Measured floors from real Claude Code / Cursor / Codex burn, priced at list API rates. Empty slots mean we need a reading — honest scarcity beats a fake comparison.</p>
+          <p class="meta">Measured floors from real coding-agent burn (Cursor, Claude Code, Codex, …), priced at list API rates. Empty slots mean we need a reading — honest scarcity beats a fake comparison.</p>
         </div>
       </div>
       <div class="band-grid" id="valueBands"></div>
@@ -605,31 +605,80 @@
         <div>
           <p class="eyebrow">Crowdsource</p>
           <h2>Submit a reading</h2>
-          <p class="meta">Help fill the empty price-band slots. Record exactly what your usage screen showed — a maintainer verifies before anything is published.</p>
+          <p class="meta">Saw a usage % or included-pool figure on Cursor, Claude, ChatGPT/Codex, Copilot, or another coding agent? Send it with a screenshot. A maintainer verifies before anything is published.</p>
         </div>
       </div>
       <form id="receiptForm" class="rform" enctype="multipart/form-data" novalidate>
         <div class="rgrid">
-          <label>Provider<select name="provider" required><option value="">Pick one</option><option>Anthropic</option><option>OpenAI</option><option>Cursor</option><option>Google</option><option>GitHub Copilot</option><option>Replit</option><option>xAI</option><option>Perplexity</option><option>Other</option></select></label>
-          <label>Plan<input name="plan" placeholder="Pro" required></label>
-          <label>Where you saw it<select name="surface"><option value="">Optional</option><option>Claude Code</option><option>claude.ai</option><option>Cursor dashboard</option><option>Codex / ChatGPT</option><option>desktop app</option><option>other</option></select></label>
-          <label>Cap window<select name="window" required><option value="">Pick one</option><option value="5h">5-hour</option><option value="day">daily</option><option value="week">weekly</option><option value="month">monthly</option></select></label>
-          <label>The reading is<select name="metric" required><option value="percent">a percent used</option><option value="messages">messages sent</option><option value="tokens">tokens</option></select></label>
-          <label>Value<input name="observed" type="number" step="any" placeholder="72" required></label>
+          <label>Provider
+            <select name="provider" id="receiptProvider" required>
+              <option value="">Pick one</option>
+              <option>Cursor</option>
+              <option>Anthropic</option>
+              <option>OpenAI</option>
+              <option>GitHub Copilot</option>
+              <option>Replit</option>
+              <option>Google</option>
+              <option>xAI</option>
+              <option>Perplexity</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Plan
+            <input name="plan" list="planSuggestions" placeholder="e.g. Pro, Plus, Max 5x" required autocomplete="off">
+            <datalist id="planSuggestions">
+              <option value="Pro"></option>
+              <option value="Pro+"></option>
+              <option value="Plus"></option>
+              <option value="Max"></option>
+              <option value="Max 5x"></option>
+              <option value="Ultra"></option>
+              <option value="Go"></option>
+              <option value="Core"></option>
+            </datalist>
+          </label>
+          <label>Where you read it
+            <select name="surface" id="receiptSurface">
+              <option value="">Pick one (optional)</option>
+            </select>
+          </label>
+          <label>Limit window
+            <select name="window" required>
+              <option value="">Pick one</option>
+              <option value="5h">5-hour (rolling)</option>
+              <option value="day">Daily</option>
+              <option value="week">Weekly</option>
+              <option value="month">Monthly / billing cycle</option>
+            </select>
+          </label>
+          <label>What the number is
+            <select name="metric" required>
+              <option value="percent">Percent used (most common)</option>
+              <option value="tokens">Tokens used / remaining</option>
+              <option value="messages">Messages / requests</option>
+            </select>
+          </label>
+          <label>Value
+            <input name="observed" type="number" step="any" min="0" placeholder="e.g. 34" required>
+          </label>
         </div>
-        <label class="rcheck"><input type="checkbox" name="limit_hit"> I actually hit the cap at this reading</label>
-        <label>What you did, and the exact wording on screen<textarea name="note" rows="3" required placeholder="Coding agent session; screen said '34% of API used' / '58% Auto + Composer'"></textarea></label>
-        <label>Screenshot of the usage screen (required)
-          <input name="proof" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required>
-          <span class="proof-req"><strong>Required for verification.</strong> Crop to the usage panel if you like. Max 1.5&nbsp;MB · png/jpeg/webp.</span>
+        <label class="rcheck"><input type="checkbox" name="limit_hit"> I hit the limit / was throttled at this reading</label>
+        <label>Exact wording on screen + brief context
+          <textarea name="note" rows="3" required placeholder="e.g. Cursor Included in Pro: Total 52%, Auto + Composer 58%, API 34%. Or: Claude Code weekly 83% used."></textarea>
         </label>
-        <label>Optional: usage CSV export (Cursor etc.)
-          <input name="csv" type="file" accept=".csv,text/csv">
-          <span class="proof-req">Helps us exclude Free/promo rows from Included totals.</span>
-        </label>
+        <div class="rgrid" style="margin-top:.2rem">
+          <label>Screenshot of the usage screen
+            <input name="proof" type="file" accept="image/png,image/jpeg,image/webp,image/gif" required>
+            <span class="proof-req"><strong>Required.</strong> Crop to the usage panel. Max 1.5&nbsp;MB · png/jpeg/webp.</span>
+          </label>
+          <label>Usage CSV export (optional)
+            <input name="csv" type="file" accept=".csv,text/csv">
+            <span class="proof-req">Useful for Cursor/Replit — we exclude Free/promo rows from Included totals.</span>
+          </label>
+        </div>
         <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
         <div class="cf-turnstile" data-size="invisible" aria-hidden="true"></div>
-        <label class="rcheck"><input type="checkbox" name="confirm" required> This is a real reading I observed, recorded as shown — and the screenshot matches it.</label>
+        <label class="rcheck"><input type="checkbox" name="confirm" required> Real reading I observed — screenshot matches the numbers above.</label>
         <div class="ractions"><button type="submit">Submit reading</button> <span id="rmsg" class="meta"></span></div>
       </form>
     </div>
@@ -680,8 +729,8 @@
         <div class="pgrp">
           <span class="plabel">Mostly for</span>
           <div class="chips" id="pkUse">
+            <button class="chip active" type="button" data-use="coding" aria-pressed="true">Coding agents</button>
             <button class="chip" type="button" data-use="general" aria-pressed="false">Chat / general</button>
-            <button class="chip active" type="button" data-use="coding" aria-pressed="true">Coding</button>
             <button class="chip" type="button" data-use="research" aria-pressed="false">Research</button>
           </div>
         </div>
@@ -779,7 +828,7 @@
         <div>
           <p class="eyebrow">Compare value</p>
           <h2>Which plan gives more per dollar</h2>
-          <p class="meta">Two lenses: hard same-unit value (no assumptions), and a normalized cross-provider estimate (with adjustable assumptions). We never silently equate a message to a token.</p>
+          <p class="meta">Two lenses for coding-agent plans: hard same-unit value (no assumptions), and a normalized tokens/day/$ estimate (with adjustable knobs). We never silently equate a message to a token.</p>
         </div>
       </div>
 
@@ -822,14 +871,14 @@
         <div>
           <p class="eyebrow">Measured evidence</p>
           <h2>What plans delivered in practice <span class="meta" style="font-weight:400">(observed, not caps)</span></h2>
-          <p class="meta">Observed readings from real accounts. They show how accounts behaved in practice, not a provider promise. <span class="badge crowdsourced">crowdsourced</span></p>
+          <p class="meta">Observed readings from real coding-agent accounts. They show how plans behaved in practice, not a provider promise. <span class="badge crowdsourced">crowdsourced</span></p>
         </div>
         <a class="submit-btn" href="#contribute">Submit a reading →</a>
       </div>
 
       <div id="reportsSub" style="display:none">
-        <h3 class="subh">Subscription cap readings <span class="meta" style="font-weight:400">— chat &amp; Claude Code</span></h3>
-        <p class="meta">Read straight off the provider's usage screen (claude.ai, ChatGPT, Claude Code). These 5-hour / weekly caps are <strong>not in any API</strong>. Each row is one observed reading, kept verbatim.</p>
+        <h3 class="subh">Subscription cap readings <span class="meta" style="font-weight:400">— coding agents &amp; chat</span></h3>
+        <p class="meta">Read straight off the provider's usage screen (Cursor, Claude Code, ChatGPT/Codex, Copilot, …). These 5-hour / weekly / monthly caps are often <strong>not in any API</strong>. Each row is one observed reading, kept verbatim.</p>
         <div id="reportsSummary"></div>
         <details class="rdetails"><summary>All individual readings</summary>
         <div class="table-scroll"><table id="reportsTable">
@@ -893,6 +942,7 @@
       <ul class="meta">
         <li>Every number carries a confidence tier and a link to its source. Hover any dotted limit to read the exact source sentence.</li>
         <li>We store only as-published facts. Per-day / $-value / cross-provider math is derived in your browser, never baked into the data.</li>
+        <li>Measured API-equivalent floors come from real burn + in-app %, or Included CSV rows (Free/promo excluded). Crowdsourced readings require a screenshot.</li>
         <li>Raw dated snapshots are public and version-controlled. The git history is the audit trail.</li>
       </ul>
       <div class="key">
@@ -1201,8 +1251,8 @@
         }).join("");
         document.getElementById("valueBands").innerHTML = bandHtml;
         document.getElementById("valueNote").innerHTML =
-          `${have} measured · ${need} still need a reading. Floors from Claude Code / Cursor CSV / Codex logs — not provider promises. ` +
-          `<a href="#measured">All receipts</a> · <a href="#limits">Published sticker facts</a>.`;
+          `${have} measured · ${need} still need a reading. Floors from real coding-agent burn — not provider promises. ` +
+          `<a href="#contribute">Submit a reading</a> · <a href="#measured">All receipts</a> · <a href="#limits">Published sticker facts</a>.`;
       })();
 
       // One plan's limits collapsed into a single cell. Each limit carries its own tooltip
@@ -2111,6 +2161,34 @@
         const form = document.getElementById("receiptForm");
         if (!form) return;
         const msg = document.getElementById("rmsg");
+        const providerEl = document.getElementById("receiptProvider");
+        const surfaceEl = document.getElementById("receiptSurface");
+        const SURFACES = {
+          Cursor: ["Cursor IDE", "cursor.com usage / billing", "Usage CSV export", "Other"],
+          Anthropic: ["Claude Code", "claude.ai", "Claude desktop", "Other"],
+          OpenAI: ["Codex / ChatGPT agent", "chatgpt.com", "ChatGPT desktop", "Other"],
+          "GitHub Copilot": ["VS Code / Copilot Chat", "github.com", "Other"],
+          Replit: ["Replit Agent", "replit.com billing", "Other"],
+          Google: ["Gemini app", "Google AI Studio", "Other"],
+          xAI: ["Grok app", "x.com / grok", "Other"],
+          Perplexity: ["Perplexity app", "perplexity.ai", "Other"],
+          Other: ["Coding agent (IDE / CLI)", "Web usage panel", "Desktop app", "Billing / usage dashboard", "Other"],
+        };
+        const DEFAULT_SURFACES = ["Coding agent (IDE / CLI)", "Web usage panel", "Desktop app", "Billing / usage dashboard", "Usage CSV export", "Other"];
+        const fillSurfaces = () => {
+          const prev = surfaceEl.value;
+          const list = SURFACES[providerEl.value] || DEFAULT_SURFACES;
+          surfaceEl.innerHTML = `<option value="">Pick one (optional)</option>` +
+            list.map((s) => `<option${s === prev ? " selected" : ""}>${s}</option>`).join("");
+          if (prev && ![...surfaceEl.options].some((o) => o.value === prev || o.textContent === prev)) {
+            const opt = document.createElement("option");
+            opt.value = prev; opt.textContent = prev; opt.selected = true;
+            surfaceEl.appendChild(opt);
+          }
+        };
+        fillSurfaces();
+        providerEl.addEventListener("change", fillSurfaces);
+
         const ISSUE_URL = "https://github.com/tsouth89/limitwatch/issues/new?template=usage-report.yml";
         const fallback = () => { msg.innerHTML = `Couldn't submit right now — you can <a href="${ISSUE_URL}" target="_blank" rel="noopener">file it on GitHub</a> instead (attach a screenshot there too).`; };
         form.addEventListener("submit", async (e) => {
@@ -2139,6 +2217,7 @@
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             msg.textContent = "Thanks! A maintainer will verify the screenshot and publish it.";
             form.reset();
+            fillSurfaces();
             track("receipt_submit", { provider: fd.get("provider"), window: fd.get("window") });
           } catch (err) { fallback(); }
           finally { btn.disabled = false; }

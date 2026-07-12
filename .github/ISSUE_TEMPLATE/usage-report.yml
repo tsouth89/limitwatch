@@ -7,35 +7,41 @@ body:
     attributes:
       value: |
         Thanks for contributing a reading. Record **what the usage screen actually showed**, not a guess.
-        **Attach a screenshot** of the usage panel (required). For Cursor, a usage-events CSV is helpful so Free/promo rows can be excluded.
+        **Attach a screenshot** of the usage panel (required). For Cursor/Replit, a usage-events CSV helps exclude Free/promo rows.
         Verified reports go into `data/usage-reports.json`; the git history is the audit trail.
         Prefer the on-site form at https://limitwatch.dev/#contribute when you can.
   - type: dropdown
     id: provider
     attributes:
       label: Provider
-      options: [Anthropic, OpenAI, Cursor, Google, GitHub Copilot, Replit, xAI, Perplexity, Other]
+      options: [Cursor, Anthropic, OpenAI, GitHub Copilot, Replit, Google, xAI, Perplexity, Other]
     validations:
       required: true
   - type: input
     id: plan
     attributes:
       label: Plan
-      description: e.g. Pro, Max 5x, Plus, Go
+      description: e.g. Pro, Plus, Max 5x, Ultra, Go
       placeholder: Pro
     validations:
       required: true
   - type: dropdown
     id: surface
     attributes:
-      label: Surface (where you read it)
-      options: [Claude Code, claude.ai, Cursor dashboard, Codex / ChatGPT, desktop app, other]
+      label: Where you read it
+      options:
+        - Coding agent (IDE / CLI)
+        - Web usage panel
+        - Desktop app
+        - Billing / usage dashboard
+        - Usage CSV export
+        - Other
     validations:
       required: true
   - type: dropdown
     id: window
     attributes:
-      label: Cap window this observes
+      label: Limit window
       options: ["5h", "day", "week", "month"]
     validations:
       required: true
@@ -49,42 +55,42 @@ body:
   - type: dropdown
     id: metric
     attributes:
-      label: What the number means
-      options: [percent, messages, tokens]
+      label: What the number is
+      options: [percent, tokens, messages]
     validations:
       required: true
   - type: input
     id: observed
     attributes:
       label: Observed value
-      description: The number at capture — percent used, messages sent, or tokens.
-      placeholder: "72"
+      description: The number at capture — percent used, tokens, or messages/requests.
+      placeholder: "34"
     validations:
       required: true
   - type: dropdown
     id: limit_hit
     attributes:
-      label: Did the cap actually throttle at this reading?
-      options: ["no", "yes — hit the cap"]
+      label: Did you hit the limit / get throttled at this reading?
+      options: ["no", "yes — hit the limit"]
     validations:
       required: true
   - type: input
     id: model
     attributes:
       label: Model in use (optional)
-      placeholder: Claude Opus 4.8
+      placeholder: e.g. Opus, GPT-5.5, Auto
   - type: textarea
     id: note
     attributes:
-      label: Note
-      description: Verbatim wording from the usage screen plus any context (session length, Free vs Included, etc.).
+      label: Exact wording on screen + brief context
+      description: Quote the usage panel. Mention Free vs Included if relevant.
     validations:
       required: true
   - type: textarea
     id: evidence
     attributes:
       label: Evidence
-      description: Attach a screenshot to this issue (drag onto the comment box), then paste the image markdown link here. Optional CSV filename if you also attach a Cursor usage export.
+      description: Attach a screenshot to this issue, then paste the image markdown link here. Optional CSV filename if you also attach a usage export.
       placeholder: "![usage](…uploaded screenshot…)"
     validations:
       required: true
@@ -93,5 +99,5 @@ body:
     attributes:
       label: Confirmation
       options:
-        - label: This is a real reading I observed, recorded as shown, and the screenshot matches it (no guessed numbers).
+        - label: Real reading I observed — screenshot matches the numbers (no guessed values).
           required: true
