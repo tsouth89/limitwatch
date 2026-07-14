@@ -54,9 +54,36 @@ case "$mode" in
     sha="$(git rev-parse HEAD)"
     git push --force-with-lease origin "HEAD:refs/heads/$branch"
 
+    pr_number="$(gh pr list \
+      --base main \
+      --head "$branch" \
+      --state open \
+      --limit 1 \
+      --json number \
+      --jq '.[0].number // empty')"
+    if [[ -z "$pr_number" ]]; then
+      gh pr create \
+        --base main \
+        --head "$branch" \
+        --title "$message" \
+        --body "Automated state update. The existing CI workflow is dispatched against this exact commit before merge."
+      pr_number="$(gh pr list \
+        --base main \
+        --head "$branch" \
+        --state open \
+        --limit 1 \
+        --json number \
+        --jq '.[0].number // empty')"
+    fi
+    if [[ -z "$pr_number" ]]; then
+      echo "Could not resolve the automation pull request for $branch." >&2
+      exit 1
+    fi
+
     # Branch protection requires the CI job named `test` on the exact commit
-    # being pushed. workflow_dispatch is intentionally used because GitHub
-    # permits GITHUB_TOKEN-triggered dispatches without allowing event loops.
+    # being merged. workflow_dispatch is intentionally used because GitHub
+    # permits GITHUB_TOKEN-triggered dispatches without allowing event loops or
+    # requiring a separate PAT for workflow-created pull requests.
     gh workflow run ci.yml --ref "$branch"
 
     run_id=""
@@ -87,8 +114,7 @@ case "$mode" in
       exit 1
     fi
 
-    git push origin "HEAD:refs/heads/main"
-    git push origin --delete "$branch"
+    gh pr merge "$pr_number" --squash --delete-branch
     ;;
 
   *)
