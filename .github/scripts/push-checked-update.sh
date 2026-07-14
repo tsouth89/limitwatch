@@ -126,8 +126,8 @@ case "$mode" in
     for _ in $(seq 1 60); do
       candidate="$(gh api \
         "repos/$GITHUB_REPOSITORY/git/ref/pull/$pr_number/merge" \
-        --jq '.object.sha')"
-      if gh api "repos/$GITHUB_REPOSITORY/commits/$candidate" \
+        --jq '.object.sha' 2>/dev/null || true)"
+      if [[ -n "$candidate" ]] && gh api "repos/$GITHUB_REPOSITORY/commits/$candidate" \
         --jq '.parents[].sha' | grep -qx "$sha"; then
         merge_sha="$candidate"
         break
