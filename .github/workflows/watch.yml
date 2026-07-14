@@ -12,6 +12,7 @@ on:
     - cron: "17 13 * * 1"
 
 permissions:
+  actions: write
   contents: write
   issues: write
 
@@ -20,6 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resume checked source-watch update
+        run: bash .github/scripts/push-checked-update.sh prepare automation/source-watch
 
       - uses: actions/setup-node@v4
         with:
@@ -60,14 +66,11 @@ jobs:
           fi
 
       - name: Commit advanced baseline
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           rm -f data/_watch-summary.md
-          if ! git diff --quiet -- data/source-state.json; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add data/source-state.json
-            git commit -m "chore: advance source-watch baseline [skip ci]"
-            git push
-          else
-            echo "No baseline change to commit."
-          fi
+          bash .github/scripts/push-checked-update.sh publish \
+            automation/source-watch \
+            "chore: advance source-watch baseline" \
+            data/source-state.json
