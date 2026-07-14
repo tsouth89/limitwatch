@@ -151,19 +151,19 @@ case "$mode" in
       --field "output[summary]=Required test and build passed for automation head $sha." \
       --silent
 
-    test_ready="false"
+    merge_ready="false"
     for _ in $(seq 1 30); do
-      test_count="$(gh pr view "$pr_number" \
-        --json statusCheckRollup \
-        --jq '[.statusCheckRollup[] | select(.name == "test" and .conclusion == "SUCCESS")] | length')"
-      if (( test_count > 0 )); then
-        test_ready="true"
-        break
-      fi
+      merge_state="$(gh pr view "$pr_number" --json mergeStateStatus --jq '.mergeStateStatus')"
+      case "$merge_state" in
+        CLEAN|HAS_HOOKS|UNSTABLE)
+          merge_ready="true"
+          break
+          ;;
+      esac
       sleep 2
     done
-    if [[ "$test_ready" != "true" ]]; then
-      echo "Timed out waiting for the required test check on PR $pr_number." >&2
+    if [[ "$merge_ready" != "true" ]]; then
+      echo "Timed out waiting for PR $pr_number to become mergeable." >&2
       exit 1
     fi
 
