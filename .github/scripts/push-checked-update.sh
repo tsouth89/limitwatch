@@ -122,20 +122,25 @@ case "$mode" in
     # branch is already based on current main, so it has the same tree; record
     # the successful nested CI run on that merge SHA before asking GitHub to
     # perform the protected merge.
+    base_sha="$(git rev-parse origin/main)"
     merge_sha=""
     for _ in $(seq 1 60); do
       candidate="$(gh api \
         "repos/$GITHUB_REPOSITORY/git/ref/pull/$pr_number/merge" \
         --jq '.object.sha' 2>/dev/null || true)"
-      if [[ -n "$candidate" ]] && gh api "repos/$GITHUB_REPOSITORY/commits/$candidate" \
-        --jq '.parents[].sha' | grep -qx "$sha"; then
+      parents=""
+      if [[ -n "$candidate" ]]; then
+        parents="$(gh api "repos/$GITHUB_REPOSITORY/commits/$candidate" \
+          --jq '.parents[].sha' 2>/dev/null || true)"
+      fi
+      if [[ -n "$candidate" ]] && grep -qx "$base_sha" <<<"$parents" && grep -qx "$sha" <<<"$parents"; then
         merge_sha="$candidate"
         break
       fi
       sleep 2
     done
     if [[ -z "$merge_sha" ]]; then
-      echo "Timed out waiting for PR $pr_number to contain automation head $sha." >&2
+      echo "Timed out waiting for PR $pr_number to combine current main $base_sha with automation head $sha." >&2
       exit 1
     fi
 
