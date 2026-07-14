@@ -10,6 +10,9 @@ mode="${1:-}"
 branch="${2:-}"
 [[ -n "$mode" && -n "$branch" ]] || usage
 
+git config user.name "github-actions[bot]"
+git config user.email "github-actions[bot]@users.noreply.github.com"
+
 case "$mode" in
   prepare)
     git fetch origin "refs/heads/main:refs/remotes/origin/main"
@@ -30,8 +33,6 @@ case "$mode" in
     [[ -n "$message" && "$#" -ge 4 ]] || usage
     shift 3
 
-    git config user.name "github-actions[bot]"
-    git config user.email "github-actions[bot]@users.noreply.github.com"
     git add -- "$@"
     if ! git diff --cached --quiet; then
       git commit -m "$message"
