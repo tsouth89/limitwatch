@@ -15,7 +15,6 @@ permissions:
   actions: write
   contents: write
   issues: write
-  pull-requests: write
 
 jobs:
   watch:
@@ -24,6 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ssh-key: ${{ secrets.LIMITWATCH_DEPLOY_KEY }}
 
       - name: Resume checked source-watch update
         run: bash .github/scripts/push-checked-update.sh prepare automation/source-watch
