@@ -59,39 +59,6 @@ case "$mode" in
     sha="$(git rev-parse HEAD)"
     git push --force-with-lease origin "HEAD:refs/heads/$branch"
 
-    # Branch protection requires the CI job named `test` on the exact commit
-    # being merged. workflow_dispatch is intentionally used because GitHub
-    # permits GITHUB_TOKEN-triggered dispatches without allowing event loops.
-    gh workflow run ci.yml --ref "$branch"
-
-    run_id=""
-    for _ in $(seq 1 60); do
-      run_id="$(gh run list \
-        --workflow ci.yml \
-        --branch "$branch" \
-        --event workflow_dispatch \
-        --commit "$sha" \
-        --limit 1 \
-        --json databaseId \
-        --jq '.[0].databaseId // empty')"
-      [[ -n "$run_id" ]] && break
-      sleep 2
-    done
-    if [[ -z "$run_id" ]]; then
-      echo "Timed out waiting for CI to start for $sha; leaving $branch intact." >&2
-      exit 1
-    fi
-
-    gh run watch "$run_id" --exit-status
-
-    # Strict status checks also require the tested commit to remain up to date.
-    # If main moved during CI, preserve the branch and let the next run rebase it.
-    git fetch origin "refs/heads/main:refs/remotes/origin/main"
-    if ! git merge-base --is-ancestor origin/main HEAD; then
-      echo "Main moved while CI ran; leaving $branch intact for the next run." >&2
-      exit 1
-    fi
-
     pr_number="$(gh pr list \
       --base main \
       --head "$branch" \
@@ -118,10 +85,8 @@ case "$mode" in
       exit 1
     fi
 
-    # Strict protection evaluates the PR's synthetic merge commit. The tested
-    # branch is already based on current main, so it has the same tree; record
-    # the successful nested CI run on that merge SHA before asking GitHub to
-    # perform the protected merge.
+    # Strict protection evaluates the PR's synthetic merge commit. Wait until
+    # GitHub has combined the exact current base and automation head.
     base_sha="$(git rev-parse origin/main)"
     merge_sha=""
     for _ in $(seq 1 60); do
@@ -144,17 +109,63 @@ case "$mode" in
       exit 1
     fi
 
+    # A branch pointing at the synthetic commit lets workflow_dispatch create
+    # the native GitHub Actions `test` check on the exact commit protection
+    # evaluates. API-created checks can cause GitHub to refresh the merge ref,
+    # immediately making those checks stale.
+    check_branch="automation-merge-check-$pr_number"
+    if gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/$check_branch" >/dev/null 2>&1; then
+      gh api \
+        --method PATCH \
+        "repos/$GITHUB_REPOSITORY/git/refs/heads/$check_branch" \
+        --field sha="$merge_sha" \
+        -F force=true \
+        --silent
+    else
+      gh api \
+        --method POST \
+        "repos/$GITHUB_REPOSITORY/git/refs" \
+        --field ref="refs/heads/$check_branch" \
+        --field sha="$merge_sha" \
+        --silent
+    fi
+
+    gh workflow run ci.yml --ref "$check_branch"
+
+    run_id=""
+    for _ in $(seq 1 60); do
+      run_id="$(gh run list \
+        --workflow ci.yml \
+        --branch "$check_branch" \
+        --event workflow_dispatch \
+        --commit "$merge_sha" \
+        --limit 1 \
+        --json databaseId \
+        --jq '.[0].databaseId // empty')"
+      [[ -n "$run_id" ]] && break
+      sleep 2
+    done
+    if [[ -z "$run_id" ]]; then
+      echo "Timed out waiting for merge CI to start for $merge_sha; leaving $branch intact." >&2
+      exit 1
+    fi
+
+    gh run watch "$run_id" --exit-status
     gh api \
-      --method POST \
-      "repos/$GITHUB_REPOSITORY/check-runs" \
-      --field name=test \
-      --field head_sha="$merge_sha" \
-      --field status=completed \
-      --field conclusion=success \
-      --field details_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$run_id" \
-      --field 'output[title]=Automation CI passed' \
-      --field "output[summary]=Required test and build passed for automation head $sha." \
+      --method DELETE \
+      "repos/$GITHUB_REPOSITORY/git/refs/heads/$check_branch" \
       --silent
+
+    # Preserve the state branch if main or the synthetic merge commit changed
+    # while CI ran; the next automation run will rebase and try again.
+    git fetch origin "refs/heads/main:refs/remotes/origin/main"
+    current_merge_sha="$(gh api \
+      "repos/$GITHUB_REPOSITORY/git/ref/pull/$pr_number/merge" \
+      --jq '.object.sha' 2>/dev/null || true)"
+    if [[ "$(git rev-parse origin/main)" != "$base_sha" || "$current_merge_sha" != "$merge_sha" ]]; then
+      echo "Main or PR merge ref moved while CI ran; leaving $branch intact for the next run." >&2
+      exit 1
+    fi
 
     merge_ready="false"
     for _ in $(seq 1 30); do
