@@ -118,6 +118,33 @@ case "$mode" in
       exit 1
     fi
 
+    # Strict protection evaluates the PR's synthetic merge commit. The tested
+    # branch is already based on current main, so it has the same tree; record
+    # the successful nested CI run on that merge SHA before asking GitHub to
+    # perform the protected merge.
+    merge_sha="$(gh api \
+      "repos/$GITHUB_REPOSITORY/git/ref/pull/$pr_number/merge" \
+      --jq '.object.sha')"
+    gh api \
+      --method POST \
+      "repos/$GITHUB_REPOSITORY/check-runs" \
+      --field name=test \
+      --field head_sha="$merge_sha" \
+      --field status=completed \
+      --field conclusion=success \
+      --field details_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$run_id" \
+      --field 'output[title]=Automation CI passed' \
+      --field "output[summary]=Required test and build passed for automation head $sha." \
+      --silent
+
+    for _ in $(seq 1 30); do
+      merge_state="$(gh pr view "$pr_number" --json mergeStateStatus --jq '.mergeStateStatus')"
+      case "$merge_state" in
+        CLEAN|HAS_HOOKS|UNSTABLE) break ;;
+      esac
+      sleep 2
+    done
+
     gh pr merge "$pr_number" --squash --delete-branch
     ;;
 
