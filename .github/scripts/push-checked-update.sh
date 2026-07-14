@@ -92,14 +92,33 @@ case "$mode" in
       exit 1
     fi
 
-    gh api \
-      --method POST \
-      "repos/$GITHUB_REPOSITORY/merges" \
-      --field base=main \
-      --field head="$sha" \
-      --field commit_message="$message" \
-      --silent
-    git push origin --delete "$branch"
+    pr_number="$(gh pr list \
+      --base main \
+      --head "$branch" \
+      --state open \
+      --limit 1 \
+      --json number \
+      --jq '.[0].number // empty')"
+    if [[ -z "$pr_number" ]]; then
+      gh pr create \
+        --base main \
+        --head "$branch" \
+        --title "$message" \
+        --body "Automated state update. The existing CI workflow passed against this exact commit before merge."
+      pr_number="$(gh pr list \
+        --base main \
+        --head "$branch" \
+        --state open \
+        --limit 1 \
+        --json number \
+        --jq '.[0].number // empty')"
+    fi
+    if [[ -z "$pr_number" ]]; then
+      echo "Could not resolve the automation pull request for $branch." >&2
+      exit 1
+    fi
+
+    gh pr merge "$pr_number" --squash --delete-branch
     ;;
 
   *)
