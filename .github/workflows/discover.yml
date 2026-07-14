@@ -13,6 +13,7 @@ on:
     - cron: "23 12 * * *"
 
 permissions:
+  actions: write
   contents: write
   issues: write
 
@@ -21,9 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Resume checked discovery update
+        run: bash .github/scripts/push-checked-update.sh prepare automation/news-discovery
 
       - name: Discover new provider news
         env:
@@ -49,14 +55,11 @@ jobs:
           fi
 
       - name: Commit advanced discovery state + radar
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           rm -f data/_discover-summary.md
-          if ! git diff --quiet -- data/discover-state.json data/news.json data/auto-events.json; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add data/discover-state.json data/news.json data/auto-events.json
-            git commit -m "data: discovery state + news radar + auto-events"
-            git push
-          else
-            echo "No discovery state change to commit."
-          fi
+          bash .github/scripts/push-checked-update.sh publish \
+            automation/news-discovery \
+            "data: discovery state + news radar + auto-events" \
+            data/discover-state.json data/news.json data/auto-events.json
