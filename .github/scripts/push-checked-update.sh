@@ -122,9 +122,23 @@ case "$mode" in
     # branch is already based on current main, so it has the same tree; record
     # the successful nested CI run on that merge SHA before asking GitHub to
     # perform the protected merge.
-    merge_sha="$(gh api \
-      "repos/$GITHUB_REPOSITORY/git/ref/pull/$pr_number/merge" \
-      --jq '.object.sha')"
+    merge_sha=""
+    for _ in $(seq 1 60); do
+      candidate="$(gh api \
+        "repos/$GITHUB_REPOSITORY/git/ref/pull/$pr_number/merge" \
+        --jq '.object.sha')"
+      if gh api "repos/$GITHUB_REPOSITORY/commits/$candidate" \
+        --jq '.parents[].sha' | grep -qx "$sha"; then
+        merge_sha="$candidate"
+        break
+      fi
+      sleep 2
+    done
+    if [[ -z "$merge_sha" ]]; then
+      echo "Timed out waiting for PR $pr_number to contain automation head $sha." >&2
+      exit 1
+    fi
+
     gh api \
       --method POST \
       "repos/$GITHUB_REPOSITORY/check-runs" \
@@ -137,13 +151,21 @@ case "$mode" in
       --field "output[summary]=Required test and build passed for automation head $sha." \
       --silent
 
+    test_ready="false"
     for _ in $(seq 1 30); do
-      merge_state="$(gh pr view "$pr_number" --json mergeStateStatus --jq '.mergeStateStatus')"
-      case "$merge_state" in
-        CLEAN|HAS_HOOKS|UNSTABLE) break ;;
-      esac
+      test_count="$(gh pr view "$pr_number" \
+        --json statusCheckRollup \
+        --jq '[.statusCheckRollup[] | select(.name == "test" and .conclusion == "SUCCESS")] | length')"
+      if (( test_count > 0 )); then
+        test_ready="true"
+        break
+      fi
       sleep 2
     done
+    if [[ "$test_ready" != "true" ]]; then
+      echo "Timed out waiting for the required test check on PR $pr_number." >&2
+      exit 1
+    fi
 
     gh pr merge "$pr_number" --squash --delete-branch
     ;;
