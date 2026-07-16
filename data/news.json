@@ -1,16 +1,5 @@
 {
   "schema": 1,
   "note": "Auto-flagged news radar. Items the discovery LLM (scripts/discover.mjs) marked limit/pricing-relevant from provider feeds. UNVERIFIED machine output, NOT verified facts: a human promotes the real ones into data/events.json (with a verbatim quote) and they then appear in What's New / the changelog. Appended automatically by discover.mjs (dedup by link, newest first, capped). Safe to hand-prune. (Cleared 2026-06-24: the four items here predated the classifier tightening and were all out of scope — usage-metrics visibility, enterprise-only spend controls, a dev-playground deprecation, and a context-window capability bump. The stricter classifier won't re-flag them.)",
-  "items": [
-    {
-      "at": "2026-06-24",
-      "provider": "GitHub",
-      "product": "Copilot",
-      "title": "Changes to model selection for Free and Student plans",
-      "link": "https://github.blog/changelog/2026-06-24-changes-to-model-selection-for-free-and-student-plans",
-      "why": "GitHub's Free and Student plans are receiving a concrete change to which AI models users can select, directly affecting what those named consumer plan subscribers can access.",
-      "kind": "limit_cut",
-      "confidence": "official"
-    }
-  ]
+  "items": []
 }
