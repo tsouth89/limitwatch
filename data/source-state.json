@@ -1,74 +1,74 @@
 {
   "anthropic-api-rate-limits": {
-    "hash": "105b42219aa09745",
-    "checked": "2026-07-14",
-    "len": 17274,
+    "hash": "dd8b1a8981d553ce",
+    "checked": "2026-07-20",
+    "len": 18509,
     "method": "http"
   },
   "anthropic-pricing": {
-    "hash": "bcc475923a0435d4",
-    "checked": "2026-07-14",
-    "len": 30347,
+    "hash": "54cd4905510d8aca",
+    "checked": "2026-07-20",
+    "len": 30523,
     "method": "http"
   },
   "openai-gpt55-help": {
-    "hash": "39a460d36e7e8e3e",
-    "checked": "2026-07-14",
+    "hash": "4adac912d2d1d471",
+    "checked": "2026-07-20",
     "len": 7002,
     "method": "browser"
   },
   "openai-pricing": {
-    "hash": "b19907d912ae1750",
-    "checked": "2026-07-14",
-    "len": 7251,
+    "hash": "9a940dd199137252",
+    "checked": "2026-07-20",
+    "len": 7242,
     "method": "browser"
   },
   "google-gemini-subscriptions": {
-    "hash": "06af2833c7a4a100",
-    "checked": "2026-07-14",
-    "len": 17268,
+    "hash": "59b23dc7d9caa3ba",
+    "checked": "2026-07-20",
+    "len": 17427,
     "method": "http"
   },
   "github-copilot-plans": {
-    "hash": "5261ba22b736dac7",
-    "checked": "2026-07-14",
-    "len": 18411,
+    "hash": "72cfce367e342ba9",
+    "checked": "2026-07-20",
+    "len": 18440,
     "method": "http"
   },
   "github-copilot-premium-requests": {
-    "hash": "ab2941f5186b6115",
-    "checked": "2026-07-14",
-    "len": 17342,
+    "hash": "971eac4a525a9cd9",
+    "checked": "2026-07-20",
+    "len": 17306,
     "method": "http"
   },
   "replit-pricing": {
     "hash": "00407146b2065a1f",
-    "checked": "2026-07-14",
+    "checked": "2026-07-20",
     "len": 3557,
     "method": "http"
   },
   "cursor-pricing-docs": {
     "hash": "188ce4c3c8498c93",
-    "checked": "2026-07-14",
+    "checked": "2026-07-20",
     "len": 28,
     "method": "http"
   },
   "xai-supergrok-limits": {
-    "hash": "e4c19e7442f6494b",
-    "checked": "2026-07-14",
-    "len": 20061,
+    "hash": "fefb2c557d88ee39",
+    "checked": "2026-07-20",
+    "len": 20159,
     "method": "http"
   },
   "perplexity-pro-pricing": {
-    "hash": "41d1e7ee1c954b5f",
-    "checked": "2026-07-14",
-    "len": 19240,
+    "hash": "cd2a3c8975efd521",
+    "checked": "2026-07-20",
+    "len": 19297,
     "method": "http"
   },
   "openai-go-help": {
-    "hash": "1d1c164f2b42d5c1",
-    "checked": "2026-07-14",
-    "len": 5009,
+    "hash": "3c0de19ea9ea6f02",
+    "checked": "2026-07-20",
+    "len": 5005,
     "method": "browser"
   }
 }
