@@ -137,7 +137,7 @@ export async function onRequestPost({ request, env }) {
     `Raw fields:\n${JSON.stringify(d, null, 2)}`;
 
   const email = {
-    from: env.RECEIPT_FROM,
+    from: { address: env.RECEIPT_FROM, name: "LimitWatch" },
     to: env.RECEIPT_TO,
     subject: `[limitwatch] reading: ${stub.provider} ${stub.plan} ${stub.window} ${stub.metric}`,
     text,

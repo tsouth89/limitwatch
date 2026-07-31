@@ -48,7 +48,7 @@ export async function onRequestPost({ request, env }) {
     `<p style="color:#4d625d;font-size:13px">If this wasn't you, ignore this email. <a href="${unsubUrl}">Unsubscribe</a>.</p></div>`;
 
   const ok = await sendEmail(env, {
-    from: env.ALERT_FROM,
+    from: { address: env.ALERT_FROM, name: "LimitWatch" },
     to: [email],
     subject: "Confirm your LimitWatch alerts",
     text,

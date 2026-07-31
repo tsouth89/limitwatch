@@ -207,11 +207,11 @@ the GitHub issue template (also requires screenshot evidence).
 
 To turn it on, set four env vars in the Cloudflare Pages project (Settings → Environment variables):
 
-- `CLOUDFLARE_EMAIL_API_TOKEN` (secret) — an API token with Email Sending Write only.
+- `CLOUDFLARE_EMAIL_API_TOKEN` (secret) — an API token with Email Sending: Edit only.
 - `CLOUDFLARE_ACCOUNT_ID` — the Cloudflare account that owns the sending domain.
 - `RECEIPT_TO` — where leads are emailed (your inbox).
-- `RECEIPT_FROM` — a Cloudflare Email Sending sender. `limitwatch.dev` is onboarded, so use
-  `LimitWatch <receipts@limitwatch.dev>`.
+- `RECEIPT_FROM` — a Cloudflare Email Sending sender address. `limitwatch.dev` is onboarded, so use
+  `receipts@limitwatch.dev`.
 
 Abuse controls (always on when the function can send mail):
 
@@ -239,7 +239,7 @@ Setup (one time):
 
 1. KV namespace `limitwatch-subscribers` already exists (id `7adec8a72aea4860b180ef7afdf3733c`). In the
    Pages project → Settings → Functions → **KV namespace bindings**, bind it as **`SUBS`**.
-2. Pages env vars: `ALERT_FROM` = `LimitWatch <alerts@limitwatch.dev>`, plus the
+2. Pages env vars: `ALERT_FROM` = `alerts@limitwatch.dev`, plus the
    `CLOUDFLARE_EMAIL_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` values from above.
    Set `NOTIFY_SECRET` to a separate long random value; do not reuse an API token.
 3. GitHub repo secret `NOTIFY_SECRET` = the same value, so the daily workflow can authenticate.

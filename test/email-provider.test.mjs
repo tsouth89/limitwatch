@@ -23,7 +23,7 @@ test("sendEmail calls Cloudflare Email Sending with the supplied message", async
   };
 
   const message = {
-    from: "LimitWatch <alerts@limitwatch.dev>",
+    from: { address: "alerts@limitwatch.dev", name: "LimitWatch" },
     to: ["reader@example.com"],
     subject: "Test",
     text: "Hello",

@@ -71,7 +71,13 @@ export async function onRequestPost({ request, env }) {
       `<ul style="padding-left:1.1rem">${fresh.map((c) => `<li style="margin:.25rem 0">${fmtChange(c)}</li>`).join("")}</ul>` +
       `<p><a href="${base}/#changelog" style="color:#0d9488;font-weight:600">Full changelog</a></p>` +
       `<p style="color:#4d625d;font-size:12px"><a href="${unsub}">Unsubscribe</a></p></div>`;
-    if (await sendEmail(env, { from: env.ALERT_FROM, to: [s.email], subject, text, html })) sent++;
+    if (await sendEmail(env, {
+      from: { address: env.ALERT_FROM, name: "LimitWatch" },
+      to: [s.email],
+      subject,
+      text,
+      html,
+    })) sent++;
   }
 
   await env.SUBS.put("meta:last_notified", latest);
