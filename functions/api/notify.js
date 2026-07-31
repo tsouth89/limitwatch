@@ -4,7 +4,7 @@
 // daily by .github/workflows/alerts.yml. Idempotent: it diffs the live changelog against a marker in
 // KV, so running it repeatedly with no new changes sends nothing. Base the digest on data.json's
 // derived `changes` (the per-limit changelog).
-import { json, sendEmail } from "./_lib.js";
+import { json, sendEmail, emailConfigured } from "./_lib.js";
 
 const sig = (c) => `${c.date}|${c.kind}|${c.key || ""}|${c.from ?? ""}|${c.to ?? ""}`;
 
@@ -23,7 +23,7 @@ const fmtChange = (c) => {
 };
 
 export async function onRequestPost({ request, env }) {
-  if (!env.SUBS || !env.RESEND_API_KEY || !env.ALERT_FROM) return json({ error: "not configured" }, 503);
+  if (!env.SUBS || !emailConfigured(env) || !env.ALERT_FROM) return json({ error: "not configured" }, 503);
   if (!env.NOTIFY_SECRET || request.headers.get("x-notify-secret") !== env.NOTIFY_SECRET) return json({ error: "forbidden" }, 403);
 
   const base = new URL(request.url).origin;
@@ -71,7 +71,13 @@ export async function onRequestPost({ request, env }) {
       `<ul style="padding-left:1.1rem">${fresh.map((c) => `<li style="margin:.25rem 0">${fmtChange(c)}</li>`).join("")}</ul>` +
       `<p><a href="${base}/#changelog" style="color:#0d9488;font-weight:600">Full changelog</a></p>` +
       `<p style="color:#4d625d;font-size:12px"><a href="${unsub}">Unsubscribe</a></p></div>`;
-    if (await sendEmail(env, [s.email], subject, text, html)) sent++;
+    if (await sendEmail(env, {
+      from: { address: env.ALERT_FROM, name: "LimitWatch" },
+      to: [s.email],
+      subject,
+      text,
+      html,
+    })) sent++;
   }
 
   await env.SUBS.put("meta:last_notified", latest);

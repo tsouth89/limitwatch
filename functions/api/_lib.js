@@ -93,13 +93,23 @@ export async function verifyTurnstile(env, token, ip) {
   }
 }
 
-export async function sendEmail(env, to, subject, text, html) {
+export const emailConfigured = (env) =>
+  !!(env.CLOUDFLARE_EMAIL_API_TOKEN && env.CLOUDFLARE_ACCOUNT_ID);
+
+export async function sendEmail(env, email) {
+  if (!emailConfigured(env)) return false;
   try {
-    const r = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
-      body: JSON.stringify({ from: env.ALERT_FROM, to, subject, text, html }),
-    });
+    const r = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/email/sending/send`,
+      {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${env.CLOUDFLARE_EMAIL_API_TOKEN}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(email),
+      }
+    );
     return r.ok;
   } catch { return false; }
 }

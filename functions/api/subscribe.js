@@ -2,11 +2,11 @@
 // Stores a PENDING subscriber in KV and sends a double-opt-in confirmation email. Nobody is added to
 // the alert list until they click the confirm link, so you can't sign someone else up.
 //
-// Needs the SUBS KV binding plus RESEND_API_KEY and ALERT_FROM env vars (see README).
-import { json, validEmail, newToken, sendEmail, clientIp, allowRequest, verifyTurnstile } from "./_lib.js";
+// Needs the SUBS KV binding plus Cloudflare Email Sending credentials and ALERT_FROM (see README).
+import { json, validEmail, newToken, sendEmail, emailConfigured, clientIp, allowRequest, verifyTurnstile } from "./_lib.js";
 
 export async function onRequestPost({ request, env }) {
-  if (!env.SUBS || !env.RESEND_API_KEY || !env.ALERT_FROM) return json({ error: "not configured" }, 503);
+  if (!env.SUBS || !emailConfigured(env) || !env.ALERT_FROM) return json({ error: "not configured" }, 503);
 
   let d;
   try { d = await request.json(); } catch { return json({ error: "bad json" }, 400); }
@@ -47,7 +47,13 @@ export async function onRequestPost({ request, env }) {
     `<p><a href="${confirmUrl}" style="display:inline-block;background:#0d9488;color:#fff;padding:.6rem 1.1rem;border-radius:8px;text-decoration:none;font-weight:600">Confirm subscription</a></p>` +
     `<p style="color:#4d625d;font-size:13px">If this wasn't you, ignore this email. <a href="${unsubUrl}">Unsubscribe</a>.</p></div>`;
 
-  const ok = await sendEmail(env, [email], "Confirm your LimitWatch alerts", text, html);
+  const ok = await sendEmail(env, {
+    from: { address: env.ALERT_FROM, name: "LimitWatch" },
+    to: [email],
+    subject: "Confirm your LimitWatch alerts",
+    text,
+    html,
+  });
   if (!ok) return json({ error: "send failed" }, 502);
   return json({ ok: true });
 }

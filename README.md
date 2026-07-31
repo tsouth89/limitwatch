@@ -198,22 +198,24 @@ Pricing and aggregation live once in `scripts/lib/usage-core.mjs` (shared with `
 ## Crowdsourced readings (on-site form)
 
 The **Submit a reading** card (hero → `#contribute`) posts to a Cloudflare Pages Function
-(`functions/api/receipt.js`) that emails a ready-to-verify `usage-reports.json` stub via Resend,
+(`functions/api/receipt.js`) that emails a ready-to-verify `usage-reports.json` stub via Cloudflare
+Email Sending,
 **with the screenshot attached**. A screenshot of the usage screen is **required** (max 1.5&nbsp;MB);
 an optional Cursor usage CSV helps exclude Free/promo rows. Nothing is auto-published; a human still
 verifies every reading. If the function isn't configured or is unreachable, the form falls back to
 the GitHub issue template (also requires screenshot evidence).
 
-To turn it on, set three env vars in the Cloudflare Pages project (Settings → Environment variables):
+To turn it on, set four env vars in the Cloudflare Pages project (Settings → Environment variables):
 
-- `RESEND_API_KEY` (secret) — your Resend API key.
+- `CLOUDFLARE_EMAIL_API_TOKEN` (secret) — an API token with Email Sending: Edit only.
+- `CLOUDFLARE_ACCOUNT_ID` — the Cloudflare account that owns the sending domain.
 - `RECEIPT_TO` — where leads are emailed (your inbox).
-- `RECEIPT_FROM` — a **verified** Resend sender. `limitwatch.dev` is verified, so use
-  `LimitWatch <receipts@limitwatch.dev>`.
+- `RECEIPT_FROM` — a Cloudflare Email Sending sender address. `limitwatch.dev` is onboarded, so use
+  `receipts@limitwatch.dev`.
 
 Abuse controls (always on when the function can send mail):
 
-- Per-IP rate limit (5 / hour) before Resend is called. Uses the `SUBS` KV binding when present,
+- Per-IP rate limit (5 / hour) before Email Sending is called. Uses the `SUBS` KV binding when present,
   otherwise the Cache API.
 - Honeypot field on the form (unchanged).
 - Optional Cloudflare Turnstile: set Pages secret `TURNSTILE_SECRET_KEY`, then add
@@ -223,7 +225,7 @@ Abuse controls (always on when the function can send mail):
 ## Email change alerts (double opt-in)
 
 The "Get changes by email" form on the Changelog card lets visitors subscribe to a digest that fires
-when a tracked plan's limits or price move. All in Cloudflare Pages Functions + Resend + KV, with
+when a tracked plan's limits or price move. All in Cloudflare Pages Functions + Email Sending + KV, with
 double opt-in (subscribe → confirm email → confirmed) so nobody can sign up someone else, and a
 one-click unsubscribe on every email.
 
@@ -237,8 +239,9 @@ Setup (one time):
 
 1. KV namespace `limitwatch-subscribers` already exists (id `7adec8a72aea4860b180ef7afdf3733c`). In the
    Pages project → Settings → Functions → **KV namespace bindings**, bind it as **`SUBS`**.
-2. Pages env vars: `ALERT_FROM` = `LimitWatch <alerts@limitwatch.dev>`, `NOTIFY_SECRET` = a long random
-   string (reuse `RESEND_API_KEY` from above).
+2. Pages env vars: `ALERT_FROM` = `alerts@limitwatch.dev`, plus the
+   `CLOUDFLARE_EMAIL_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` values from above.
+   Set `NOTIFY_SECRET` to a separate long random value; do not reuse an API token.
 3. GitHub repo secret `NOTIFY_SECRET` = the same value, so the daily workflow can authenticate.
 
 Until the KV binding + env vars are set, the form degrades to pointing at the RSS feed.

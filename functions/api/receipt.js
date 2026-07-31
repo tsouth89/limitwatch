@@ -2,16 +2,18 @@
 //
 // Requires a screenshot (or short proof image) so submissions can be verified. Accepts
 // multipart/form-data (preferred: fields + proof file) or JSON with evidenceUrl (fallback).
-// Emails the maintainer a ready-to-verify data/usage-reports.json stub via Resend, with the
+// Emails the maintainer a ready-to-verify data/usage-reports.json stub via Cloudflare Email
+// Sending, with the
 // proof attached when present. Nothing is auto-published.
 //
 // Cloudflare Pages env:
-//   RESEND_API_KEY  (secret)
+//   CLOUDFLARE_EMAIL_API_TOKEN  (secret)
+//   CLOUDFLARE_ACCOUNT_ID       (var)
 //   RECEIPT_TO      (var)
 //   RECEIPT_FROM    (var)
 // Optional: SUBS KV, TURNSTILE_SECRET_KEY
 
-import { json, clientIp, allowRequest, verifyTurnstile } from "./_lib.js";
+import { json, clientIp, allowRequest, verifyTurnstile, emailConfigured, sendEmail } from "./_lib.js";
 
 const PROOF_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 const PROOF_MAX = 1_500_000; // 1.5 MB
@@ -32,6 +34,8 @@ async function fileAttachment(file, fallbackName) {
   return {
     filename: (file.name || fallbackName).replace(/[^\w.\-]+/g, "_").slice(0, 120),
     content: bytesToBase64(buf),
+    type: file.type || "application/octet-stream",
+    disposition: "attachment",
   };
 }
 
@@ -90,7 +94,7 @@ export async function onRequestPost({ request, env }) {
     if (csv.size > CSV_MAX) return json({ error: "csv too large (max 2MB)" }, 400);
   }
 
-  if (!env.RESEND_API_KEY || !env.RECEIPT_TO || !env.RECEIPT_FROM) {
+  if (!emailConfigured(env) || !env.RECEIPT_TO || !env.RECEIPT_FROM) {
     return json({ error: "not configured" }, 503);
   }
 
@@ -133,24 +137,14 @@ export async function onRequestPost({ request, env }) {
     `Raw fields:\n${JSON.stringify(d, null, 2)}`;
 
   const email = {
-    from: env.RECEIPT_FROM,
+    from: { address: env.RECEIPT_FROM, name: "LimitWatch" },
     to: env.RECEIPT_TO,
     subject: `[limitwatch] reading: ${stub.provider} ${stub.plan} ${stub.window} ${stub.metric}`,
     text,
   };
   if (attachments.length) email.attachments = attachments;
 
-  let r;
-  try {
-    r = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { authorization: `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
-      body: JSON.stringify(email),
-    });
-  } catch {
-    return json({ error: "send failed" }, 502);
-  }
-  if (!r.ok) return json({ error: "send failed", status: r.status }, 502);
+  if (!(await sendEmail(env, email))) return json({ error: "send failed" }, 502);
 
   return json({ ok: true });
 }
