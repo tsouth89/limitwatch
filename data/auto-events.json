@@ -1,5 +1,48 @@
 {
   "schema": 1,
   "note": "Auto-published events from scripts/discover.mjs. Machine-extracted, but every quote is verified to appear VERBATIM in the cited source before publishing, and only high-certainty items pass. Tagged auto:true and badged on-site. build.mjs merges these with the hand-curated data/events.json; a manual event with the same id/source supersedes. Safe to hand-correct or delete any entry. (Removed the 2026-06-04 'larger context windows / reasoning levels' entry: a capability change, not a consumer usage-limit or price change, so it fails the tightened scope and shouldn't read as a 'limit boost'.)",
-  "events": []
+  "events": [
+    {
+      "id": "auto-replit-replit-free-mode-increases-core-plan-usage-capac-Tue,",
+      "provider": "Replit",
+      "product": "Replit",
+      "applies_to": [
+        "Core",
+        "Pro"
+      ],
+      "title": "Replit Free Mode increases Core plan usage capacity 30x",
+      "kind": "limit_boost",
+      "window": "month",
+      "factor": 30,
+      "starts_on": "2026-08-18",
+      "ends_on": null,
+      "permanent": true,
+      "confidence": "announced",
+      "quote": "Core subscribers will now be able to create 30X more than before on Replit using Free Mode, as well as up to 30 hours per month of chat.",
+      "source": "https://replit.com/blog/replit-introduces-free-mode",
+      "auto": true,
+      "flagged_at": "2026-08-20T13:15:29.445Z"
+    },
+    {
+      "id": "auto-google-free-1-year-google-ai-pro-for-eligible-us-colleg-2026",
+      "provider": "Google",
+      "product": "Gemini",
+      "applies_to": [
+        "Google AI Pro",
+        "Google AI Plus"
+      ],
+      "title": "Free 1-year Google AI Pro for eligible US college students with 4x usage limits",
+      "kind": "promo",
+      "window": "month",
+      "factor": 4,
+      "starts_on": "2026-08-19",
+      "ends_on": "2027-08-19",
+      "permanent": false,
+      "confidence": "official",
+      "quote": "For eligible college students in the U.S., we're offering one year of Google AI Pro for free 1 (valued at $19.99/mo). This offer unlocks 4x higher usage limits in Gemini, 2 access to Gemini Spark , Gemini in Google apps like Gmail and Google Docs, 5 TB of storage, Google Health Premium, and more .",
+      "source": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
+      "auto": true,
+      "flagged_at": "2026-08-20T13:15:29.445Z"
+    }
+  ]
 }

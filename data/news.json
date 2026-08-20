@@ -1,5 +1,26 @@
 {
   "schema": 1,
   "note": "Auto-flagged news radar. Items the discovery LLM (scripts/discover.mjs) marked limit/pricing-relevant from provider feeds. UNVERIFIED machine output, NOT verified facts: a human promotes the real ones into data/events.json (with a verbatim quote) and they then appear in What's New / the changelog. Appended automatically by discover.mjs (dedup by link, newest first, capped). Safe to hand-prune. (Cleared 2026-06-24: the four items here predated the classifier tightening and were all out of scope — usage-metrics visibility, enterprise-only spend controls, a dev-playground deprecation, and a context-window capability bump. The stricter classifier won't re-flag them.)",
-  "items": []
+  "items": [
+    {
+      "at": "2026-08-18",
+      "provider": "Replit",
+      "product": "Replit",
+      "title": "Replit Introduces Free Mode to Expand What is Possible with AI",
+      "link": "https://replit.com/blog/replit-introduces-free-mode",
+      "why": "Replit is launching a new 'Free Mode' consumer plan tier, expanding what users can access at no cost.",
+      "kind": "new_plan",
+      "confidence": "announced"
+    },
+    {
+      "at": "2026-08-19",
+      "provider": "Google",
+      "product": "Gemini",
+      "title": "Start the semester with one year of Gemini, on us",
+      "link": "https://blog.google/innovation-and-ai/products/gemini-app/student-offer-google-ai/",
+      "why": "Google is offering students one year of Gemini (consumer AI subscription) free as a named promotional offer.",
+      "kind": "promo",
+      "confidence": "announced"
+    }
+  ]
 }
