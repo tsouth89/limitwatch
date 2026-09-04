@@ -620,7 +620,7 @@ const providerPageHtml = ({ provider, name, slug }) => {
 ${renderProviderChanges(changes)}
 <footer>
 <div class="provs">Other providers: ${otherLinks}</div>
-<a href="/">LimitWatch home</a> · <a href="https://github.com/tsouth89/limitwatch" rel="noopener">Source &amp; raw data</a> · open data, AI-built.
+<a href="/">LimitWatch home</a> · <a href="https://github.com/btsouth/limitwatch" rel="noopener">Source &amp; raw data</a> · open data, AI-built.
 </footer>
 </div>
 </body>
@@ -735,7 +735,7 @@ ${renderProviderChanges(bChanges)}
 <footer>
 <div class="provs">Single-provider detail: <a href="/${a.slug}">${escHtml(a.name)}</a> · <a href="/${b.slug}">${escHtml(b.name)}</a></div>
 ${related ? `<div class="provs">More comparisons: ${related}</div>` : ""}
-<a href="/">LimitWatch home</a> · <a href="https://github.com/tsouth89/limitwatch" rel="noopener">Source &amp; raw data</a> · open data, AI-built.
+<a href="/">LimitWatch home</a> · <a href="https://github.com/btsouth/limitwatch" rel="noopener">Source &amp; raw data</a> · open data, AI-built.
 </footer>
 </div>
 </body>
